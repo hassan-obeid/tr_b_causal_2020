@@ -18,8 +18,7 @@ jupyter:
 
 ## At the highest level, how to solve this project’s problem---what will be done in the project? 
 
-
-In this project, we want to demonstrate using simulations how to structurally approach demand modeling and modeling in general while paying attention to the causal structure of how people make their choices, and the data generation process in general. 
+We will demonstrate using simulations how to structurally approach demand modeling and modeling in general while paying attention to the causal structure of how people make their choices, and the data generation process in general. 
 We will build on Brathwaite’s work and review paper and demonstrate with steps how to incorporate and think about causal inference in the context of DCM. We will also demonstrate the value of such an approach by contrasting the outcome of this way of thinking to that of traditional demand modeling where little care is given to the causal structure. 
 
 Specifically, there will be two main deliverables in our work/presentation. The first one is a simple application of the steps outlined in Brathwaite et. al to a simulation example, where we will also show what would happen to our causal estimates under different assumptions of the causal graph. In this example, the problem would be purely a selection on observables problem, and there won’t be complications related to unobserved latent confounders -- the goal is to solely demonstrate the step-by-step approach with explicitly stating and showing the causal assumptions being made. 

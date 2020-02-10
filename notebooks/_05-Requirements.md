@@ -42,7 +42,7 @@ jupyter:
     - Output: Simulated variables 
 2. For deconfounder
     - Function for fitting factor model
-        - A class with a couple of factor model methods: Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
+        - A class with a few of factor model methods: Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
            1. Input: Vector of covariates, dimensionality of latent variable space
            2. Output: A fitted factor model
         - Function for posterior predictive checks for the factor models.  

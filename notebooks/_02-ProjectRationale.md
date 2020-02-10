@@ -19,4 +19,4 @@ jupyter:
 ## Why work on this problem now? 
 
 
-The field of causal inference has had a significant boost in interest recently with a new direction of research based on both the potential outcome framework and the double ML methods, as well as causal graphical models put forward by Pearl.
+The field of causal inference has had a significant boost in interest recently with a new direction of research based on the potential outcome framework and the double ML methods, as well as causal graphical models put forward by Pearl.
