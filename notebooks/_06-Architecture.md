@@ -17,9 +17,9 @@ jupyter:
 
 
 ## 1. At a “high” level, how will the project deliver each of the needed requirements?
-- Try to think in terms of some manageable (e.g. 10-20) steps
-- List needed intermediate products (e.g. pseudo-code, unit tests, etc.)
-- Try to be concise but comprehensive?
+- **Try to think in terms of some manageable (e.g. 10-20) steps**
+- **List needed intermediate products (e.g. pseudo-code, unit tests, etc.)**
+- **Try to be concise but comprehensive?**
 
 
 
@@ -80,18 +80,18 @@ jupyter:
 
 
 ## 4. Description of major classes to be used (relates to major components above):
-- Class responsibilities
-- Interactions between classes
-- Class hierarchies / state transitions / object persistence
-- Organization of classes into subsystems (if necessary / planned)
-- Why does each class have “jurisdiction” over the parts of the system that it does?
+- **Class responsibilities**
+- **Interactions between classes**
+- **Class hierarchies / state transitions / object persistence**
+- **Organization of classes into subsystems (if necessary / planned)**
+- **Why does each class have “jurisdiction” over the parts of the system that it does?**
 
 
 
 
 
 ## 5. Description of the minimally viable product (if any):
-- Note the portions of the architecture responsible for producing the minimally viable product. 
+- **Note the portions of the architecture responsible for producing the minimally viable product.**
 
 
 
@@ -188,16 +188,16 @@ jupyter:
 
 
 ### 7.8 How will the flow / manipulation of data be controlled (and recorded / version-controlled) and made reproducible? E.g. data ingestion and manipulation to create training / testing sets.
-- Flyte?
-- Make?
-- Other?  
+- **Flyte?**
+- **Make?**
+- **Other?**  
 
 
 
 
 
 ## 8. Description of experimentation protocols (if relevant):
-If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B tests, etc.):
+**If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B tests, etc.):**
 
 
 ### 8.1 How will experiments be launched?
@@ -240,9 +240,9 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 9.1 How will users (including myself) interact with the system that is built?
-- Will there be a command line interface?
-- Will users be editing configuration files, and if so, where will they be stored?
-- Will there be ability to replay the DAG representing one’s data analysis?
+- **Will there be a command line interface?**
+- **Will users be editing configuration files, and if so, where will they be stored?**
+- **Will there be ability to replay the DAG representing one’s data analysis?**
 
 
 
@@ -270,8 +270,8 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 10.2 How much memory and time will it take the system to execute?
-- Offline / online prediction
-- Model training
+- **Offline / online prediction**
+- **Model training**
 
 
 
@@ -323,8 +323,8 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ## 12. Description of how the system will interface with external systems:
-- E.g. if a model needs to be served in Go but it was trained in Python…
-- If the system needs to manipulate Kubernetes for training...
+- **E.g. if a model needs to be served in Go but it was trained in Python…**
+- **If the system needs to manipulate Kubernetes for training...**
 
 
 
@@ -379,14 +379,11 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 14.1 How will we test that all of the parts of the architecture are working correctly?
-- How will we create tests for each part of the architecture that are:
- - clear and unambiguous
- - capable of dealing with stochastic functions / objects
- - minimizing reliance / use of stochasticity
- - fast to evaluate
-
-
-
+- **How will we create tests for each part of the architecture that are:**
+ - **clear and unambiguous**
+ - **capable of dealing with stochastic functions / objects**
+ - **minimizing reliance / use of stochasticity**
+ - **fast to evaluate**
 
 
 ### 14.2 What are the various types of tests that are needed?
@@ -417,38 +414,32 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 15.1 Is there a plan in place for producing documentation for the software?
-- Documentation for operating the software
-- Documentation of software limits
-- Usage examples and tutorials
-- Key project learnings / retrospective notes
+- **Documentation for operating the software**
+- **Documentation of software limits**
+- **Usage examples and tutorials**
+- **Key project learnings / retrospective notes**
 
-
-
+Documentation, in the form of Jupyter Notebook accompanied by a Markdown file (README.md) detailing the procedure for installing the environment and the content of folders and notebooks. Any limitations to the project will be noted in the jupyter notebooks developed to illustrate the analysis effort. The README.md markdown file will also will point to documentation pages for any packages used in the project.
 
 
 ### 15.2 Is there a plan for sharing the software with others?
-- File upload?
-- Upload to package repository?
+- **File upload?**
+- **Upload to package repository?**
 
-
-
+All project related material including code, documentation, presentation, environment files, and datasets will be uploaded to the project github repository.
 
 
 ### 15.3 Will the project have an associated website? If so is there a plan for its development?
 
-
-
+The only "website" for the project will be its github repository.
 
 
 ### 15.4 Is there a plan for producing any written or visual materials that others may wish to view?
-- Final or interim project reports
-- Tables of key project results
-- Graphs, diagrams, images from the project, e.g.
- - Plots of system performance
- - Model checking plots
-
-
-
+- **Final or interim project reports**
+- **Tables of key project results**
+- **Graphs, diagrams, images from the project, e.g.:**
+ - **Plots of system performance**
+ - **Model checking plots**
 
 
 ## 16 Description of maintenance plan:
@@ -482,8 +473,8 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 17.2 Is there evidence that we understand the basics of how all of those tools work?
-- Have we read any/all relevant documentation and instruction materials?
-- Have we taken any basic training courses in any of these tools?
+- **Have we read any/all relevant documentation and instruction materials?**
+- **Have we taken any basic training courses in any of these tools?**
 
 
 
@@ -493,15 +484,15 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 18.1  There should be some evidence for, and of, project feasibility:
-- How do we know that every part of the architecture will work?
-- Based on the architecture, what are all needed resources?
+- **How do we know that every part of the architecture will work?**
+- **Based on the architecture, what are all needed resources?**
 
 
 
 
 
 ### 18.2 What could render the project infeasible?
-- Is there adequate resourcing?
+- **Is there adequate resourcing?**
 
 
 
@@ -520,8 +511,8 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 18.5 What are the weakest areas of the architecture?
-- Where is the project most vulnerable to failure?
-- How are these weaknesses being addressed?
+- **Where is the project most vulnerable to failure?**
+- **How are these weaknesses being addressed?**
 
 
 
@@ -540,13 +531,13 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 20.1 What steps are being taken to ensure that the architecture is able to handle changes with maximal ease / flexibility? e.g.:
-- Newly desired capabilities based on usage of initial iterations
-- Adding planned features that didn’t make it to the minimal viable product
-- Allowing for easy change of third party dependencies
-- Complying with any relevant standards for maximal compatibility with outside products
-- New ways of interaction with users (e.g. avoiding type checking as much as possible in favor of duck-typing)
-- Are classes maximally independent such that changes in one class don’t necessitate changes in the others?
-- Do we have a plan in place for test changes? For example if needing to change the data used in a test, can that be easily done without having to rewrite the test? E.g. data stored outside the code, or integration tests that don’t test for a specific prediction output but rather a property of the prediction outputs so that the model can change without the test necessitating a rewrite.
+- **Newly desired capabilities based on usage of initial iterations**
+- **Adding planned features that didn’t make it to the minimal viable product**
+- **Allowing for easy change of third party dependencies**
+- **Complying with any relevant standards for maximal compatibility with outside products**
+- **New ways of interaction with users (e.g. avoiding type checking as much as possible in favor of duck-typing)**
+- **Are classes maximally independent such that changes in one class don’t necessitate changes in the others?**
+- **Do we have a plan in place for test changes? For example if needing to change the data used in a test, can that be easily done without having to rewrite the test? E.g. data stored outside the code, or integration tests that don’t test for a specific prediction output but rather a property of the prediction outputs so that the model can change without the test necessitating a rewrite.**
 
 
 
@@ -578,7 +569,7 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 22.1 What are the closest alternative systems that could be used for this project or for parts of the project?
-- How can those alternate systems be leveraged?
+- **How can those alternate systems be leveraged?**
 
 
 ### 22.2 Why is it expected that this project’s custom built sub-systems will be better than the available alternatives for those sub-systems?
@@ -591,7 +582,7 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 23.1 What are the closest alternative systems that could be used for this project or for parts of the project?
-- How can those alternate systems be leveraged?
+- **How can those alternate systems be leveraged?**
 
 
 
@@ -607,7 +598,7 @@ If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B
 
 
 ### 24.1 What were alternative ways to architect the system to satisfy the requirements?
-- If there were no other alternatives, then why were there no other alternatives and can we prove this was really the case?
+- **If there were no other alternatives, then why were there no other alternatives and can we prove this was really the case?**
 
 
 
