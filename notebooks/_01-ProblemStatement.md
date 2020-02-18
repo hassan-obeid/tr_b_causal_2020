@@ -18,5 +18,4 @@ jupyter:
 
 ## What is the problem motivating this project?
 
-
-This project attempts to bridge the gap between causal inference modeling practices and the field of demand modeling (discrete choice modeling) in transportation by demonstrating an approach to think causally about the modeling problem.
+The existing disconnect between the fields of travel demand modeling and causal inference make it hard for cross-fertilization between the two fields to take place. This project is motivated by the current lack of use of methods and findings from causal inference in travel demand modeling.

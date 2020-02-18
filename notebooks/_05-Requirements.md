@@ -25,6 +25,7 @@ jupyter:
 
 
 ### <ins>For the presentation:</ins>
+- 20 minutes so expected 20 slides, 15 -30 slides (min, max).
 - Motivation and why we need this: we will talk about the disconnect between causal inference and demand modeling and why it’s important to pay attention to it. 
 - Outline of procedure and the value it brings. (both these steps are mostly from Brathwaite et al.)
 - Demo for application on simulated dataset.
@@ -42,9 +43,10 @@ jupyter:
     - Output: Simulated variables 
 2. For deconfounder
     - Function for fitting factor model
-        - A class with a couple of factor model methods: Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
+        - A class with a few of factor model methods: Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
            1. Input: Vector of covariates, dimensionality of latent variable space
            2. Output: A fitted factor model
         - Function for posterior predictive checks for the factor models.  
            1. Input: Factor model, test data
            2. Output: P-values for predictive checks
+3. Tests for code

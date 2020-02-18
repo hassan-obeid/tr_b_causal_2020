@@ -19,4 +19,4 @@ jupyter:
 ## Who are the end users and stakeholders for this project? 
 
 
-Transportation demand modelers, anyone who wants to develop models that may potentially be used to answer “what if” questions and causal queries.
+Transportation demand modelers, anyone who wants to develop models that may be used to answer “what if” questions or other causal queries.
