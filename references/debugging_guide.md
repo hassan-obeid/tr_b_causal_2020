@@ -20,14 +20,14 @@ To find and fix the pesky bugs, follow the steps below.
       - A written description of the expected behavior. What was supposed to happen, in words?
       - Severity categorization: {Blocker; Major - aka large problem; Minor - aka an easy to fix problem; Enhancement - aka not a requirement but nice to have.}
       - A minimal working example or set of steps that reproduces the failure.
-      - If possible (but not required now), a simplified test example that produces the same qualitative failure.
+      - If possible (but not required now), a **simplified** test example that produces the same qualitative failure as the failure behavior you observed.
       - Any diagnostic information (errors, execution logs, etc.) reported when the failure was observed.
       - Environment information when the failure was observed (installed packages, operating system, memory capacity, etc.)
    3. Create a new branch off the feature branch to track work on fixing the bug.
    4. Open a pull request for the new branch to the original feature branch. Register that the issue is being worked on in this pull request by referencing the issue for the bug in the text body of the pull request on github.
-   5. Add a test to the suite of regression tests to reproduce this specific software failure instance. Check the test in with git.
+   5. Add a test to the suite of regression tests to reproduce this **specific** software failure instance. Check the test in with git. This test differs from the simplified test above because it reproduces the exact bug that caught your attention in the first place.
       - See chapter 4, "Reproducing Problems" of "Why Programs Fail: A Guide to Systematic Debugging" by Morgan Kaufmann.
-   6. Create an automated and simplified test case for this specific failure instance.
+   6. Create an automated and simplified test case for this specific failure instance. While this step was optional before, it should definitely be performed now to ease one's later investigative efforts.
       - See chapter 5, "Simplifying Problems" of "Why Programs Fail: A Guide to Systematic Debugging" by Morgan Kaufmann.
 
 2. Understand how the system that is producing the failure is supposed to work.
@@ -38,7 +38,7 @@ To find and fix the pesky bugs, follow the steps below.
 3. Understand how the system that is producing the failure is working.
    1. What is being produced during failure?
 
-      Ensure that one has a debugging system in-place to identify and record the intermediate values being produced by one's software as well as which of those values are incorrect in the simplest created test case.
+      Ensure that one has a debugging system in-place to identify and record the intermediate values being produced by one's software as well as which of those values are incorrect in the simplest created test case. In python, this is trivially provided by the built-in python debugger, but one should verify this condition for any non-python tools being used in the software.
 
    2. When does failure occur?
 
@@ -49,17 +49,17 @@ To find and fix the pesky bugs, follow the steps below.
          1. For each hypothesis, note its predicted observations. These observations will be tested for when attempting to falsify the hypothesis.
          2. For each hypothesis, note the empirical facts that suggest it.
          3. Set a time limit for this data and test-less work.
-         4. Be sure to include logically likely contributors to the failure's existence (e.g. other known bugs, causes in program state / code / input, anomolies in the output or intermediate variables, poorly written code, etc.).
+         4. Be sure to include logically likely contributors to the failure's existence (e.g. other known bugs, causes in program state / code / input, anomolies in the output or intermediate variables, poorly written code, etc.). The difference between these contributors and simply documenting the inputs that cause failur to occur is that the listed contributor should be a hypothesis describing what about the inputs makes one suspect the defect to be in a particular area of code.
       2. For each of those hypothesized points, determine whether the point is defective.
       3. For each defective point, determine whether that point actually changes the failure behavior.
-      4. Employ various brute-force / common search techniques to discover remaining causes of the failure. E.g.: [WIP--to be detailed.]
+      4. Once one's a-priori hypotheses have been exhausted (or once one's time limit for ad-hoc debugging has been reached), employ various brute-force / common search techniques to discover remaining causes of the failure. E.g.: [WIP--to be detailed.]
          1. Bisection Search
             1. Start at the beginning of a chunk of code where there is no code failure.
             2. Mark the earliest point in the code chunk where the failure has occurred.
             3. Go halfway between the two points and identify whether there are any infections (incorrect states) in the first half of the code chunk.
-            4. If infections are found, repeat steps 1 to 3 on the code chunk between the original starting point and the earliest new infection that was found.
+            4. If infections are found, repeat steps A to C on the code chunk between the original starting point and the earliest new infection that was found.
             5. If infections are not found, identify whether there are any infections in the second half of the code chunk.
-            6. If infections are found in the second half of the code chunk, repeat steps 1 to 3 between the beginning point of the second half and the earliest new infection that was found.
+            6. If infections are found in the second half of the code chunk, repeat steps A to C between the beginning point of the second half and the earliest new infection that was found.
             7. Cease when no more infections are located.
             8. Take all infections without causally preceding infections as defect sites.
          2. (Static / Dynamic) Ancestor Tracking
@@ -69,7 +69,7 @@ To find and fix the pesky bugs, follow the steps below.
                1. Control ancestors: These objects or lines of code control or affect the execution of the code that created the current infection.
                2. Data ancestors: These objects or lines of code contain / create / affect the data used to create the current infection.
             4. Identify whether each of the ancestors are infected.
-            5. Repeat steps 1 - 4 on each infected ancestor.
+            5. Repeat steps A to D on each infected ancestor.
             6. Cease when there are no more ancestors.
             7. Collect all infected objects / variables without infected ancestors of their own as defect sites.
       5. Open a new task on the failure's github issue for each discovered contributor to the failure's existence (i.e.  each defect).
