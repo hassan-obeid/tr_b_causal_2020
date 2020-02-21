@@ -1,7 +1,7 @@
 Causal_Inference_Transportation
 ==============================
 
-causal graphs and transportatability
+causal graphs and transportability
 
 Project Organization
 ------------
