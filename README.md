@@ -26,6 +26,8 @@ Project Organization
     │   └── final          <- Completed Jupyter notebooks.
     │
     ├── references         <- Data dictionaries, manuals, and all other explanatory materials.
+    │   ├── code           <- Reference code and notebooks.
+    │   ├── papers         <- Reference papers.
     │   └── organization   <- Jupyter notebooks and markdown files for the project organization.
     │
     ├── reports            <- Generated analysis as HTML, PDF, LaTeX, etc.
