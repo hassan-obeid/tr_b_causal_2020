@@ -32,7 +32,7 @@ How to falsify a causal graph?
       - Song, Jin, and Oyama, Satoshi, and Kurihara, Masahito (2019). "Identification of Possible Common Causes by Intrinsic Dimension Estimation." IEEE.
       - Romano, Simone, and Chelly, Oussama, and Nguyen, Vinh, and Bailey, James, and Houle, Michael E. (?, >2016). "Measuring Dependency via Intrinsic Dimensionality."
       - Carter, Kevin M., and Raich, Raviv, and Hero, Alfred O. (2010). "On Local Intrinsic Dimension Estimation and Its Applications." IEEE Transactions on Signal Processing, 58:20, 650-662.
-    - Information-Theoretic comparison of directed / mutual information
+    - Directed / mutual information assessment
       - Wibral, Michael, and Vicente, Raul (2014). "Efficient Estimation of Information Transfer" in Directed Information Measures in Neuroscience, Understanding Complex Systems. Springer. DOI: 10.1007/978-3-642-54474-3_2.
       - Steudel, Bastian, and Ay, Nihat (2015). "Information-Theoretic Inference of Common Ancestors." Entropy, 17: 2304-2327.
         - Ay, Nihat, and Wenzel, W. (2012). "On Solution Sets of Information Inequalities." Kybernetica, 48: 845-864.
