@@ -4,8 +4,12 @@ How to falsify a causal graph?
     - Pitchforth, Jegar and Mengersen, Kerrie (2013). “A proposed validation framework for expert elicited Bayesian Networks.” Expert Systems with Applications, 40:162-167.
 - Test conditional independence assumptions implied by the graph.
     - Permutation Testing
+        - Hothorn, Torsten, and Hornik, Kurt, and van de Wiel, Mark and Zeileis, Achim (2008). "Implementing a Class of Permutation Tests: The coin Package." Journal of Statistical Software.
         - Tsamardinos, I., and Borboudakis, G. (2010). “Permutation testing improves bayesian network learning.” In Machine Learning and Knowledge Discovery in Databases. Springier, 322 - 337.
         - Doran, Gary, and Muandet, Krikamol, and Zhang, Kun, and Scholkopf, Bernhard (?). “A Permutation-Based Kernel Conditional Independence Test”
+        - Visual Permutation Testing (no reference as it's simply Tim's thoughts)
+          - P(X_1|X_2) = P(X_1) implies E(X_1|X_2) = E(X_1) so plot E(X_1|X_2) under the real data versus under permutations of the X_2 column.
+          - P(X_1|X_2, X_3) = P(P(X_1|X_2) implies E(X_1|X_2, X_3) = E(X_1|X_2) so plot E(X_1|X_2, X_3) under the real data versus under permutations of the X_3 column.
     - Model-Based Predictive Testing (AKA Model-Based Exploratory Testing since we’re exploring whether adding Y helps us predict X when already using Z.)
         - Sen, Rajat, and Suresh, Ananda Theertha and Shanmugam Karthikeyan and Dimakis Alexandros G. And Shakkottai Sanjay (2017). “Model-Powered Conditional Independence Test” 31st Conference on Neural Information Processing Systems (NIPS).
         - Burkart, Samuel and Kiraly, Franz J. (2017). “Predictive Independence Testing, Predictive Conditional Independence Testing, and Predictive Graphical Modelling.” arXiv:1711.05869v1
@@ -22,7 +26,19 @@ How to falsify a causal graph?
     - Density-Estimation Based Testing
     - Graphical Diagnostics
         - Walsh, Stephen and Whitney, Paul (2012). “A Graphical Approach to Diagnosing the Validity of the Conditional Independence Assumptions of a Bayesian Network Given Data.” Journal of Computational and Graphical Statistics, 21:4, 961-978.
-        - Permutation-based visualizations to visually test for marginal and conditional independence between two variables.
+        - See bullet on "Visual Permutation Testing".
+    - Intrinsic Dimension assessment
+      - Camastra, Francesco, and Staiano, Antonino (2016). "Intrinsic dimension estimation: Advances and open problems." Information Sciences, 328:16-41.
+      - Song, Jin, and Oyama, Satoshi, and Kurihara, Masahito (2019). "Identification of Possible Common Causes by Intrinsic Dimension Estimation." IEEE.
+      - Romano, Simone, and Chelly, Oussama, and Nguyen, Vinh, and Bailey, James, and Houle, Michael E. (?, >2016). "Measuring Dependency via Intrinsic Dimensionality."
+      - Carter, Kevin M., and Raich, Raviv, and Hero, Alfred O. (2010). "On Local Intrinsic Dimension Estimation and Its Applications." IEEE Transactions on Signal Processing, 58:20, 650-662.
+    - Information-Theoretic comparison of directed / mutual information
+      - Wibral, Michael, and Vicente, Raul (2014). "Efficient Estimation of Information Transfer" in Directed Information Measures in Neuroscience, Understanding Complex Systems. Springer. DOI: 10.1007/978-3-642-54474-3_2.
+      - Steudel, Bastian, and Ay, Nihat (2015). "Information-Theoretic Inference of Common Ancestors." Entropy, 17: 2304-2327.
+        - Ay, Nihat, and Wenzel, W. (2012). "On Solution Sets of Information Inequalities." Kybernetica, 48: 845-864.
+      - Raginsky, Maxim (2011). "Directed Information and Pearl's Causal Calculus." FortyNinth Annual Allerton Conference, UIUC, IEEE, 958-965.
+      - Wieczorek, Aleksander, and Roth, Volker (2019). "Information Theoretic Causal Effect Quantification." Entropy, 21:975, 1-26.
+      - Belghazi, Mohamed Ishmael, and Baratin, Aristide, and Rajeswar, Sai, and Ozair, Sherjil, and Bengio, Yoshua, and Courville, Aaron, and Hjelm, R. Devon (2018). "Mutual Infromation Neural Estimation." arXiv:1801.04062v4
 - Test the “functional constraints” implied by one’s causal graph if latent variables are present.
     - Tian, Jin and Pearl, Judea (2002). “On the Testable Implications of Causal Models with Hidden Variables.” In Uncertainty in Artificial Intelligence.
     - Kang, Changsung, and Tian, Jin (?). “Inequality Constraints in Causal Models with Hidden Variables”
