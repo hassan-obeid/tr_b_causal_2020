@@ -102,11 +102,13 @@ mnl_names["intercept"] = ['ASC Shared Ride: 2',
                           'ASC Walk',
                           'ASC Bike']
 
-mnl_specification["total_travel_time"] = [1, 2, 3, [4, 5, 6]]
+mnl_specification["total_travel_time"] = [1, 2, 3, 4, 5, 6]
 mnl_names["total_travel_time"] = ['Travel Time, units:min (Drive Alone)',
                                   'Travel Time, units:min (SharedRide-2)',
                                   'Travel Time, units:min (SharedRide-3)',
-                                  'Travel Time, units:min (All Transit Modes)']
+                                  'Travel Time, units:min Walk-Transit-Walk',
+                                 'Travel Time, units:min Drive-Transit-Walk',
+                                 'Travel Time, units:min Walk-Transit-Drive']
 
 mnl_specification["total_travel_cost"] = [[4, 5, 6]]
 mnl_names["total_travel_cost"] = ['Travel Cost, units:$ (All Transit Modes)']
@@ -191,6 +193,8 @@ spec_dic = specifications(mnl_specification=mnl_specification, num_modes=8)
 
 confounder_vectors = []
 holdout_dfs = []
+masks_df = []
+rows_df =[]
 latent_dim = 1
 for i in data['mode_id'].unique():
 
@@ -206,18 +210,98 @@ for i in data['mode_id'].unique():
     
     X = np.array((data_mode_i[X_columns] - data_mode_i[X_columns].mean())/data_mode_i[X_columns].std())
     
-    confounders, holdouts= confounder(holdout_portion=0.2, X=X, latent_dim=latent_dim)
+    confounders, holdouts, holdoutmasks, holdoutrow= confounder(holdout_portion=0.2, X=X, latent_dim=latent_dim)
 
     confounder_vectors.append(confounders)
     holdout_dfs.append(holdouts)
+    masks_df.append(holdoutmasks)
+    rows_df.append(holdoutrow)
 
 # # Need to add predictive checks for confounder
 
+# +
+### Get heldout and confounder data for modes where deconfounder is to be included 
+holdouts_req = holdout_dfs[:3]
+holdouts_req[0].shape
+
+confounder_req = confounder_vectors[:3]
 
 
+# +
+n_rep = 100 # number of replicated datasets we generate
+holdout_gen_util = []
 
+for j in range(len(holdouts_req)):
+    holdout_gen = np.zeros((n_rep,*(holdouts_req[j].shape)))
+    for i in range(n_rep):
+        w_sample = npr.normal(confounder_req[j][0], confounder_req[j][1])
+        z_sample = npr.normal(confounder_req[j][2], confounder_req[j][3])
+        
+        data_dim_temp = holdouts_req[j].shape[1]
+        latent_dim_temp = confounder_req[j][2].shape[1]
+        num_datapoints_temp = holdouts_req[j].shape[0]
+        
+        with ed.interception(replace_latents(w_sample, z_sample)):
+            generate = ppca_model(
+                data_dim=data_dim_temp, latent_dim=latent_dim_temp,
+                num_datapoints=num_datapoints_temp, stddv_datapoints=0.1, holdout_mask=masks_df[j])
 
-# ## Adding confounders to original DF
+        with tf.Session() as sess:
+            x_generated, _ = sess.run(generate)
+
+        # look only at the heldout entries
+        holdout_gen[i] = np.multiply(x_generated, masks_df[j])
+        
+    holdout_gen_util.append(holdout_gen)
+# -
+
+n_eval = 100 # we draw samples from the inferred Z and W
+obs_ll_per_zi_per_mode = []
+rep_ll_per_zi_per_mode = []
+stddv_datapoints=0.1
+for mode in range(len(holdouts_req)):
+    obs_ll = []
+    rep_ll = []
+
+    for j in range(n_eval):
+        w_sample = npr.normal(confounder_req[mode][0], confounder_req[mode][1])
+        z_sample = npr.normal(confounder_req[mode][2], confounder_req[mode][3])
+
+        holdoutmean_sample = np.multiply(z_sample.dot(w_sample), masks_df[mode])
+        obs_ll.append(np.mean(stats.norm(holdoutmean_sample, \
+                            stddv_datapoints).logpdf(holdouts_req[mode]), axis=1))
+
+        rep_ll.append(np.mean(stats.norm(holdoutmean_sample, \
+                            stddv_datapoints).logpdf(holdout_gen_util[mode]),axis=2))
+
+    obs_ll_per_zi, rep_ll_per_zi = np.mean(np.array(obs_ll), axis=0), np.mean(np.array(rep_ll), axis=0)
+    obs_ll_per_zi_per_mode.append(obs_ll_per_zi)
+    rep_ll_per_zi_per_mode.append(rep_ll_per_zi)
+
+# +
+pval_mode = []
+for mode in range(len(holdouts_req)):
+    pvals = np.array([np.mean(rep_ll_per_zi_per_mode[mode][:,i] < obs_ll_per_zi_per_mode[mode][i]) 
+                      for i in range(holdouts_req[mode].shape[0])])
+    holdout_subjects = np.unique(rows_df[mode])
+    overall_pval = np.mean(pvals[holdout_subjects])
+    pval_mode.append(overall_pval)
+#     print("Predictive check p-values", overall_pval)
+
+pval_mode
+# -
+
+len(rows_df[6])
+
+# +
+holdout_subjects_0 = np.unique(rows_df[0])
+
+subject_no = npr.choice(holdout_subjects_0) 
+sns.kdeplot(rep_ll_per_zi_per_mode[0][:,subject_no]).set_title("Predictive check for subject "+str(subject_no))
+plt.axvline(x=obs_ll_per_zi_per_mode[0][subject_no], linestyle='--')
+# -
+
+# ### Adding confounders to original DF
 
 # +
 for i in data['mode_id'].unique():
@@ -292,6 +376,7 @@ mnl_model_causal.get_statsmodels_summary()
 
 # ## Putting everything in a function
 
+# +
 def confounder(X, latent_dim, holdout_portion):
     # randomly holdout some entries of X
     num_datapoints, data_dim = X.shape
@@ -412,7 +497,8 @@ def confounder(X, latent_dim, holdout_portion):
 
         return interceptor
     
-    return [w_mean_inferred, w_stddv_inferred, z_mean_inferred, z_stddv_inferred], x_vad
+    return [w_mean_inferred, w_stddv_inferred, z_mean_inferred, z_stddv_inferred], x_vad, holdout_mask, holdout_row
+
 
 
 # +
@@ -439,8 +525,55 @@ def specifications(mnl_specification, num_modes):
         newDict[i] = variables
 
     return newDict
+
+
+# +
+def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints, holdout_mask):
+    w = ed.Normal(loc=tf.zeros([latent_dim, data_dim]),
+                scale=tf.ones([latent_dim, data_dim]),
+                name="w")  # parameter
+    z = ed.Normal(loc=tf.zeros([num_datapoints, latent_dim]),
+                scale=tf.ones([num_datapoints, latent_dim]), 
+                name="z")  # local latent variable / substitute confounder
+    x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
+                scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),
+                name="x")  # (modeled) data
+    return x, (w, z)
+
+
+
+def variational_model(qw_mean, qw_stddv, qz_mean, qz_stddv):
+    qw = ed.Normal(loc=qw_mean, scale=qw_stddv, name="qw")
+    qz = ed.Normal(loc=qz_mean, scale=qz_stddv, name="qz")
+    return qw, qz
+
+
+
+def target(w, z):
+    """Unnormalized target density as a function of the parameters."""
+    return log_joint(data_dim=data_dim,
+                   latent_dim=latent_dim,
+                   num_datapoints=num_datapoints,
+                   stddv_datapoints=stddv_datapoints,
+                   w=w, z=z, x=x_train)
+
+def target_q(qw, qz):
+    return log_q(qw_mean=qw_mean, qw_stddv=qw_stddv,
+               qz_mean=qz_mean, qz_stddv=qz_stddv,
+               qw=qw, qz=qz)
+
+def replace_latents(w, z):
+
+    def interceptor(rv_constructor, *rv_args, **rv_kwargs):
+        """Replaces the priors with actual values to generate samples from."""
+        name = rv_kwargs.pop("name")
+        if name == "w":
+            rv_kwargs["value"] = w
+        elif name == "z":
+            rv_kwargs["value"] = z
+        return rv_constructor(*rv_args, **rv_kwargs)
+
+    return interceptor
 # -
-
-
 
 
