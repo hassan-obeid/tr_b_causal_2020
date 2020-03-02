@@ -74,15 +74,7 @@ df = pd.read_csv(DATA_PATH)
 
 # +
 def _make_regressor(x_2d, y, seed=None):
-#     regressor_kwargs =\
-#         {'min_samples_leaf': MIN_SAMPLES_LEAF,
-#          'max_samples': 0.8}
-#     if seed is not None:
-#         regressor_kwargs['random_state'] = seed + 10
-#     regressor =\
-#         RandomForestRegressor(**regressor_kwargs)
-    regressor =\
-        LinearRegression()
+    regressor = LinearRegression()
     regressor.fit(x_2d, y)
     return regressor
 
@@ -120,11 +112,11 @@ def computed_vs_obs_r2(df,
 
     # Get the permuted expectations
     shuffled_index_array = np.arange(num_rows)
-    
+
     iterable = range(NUM_PERMUTATIONS)
     if progress:
         iterable = tqdm(iterable)
-        
+
     for i in iterable:
         # Shuffle the index array
         np.random.shuffle(shuffled_index_array)
@@ -149,7 +141,7 @@ def visualize_permutation_results(obs_r2,
                                   close=False):
     fig, ax = plt.subplots(figsize=(10, 6))
     p_value = (obs_r2 < permuted_r2).mean()
-    
+
     if verbose:
         msg =\
             'The p-value of the permutation C.I.T. is {:.2f}.'
@@ -242,7 +234,7 @@ for i in tqdm(range(NUM_TEST_SIM)):
     sim_z = np.random.normal(size=num_drive_alone_obs)
     sim_x1 = sim_z + 0.5 * np.random.normal(size=num_drive_alone_obs)
     sim_x2 = sim_z - 0.01 * np.random.uniform(size=num_drive_alone_obs)
-    
+
     # Determine which simulations to plot.
     # Just plot 1 simulation for visual comparison with real data
     current_close = True if i != 0 else False
@@ -322,7 +314,7 @@ sbn.despine()
 pd.Series(test_p_vals).plot(kind='kde')
 
 # ## Conclusions
-# - From the last two plots, we can see that under the null hypothesis of $X_1$ independent of $X_2$ given $Z$, we get p-values that close to uniformly distributed.<br> 
+# - From the last two plots, we can see that under the null hypothesis of $X_1$ independent of $X_2$ given $Z$, we get p-values that close to uniformly distributed.<br>
 # This means the permutation p-values in `visual_permutation_test` are unlikely to be overly-optimistic.<br>
 # In other words, we can feel safe(r) about relying on this test to distinguish conditional dependence from independence.
 # - From the first two plots of this notebook, we can see from applying the `visual_permutation_test` that:
