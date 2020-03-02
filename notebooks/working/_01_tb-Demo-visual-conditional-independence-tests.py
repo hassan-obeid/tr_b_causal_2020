@@ -74,6 +74,13 @@ df = pd.read_csv(DATA_PATH)
 
 # +
 def _make_regressor(x_2d, y, seed=None):
+    # regressor_kwargs =\	    regressor = LinearRegression()
+    #     {'min_samples_leaf': MIN_SAMPLES_LEAF,
+    #      'max_samples': 0.8}
+    # if seed is not None:
+    #     regressor_kwargs['random_state'] = seed + 10
+    # regressor =\
+    #     RandomForestRegressor(**regressor_kwargs)
     regressor = LinearRegression()
     regressor.fit(x_2d, y)
     return regressor
