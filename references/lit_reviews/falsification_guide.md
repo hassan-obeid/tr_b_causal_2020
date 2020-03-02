@@ -1,0 +1,66 @@
+How to falsify a causal graph?
+
+- Test if the graph is qualitatively sensible.
+    - Pitchforth, Jegar and Mengersen, Kerrie (2013). “A proposed validation framework for expert elicited Bayesian Networks.” Expert Systems with Applications, 40:162-167.
+- Test conditional independence assumptions implied by the graph.
+    - Permutation Testing
+        - Hothorn, Torsten, and Hornik, Kurt, and van de Wiel, Mark and Zeileis, Achim (2008). "Implementing a Class of Permutation Tests: The coin Package." Journal of Statistical Software.
+        - Tsamardinos, I., and Borboudakis, G. (2010). “Permutation testing improves bayesian network learning.” In Machine Learning and Knowledge Discovery in Databases. Springier, 322 - 337.
+        - Doran, Gary, and Muandet, Krikamol, and Zhang, Kun, and Scholkopf, Bernhard (?). “A Permutation-Based Kernel Conditional Independence Test”
+        - Visual Permutation Testing (no reference as it's simply Tim's thoughts)
+          - P(X_1|X_2) = P(X_1) implies E(X_1|X_2) = E(X_1) so plot E(X_1|X_2) under the real data versus under permutations of the X_2 column.
+          - P(X_1|X_2, X_3) = P(P(X_1|X_2) implies E(X_1|X_2, X_3) = E(X_1|X_2) so plot E(X_1|X_2, X_3) under the real data versus under permutations of the X_3 column.
+    - Model-Based Predictive Testing (AKA Model-Based Exploratory Testing since we’re exploring whether adding Y helps us predict X when already using Z.)
+        - Sen, Rajat, and Suresh, Ananda Theertha and Shanmugam Karthikeyan and Dimakis Alexandros G. And Shakkottai Sanjay (2017). “Model-Powered Conditional Independence Test” 31st Conference on Neural Information Processing Systems (NIPS).
+        - Burkart, Samuel and Kiraly, Franz J. (2017). “Predictive Independence Testing, Predictive Conditional Independence Testing, and Predictive Graphical Modelling.” arXiv:1711.05869v1
+        - Chalupka, Krzysztof and Perona, Pietro and Eberhadt, Frederick (2018). “Fast Conditional Independence Test for Vector Variables with Large Sample Sizes” arXiv:1804.02747v1
+        - de Almeida Inacio, Marco Henrique and Izbicki, Rafael and Stern, Rafael Bassi (2019) “Conditional independence testing: a predictive perspective.”
+        - Watson, David S. and Wright, Marvin N. (2019). “Testing Conditional Independence in Supervised Learning Algorithms” arXiv:1901.09917v3
+    - Kernel-Based Testing
+        - Fukumizu, K., and Gretton, A., and Sun, X., and Scholkopf, B. (2007). Kernel measures of conditional dependence. In Adavances in Neural Information Processing Systems (NIPS 20), pp. 489-496.
+        - Zhang, Kun and Peters, Jonas and Janzing, Dominik and Scholkopf, Bernhard (2011). “Kernel-based conditional independence test and application in causal discovery. In: Uncertainty in artificial intelligence. AUAI Press; 2011. P. 804-13.”
+        - Pfister, Niklas, and Buhlmann, Peter and Scholkopf, Bernhard and Peters, Jonas (2016). “Kernel-based Tests for Joint Independence.” arXiv:1603.00285v3.d
+        - Stroble, Eric V. and Zhang, Kun and Visweswaran Shyam (2018). “Approximate Kernel-Based Conditional Independence Tests for Fast Non-Parametric Causal Discovery” Journal of Causal Inference.
+    - Copula-Based Testing
+        - Bergsma, Wicher P. (2004) “Testing Conditional Independence For Continuous Random Variables.”
+    - Density-Estimation Based Testing
+    - Graphical Diagnostics
+        - Walsh, Stephen and Whitney, Paul (2012). “A Graphical Approach to Diagnosing the Validity of the Conditional Independence Assumptions of a Bayesian Network Given Data.” Journal of Computational and Graphical Statistics, 21:4, 961-978.
+        - See bullet on "Visual Permutation Testing".
+    - Intrinsic Dimension assessment
+      - Camastra, Francesco, and Staiano, Antonino (2016). "Intrinsic dimension estimation: Advances and open problems." Information Sciences, 328:16-41.
+      - Song, Jin, and Oyama, Satoshi, and Kurihara, Masahito (2019). "Identification of Possible Common Causes by Intrinsic Dimension Estimation." IEEE.
+      - Romano, Simone, and Chelly, Oussama, and Nguyen, Vinh, and Bailey, James, and Houle, Michael E. (?, >2016). "Measuring Dependency via Intrinsic Dimensionality."
+      - Carter, Kevin M., and Raich, Raviv, and Hero, Alfred O. (2010). "On Local Intrinsic Dimension Estimation and Its Applications." IEEE Transactions on Signal Processing, 58:20, 650-662.
+    - Directed / mutual information assessment
+      - Wibral, Michael, and Vicente, Raul (2014). "Efficient Estimation of Information Transfer" in Directed Information Measures in Neuroscience, Understanding Complex Systems. Springer. DOI: 10.1007/978-3-642-54474-3_2.
+      - Steudel, Bastian, and Ay, Nihat (2015). "Information-Theoretic Inference of Common Ancestors." Entropy, 17: 2304-2327.
+        - Ay, Nihat, and Wenzel, W. (2012). "On Solution Sets of Information Inequalities." Kybernetica, 48: 845-864.
+      - Raginsky, Maxim (2011). "Directed Information and Pearl's Causal Calculus." FortyNinth Annual Allerton Conference, UIUC, IEEE, 958-965.
+      - Wieczorek, Aleksander, and Roth, Volker (2019). "Information Theoretic Causal Effect Quantification." Entropy, 21:975, 1-26.
+      - Belghazi, Mohamed Ishmael, and Baratin, Aristide, and Rajeswar, Sai, and Ozair, Sherjil, and Bengio, Yoshua, and Courville, Aaron, and Hjelm, R. Devon (2018). "Mutual Infromation Neural Estimation." arXiv:1801.04062v4
+- Test the “functional constraints” implied by one’s causal graph if latent variables are present.
+    - Tian, Jin and Pearl, Judea (2002). “On the Testable Implications of Causal Models with Hidden Variables.” In Uncertainty in Artificial Intelligence.
+    - Kang, Changsung, and Tian, Jin (?). “Inequality Constraints in Causal Models with Hidden Variables”
+    - Shpistser, Ilya, and Richardson, Thomas S., and Robins, James M. (2009). "Testing Edges by Truncations". In Proceedings of the Twenty-First International Joint Conference on Artificial Intelligence.
+    - Evans, Robin J. (2014). "Graphical Latent Structure Testing" in Theoretical and Applied Statistics. DOI:10.1007/10104_2014_10
+    - Chaves, R., and Luft, L., and Maciel, T.O., and Gross, D., and Janzing, D., and Scholkolpf, B. (2014). “Inferring latent structures via information inequalities.” arXiv:1407.2256v1
+    - Wolfe, Elie, and Spekkens, Robert W., and Fritz, Tobias (2019). “The Inflation Technique for Causal Inference with Latent Variables.” Journal of Causal Inference.
+    - Navascues, Miguel and Wolfe, Elie (2017). “The inflation technique solves completely the classical inference problem.” arXiv:1707.06476v1
+    - Wolfe, Elie, and Pozas-Kerstjens, Alejandro, and Grinberg, Matan, and Rosset, Denis, and Acin, Antonio, and Navascues, Miguel (2019). “Quantum Inflation:  A General Approach to Quantum Causal Compatibility”. arXiv:1909.10519v1
+    - Poverini, Davide, and Chaves, Rafael, and Agresti, Iris, and Carvacho, Gonzalo, and Sciarrino, Fabio (2019). “Exclusivity graph approach to Instrumental inequalities.” arXiv:1909.09120v1
+- Exploiting available over-identification tests based on one’s graph.
+- Test goodness of fit of a single, parameterized causal graph.
+    - Posterior Predictive Model Checking (AKA Model-Based Confirmatory Testing since we’re confirming that Z alone is sufficient to predict X and the joint distribution looks alright.)
+        - Wheaton, Blair (1987) “Assessment of Fit in Overidentified Models with Latent Variables”. Sociological Methods & Research, 16:118-154.
+        - Williamson, David M. and Almond, Russell G. And Mislevy, Robert J. (2000). “Model Criticism of Bayesian Networks with Latent Variables.” Uncertainty in Artificial Intelligence Proceedings,  634-643.
+        - Sinharay, Sandip (2006). “Model Diagnostics for Bayesian Networks.” Journal of Educational and Behavioral Statistics, 31:1, 1-33.
+        -  Crawford, Aaron (2014). “Posterior Predictive Model Checking in Bayesian Networks”. Arizona State University, dissertation.
+        - Almond, Russell G, and ____ (2015). “Critiquing and Learning Model Structure” in Bayesian Networks in Educational Assessment, 331-369.
+        - Zhang, Kun, and Zhang, Jiji, and Scholkopf, Bernhard (2015) Distinguishing Cause from Effect Based on Exogeneity. arXiv:1504.0565v1
+        - Tran, Dustin, and Ruiz, Francisco J.R., and Athey, Susan, and Blei, David M. (2016). “Model Criticism for Bayesian Causal Inference.” arXiv:1610.09037v1
+        - Seth, Sohan and Murray, Iain and Williams, Christopher, K.I. (2018). “Model Criticism in Latent Space.” Bayesian Analysis, 1-23.
+        - Merkle, E. C., and Furr, D., and Rabe-Hesketh, S. (2018). “Bayesian model assessment: use of conditional vs. marginal likelihoods” arXiv:1802.04452v1
+- Compare relative goodness of fit across alternative (parameterized) causal graphs.
+    - Kanagawa, Heishiro, and Jitkrittum, Wittawat, and Mackey, Lester, and Fukumizu, Kenji and Gretton, Arthur (2019). “A Kernel Stein Test for Comparing Latent Variable Models.”
+    - Alaa, Ahmed M., and van der Schaar, Mihaela (2019). “Validating Causal Inference Models via Influence Functions.”
