@@ -316,6 +316,7 @@ ax.set_xlabel('p-values', fontsize=13)
 ax.set_ylabel('Num Observations', rotation=0, labelpad=70, fontsize=13)
 
 sbn.despine()
+fig.show()
 # -
 
 pd.Series(test_p_vals).plot(kind='kde')
