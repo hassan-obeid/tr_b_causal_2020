@@ -263,7 +263,7 @@ for i in tqdm(range(NUM_TEST_SIM)):
     test_p_vals[i] = current_p
 
 # +
-# Create a distribution of p-values that we know for sure are uniformly distributed
+# Create a distribution of p-values that is for sure are uniformly distributed
 null_histogram_dist = multinomial(NUM_TEST_SIM, [0.1 for x in range(10)])
 
 null_hist_samples = null_histogram_dist.rvs(100)
