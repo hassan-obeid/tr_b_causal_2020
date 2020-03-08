@@ -30,7 +30,18 @@ class AbstractCausalModel(metaclass=abc.ABCMeta):
 class CGM_Model(AbstractCausalModel, StructuralCausalModel):
     """
     Now, one's causal graphical models can inherit directly from this class.
+
+    Parameters
+    ----------
+    assignment_dict : dict.
+        Keys should be strings representing variable names. Values should be
+        functions that generate the key-variable from the variables parents.
+        See https://github.com/ijmbarr/causalgraphicalmodels for more info.
     """
+    def __init__(self, assignment_dict):
+        super(StructuralCausalModel, self).__init__(assignment_dict)
+        return None
+
     def draw(self) -> Digraph:
         return self.cgm.draw()
 
