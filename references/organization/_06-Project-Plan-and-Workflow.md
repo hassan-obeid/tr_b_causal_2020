@@ -37,17 +37,19 @@ Workflow <br>
     - One where all the Xs are independent (i.e. the only edges in the causal graph are between the X and the outcome variable). 
     - One based on a realistic causal graph with confounders. Preferably focus on a case with one latent confounder (like distance? Age? Gender?) <br>
 -	For each of the two causal graphs above, simulate choice data based on the outcome model assumed. <br>
--	Estimate the choice model for each of those two datasets. <br>
--	Repeat the process n times, and calculate the percentage of those times where the estimated parameters’ confidence intervals contain the true parameter. <br>
+-	Estimate the choice model for each of those two datasets using the assumed choice model specification. <br>
+-	Repeat the process n times, and calculate the percentage of those times where the estimated parameters’ confidence intervals contain the true parameters from the assumed outcome choice model. <br>
 
 ### Dealing with latent confounders in the causal graph
 
-In this part of the work, we take the realistic causal graph from part 1 and remove a latent confounder from it. We then attempt to recover the latent confounder using the de-confounder algorithm proposed by Blei et al. (2018). We will apply this work to the simulated data set, where we know the true parameters of interest. We will repeat the same simulation process in part 1 where we sample from the population and estimate models where we control for the latent confounder using the deconfounder approach and look at the percent of time we recover the true parameter. 
+In this part of the work, we take the realistic causal graph from part 1 and remove a confounder from it, making the confounder latent with respect to the graph. We then attempt to recover the latent confounder using the de-confounder algorithm proposed by Blei et al. (2018). We will apply this work to the simulated data set, where we know the true parameters of interest. We will repeat the same simulation process in part 1 where we sample from the population and estimate models where we control for the latent confounder using the deconfounder approach and look at the percent of time we recover the true parameter. 
 
 ##### Concrete steps: 
 
 Functions <br>
 -	A class with functions to estimate factor models. Start with PPCA as in the deconfounder’s tutorial and expand as needed. <br>
+    - The class needs a method to sample from the posterior of the latent confounders given the X's <br>
+    - The class needs a method to return the expected value of the latent confounders given the X's <br>
 -	A function to perform posterior predictive checks on the factor model to assess its predictive accuracy. <br>
 
 Workflow <br>
@@ -56,9 +58,13 @@ Workflow <br>
 -	Based on the above specifications, estimate the required latent confounders using a factor model, start with PPCA. <br>
 -	Perform posterior predictive checks on the estimated factor model and assess goodness of fit. Since we’re doing this on a simulated dataset, then we know in advance how many latent confounders there are. We could potentially try controlling for more confounders and see how that affects the results (in other words, see how sensitive our analysis is to the number of confounders used). <br>
 -	Once the checks pass, include the latent confounder in the utility equations, and estimate a MNL. <br>
--	Repeat the process n times, and calculate the percentage of those times where the estimated parameters’ confidence intervals contain the true parameter. <br>
-Finally, we can repeat the above process, but now on the full, real bike dataset. The workflow would be the same as above, with the addition of one step: <br>
+-	Repeat the process n times, and calculate the percentage of those times where the estimated parameters’ confidence intervals contain the true parameter. Note only the simulation is repeated n times, but we only need to do the predictive checks once, since those mostly assess the reasonableness of the causal graph, which is only needed once (the same causal graph will be assumed for all simulations.   <br>
+Finally, we can repeat the above process, but now on the full, real bike dataset. The workflow would be the same as above, with the addition of the following steps: <br>
 -	After hypothesizing on a causal graph, we need to do some conditional independence testing to falsify the graph by making sure nothing clearly violates conditional independence tests. The caveat here is that there don’t seem to be one way to perform conditional independence testing – there are many ways proposed, but I’m not sure if the problem itself is solved yet. We can try one way, and point out that this is an active area of research and that there exists other ways to do it. The important take away is that the causal graph should not clearly violate a given test, in which case something is obviously wrong. <br>
 -	Once a non-falsifiable causal graph is nailed down, we proceed exactly as above. 
 
 
+
+```python
+
+```
