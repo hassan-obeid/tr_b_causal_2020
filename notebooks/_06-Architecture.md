@@ -233,7 +233,7 @@ Having a wrong specification for a desired model, pylogit has built-in mechanism
 Having a wrong specification for a causal graph, we can guard fro
 
 ### 13.2 Will we try to fix errors or merely notify users of the error’s presence?
-We will only notify users of the error's presence
+We will only notify users of the error's presence.
 
 ### 13.3 When errors are encountered, will we quit immediately or wait until some specified point before notifying users of errors? For which errors is each strategy appropriate?
 Quit immediately in the case of all errors.
