@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.3.3
+      jupytext_version: 1.4.0
   kernelspec:
     display_name: Python 3
     language: python
@@ -33,6 +33,8 @@ For a causal graph where all Xs are independent:
  - The dataset will be used to estimate a choice model and recover the necessary parameters. These parameters can be stored in a dictionary.
  - The previous two steps will be repeated for N times (say 100) and the parameters from each iteration will be stored in a dictionary entry.
  - A function that takes in the parameters of the estimated model and results in the percentage of time that the true parameter is recovered.
+ - We will report parameter recovery percentages separately for each parameter, then build on that with aggregate percentaged for a subset of parameters 
+   then for all parameters.
 
 
 For a realistic causal graph with confounding:
@@ -44,6 +46,8 @@ For a realistic causal graph with confounding:
  - The dataset will be used to estimate a choice model and recover the necessary parameters. These parameters can be stored in a dictionary.
  - The previous two steps will be repeated for N times (say 100) and the parameters from each iteration will be stored in a dictionary entry.
  - A function that takes in the parameters of the estimated model and results in the percentage of time that the true parameter is recovered.
+ - We will report parameter recovery percentages separately for each parameter, then build on that with aggregate percentaged for a subset of parameters 
+   then for all parameters.
 
 
 ## 2. Description of major components of the system and their relations:
@@ -55,6 +59,10 @@ Choice model estimation will try to recover the true parameters of the specified
 ### 2.2 What is the interface between each component and each other component?
 Each component(classes) will be written to be as independent as possible from other components. Functions within classes
 will depend on each other.
+However, we will write functions that test the output of each of our functions to make sure we get the expected output.
+In general, the interface between each of the project component will be some sort of data: dictionaries storing distribution parameters,
+simulated data, estimated model paramters, causal graphs, and arrays of statistics abour estimated model parameters. **this list is not
+comprehsive yet** Answer to question 7.6 provides a checklist of data characteristics that will be checked.
 
 ### 2.3 How do components use each other (if they do?), and which ones are allowed to use which other components?
 Outputs of simulation classes/functions will be used in estimation classes/functions. 
@@ -121,13 +129,13 @@ See above
 ### 6.7 Do we have any concerns with regard to algorithmic efficiency?
 See above
 
-
+<!-- #region -->
 ## 7. Description of data usage in the system:
 ### 7.1 How will data be ingested / accessed?
 Data will be ingested using pandas from either an online path to the dataset or from a local path on the user's machine
 
 ### 7.2 How will data be validated?
-Data can be validated using third party dependencies such
+Data will be validating by reestimating the models from the Assymetric paper by Brathwaite and Walker.
 
 ### 7.3 How will data be organized?
 Data will be organized in tabular format (.csv)
@@ -142,8 +150,17 @@ Summaries of model estimate will be saved as markdown tables
 
 Plots of results will be saved as .png files and pushed to the repo
 
+Previously estimated models will be stored in a dictionary that can be pickled and loaded later.
 ### 7.6 How will created data be validated?
-There are packages that will validate data.
+The simulated data will be validated as follows:
+- Ensure we have all the columns we expect
+- Ensure all columns have the correct tyoes
+- Ensure all numeric columns have the expected ranges
+- Ensure the numeric columns having the means and variances within expected ranges
+- Ensure we have the correct number of observations
+
+This will be achieved by writing a function running all assertions needed.
+
 
 ### 7.7 How does all of the above differ online vs offline? (e.g. we may throw a critical error offline to prevent training with bad data but only log a warning online to note that the data in a request was unexpected.)
 N/A
@@ -152,27 +169,34 @@ N/A
 - **Flyte?**
 - **Make?**
 - **Other?**  
-We don't have any plans for this. please make any suggestions as you see needed/fit.
+Developing a project workflow file that shows how all specified requirements of each workflow
+step are met. 
 
 ## 8. Description of experimentation protocols (if relevant):
 **If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B tests, etc.):**
 ### 8.1 How will experiments be launched?
-N/A
+We can store launch the experiment from a jupyter notebook, and **hopefully** from the command line.
 
 ### 8.2 How will experiment reproducibility be ensured?
-N/A
+Simulated data, as well as any experiment output will be store either in csv/json/pickle file
+based on the nature of the object (dataset, model, etc..) and will be loaded into a notebook.
+A third party library called `sacred` can be used https://sacred.readthedocs.io/en/stable/
 
 ### 8.3 How will experiment meta-data (e.g. launch configurations) be stored?
-N/A
+The meta-data for the experiment could be stored in a requirements.txt, the source code,
+and parameters stored in a .json/pickle/csv file. the sacred library has a `run` object
+that stores all experiment info and configuration.
 
 ### 8.4 How will experiment-created data (e.g. results) be stored?
-N/A
+The experiment-created data will be stored in json/pickle/csv files.
 
 ### 8.5 How will experiment-created data be analyzed?
-N/A
+Experiment metrics will be analyzed to find statistics about means and variances of parameters
+to make sure they fall within the expected ranges.
 
 ### 8.6 How will experiment analyses be prepared for public reporting? 
-N/A
+Experiment analyses will be stored in .json/csv files and used to create plots summarizing
+results of the experiments.
 
 ## 9. Description of user-interface:
 ### 9.1 How will users (including myself) interact with the system that is built?
@@ -180,10 +204,10 @@ N/A
 - **Will users be editing configuration files, and if so, where will they be stored?**
 - **Will there be ability to replay the DAG representing one’s data analysis?**
 
-Users will use a jupyter notebook to interact with the system that is build
-
-No configuration files will need to be edited. If any functions need to be edited, one could easily make the adjustment
-to the source code.
+Users will use a jupyter notebook to interact with the system. The `papermill` library
+will be used to parametrize a notebook. Parameters of the notebook could also be saved
+in a .json file that is loaded into the notebook. For experiments, the `sacred` library
+will help in storing experiment paramters.
 
 ### 9.2 How will ease of changes be ensured (e.g. changing a given hyperparameter value in the source code of a model)?
 Each hyperparameter that needs to be tuned will be included in the parameter definition of a function. Users will be
@@ -239,7 +263,7 @@ We will only notify users of the error's presence
 Quit immediately in the case of all errors.
 
 ### 13.4 What are the conventions for error messages that the system reports?
-
+<!-- #endregion -->
 
 ### 13.5 Where are errors processed? At the point of detection, by a central error handling class, by functions above in the call stack, etc.
 Errors are processed at the point of detection.
@@ -249,6 +273,7 @@ Code for input validation can be built in separate functions and be used part of
 
 ### 13.7 How will we use (or not use) type hinting to help prevent errors?
 Docstrings will suggest to the users what each of the function takes in as types and what it returns.
+`mypy` is an additional option to be used for type hinting withing each of the functions.
 
 ## 14. Description of testing plan:
 ### 14.1 How will we test that all of the parts of the architecture are working correctly?
@@ -286,6 +311,9 @@ cross-review between team members will help in detecting any bugs.
 
 Documentation, in the form of Jupyter Notebook accompanied by a Markdown file (README.md) detailing the procedure for installing the environment and the content of folders and notebooks. Any limitations to the project will be noted in the jupyter notebooks developed to illustrate the analysis effort. The README.md markdown file will also will point to documentation pages for any packages used in the project.
 
+For each of the functions and classes written for this project, we will write detailed docstrings that help with how the functions
+and classes function and what they output.
+
 ### 15.2 Is there a plan for sharing the software with others?
 - **File upload?**
 - **Upload to package repository?**
@@ -304,8 +332,14 @@ The only "website" for the project will be its github repository.
 
 * All the plots will be generated using functions from the source code. Additional plots as needed will be generated
 using matplotlib/seaborn. 
+    - The plots generated will show the distribution of the recovered parameters and where the true parameters fall within that distribution. Or where the recovered parameters fall within the confidence intervals of the "true" parameters assumed in simulating the data.
 * Tables will be generated as markdown tables, html tables, or any other way if found easier
+    - The tables will show the different statistics about each of the recovered parameters. These tables will relate to the produced diagrams.
+* The diagrams that will be shown are causal diagrams showing the data generating process.
 * Final presentation could be developed either on powerpoint or as a set of slides using jupyter
+
+* We will write functions that take outputs of the simulated models to produce graphs and tables. The `causalgraphicalmodels` library has an internal `draw`
+method that produces the needed causal graphs. We can write a function to save the output of this method as a .png file.
 
 ## 16 Description of maintenance plan:
 ### 16.1 How will the system / software be maintained after initial creation?
@@ -355,8 +389,14 @@ Yes, this is mitigated by reading literature on needed methodology or documentat
 ### 18.5 What are the weakest areas of the architecture?
 - **Where is the project most vulnerable to failure?**
 - **How are these weaknesses being addressed?**
-At this moment, the weakest areas of the architecture are the lack of tests in the available code and the lack of 
-refactoring that could make it hard for use by other outside users.
+At this moment, the weakest areas of the architecture are as follows:
+- The lack of tests in the available code and the lack of refactoring that could make it hard for use by other outside users.
+- The lack of a project workflow file to enable reproduction of the final results. I think this one will be fairly 
+  straightforward to make, assuming we follow good practices of creating modular notebooks and code. **(Currently in progress)**
+- The lack of a reproducible experiment system. We have no way to track all the different ideas that are likely about 
+  to be tried in the next month to get final results. Afterwards, we will then be unable/less-able to reproduce our work
+  along the way to the final results. As a result, we'll be unable/less-able to harvest any useful information from this
+  period since it's more difficult to use the knowledge of what didn't work if you don't remember all the things that didn't work.
 
 ## 19. Description of the approach to over-engineering:
 ### To what extent should planning be done to prevent all errors versus to produce the simplest system necessitated by the requirements?
