@@ -25,3 +25,9 @@ This document should store one's weekly reflections on the project. In particula
     2. Have been able to finish a full draft of architecture document and full draft
     3. I found that I sometimes didn't have a wide enough vision of what the different potential problems I can run into while writing code. I underestimated that I can run into bugs that might not be easy to fix. This relates to estimates of time of each task as well.
     4. Based on tim's suggestion, I found it very very useful to commit/push as often as possible so that the deltas are more meaningful and easier to track. So I would say we should strive to do that very often whether it is with code, documentation, tests, or anything related to the project really.
+
+3. Week of March 9th, 2020
+    1. Learned a little about distributional regression and more pythonic ways of writing code in general
+    2. Full simulation code, responded to comments on the architecture document and produced a workflow for the simulation based on the causal graph
+    3. I failed at writing code to remove outliers from the simulated data, even if I think this might not be necessary anymore?
+    4. I think we would have to move potential deadlines for important issues earlier in the week
