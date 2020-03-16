@@ -2,7 +2,7 @@ How to falsify a causal graph?
 
 - Test if the graph is qualitatively sensible.
     - Pitchforth, Jegar and Mengersen, Kerrie (2013). “A proposed validation framework for expert elicited Bayesian Networks.” Expert Systems with Applications, 40:162-167.
-- Test conditional independence assumptions implied by the graph.
+- Test marginal and conditional independence assumptions implied by the graph. This is based on notions of d-separation.
     - Permutation Testing
         - Hothorn, Torsten, and Hornik, Kurt, and van de Wiel, Mark and Zeileis, Achim (2008). "Implementing a Class of Permutation Tests: The coin Package." Journal of Statistical Software.
         - Tsamardinos, I., and Borboudakis, G. (2010). “Permutation testing improves bayesian network learning.” In Machine Learning and Knowledge Discovery in Databases. Springier, 322 - 337.
@@ -39,7 +39,10 @@ How to falsify a causal graph?
       - Raginsky, Maxim (2011). "Directed Information and Pearl's Causal Calculus." FortyNinth Annual Allerton Conference, UIUC, IEEE, 958-965.
       - Wieczorek, Aleksander, and Roth, Volker (2019). "Information Theoretic Causal Effect Quantification." Entropy, 21:975, 1-26.
       - Belghazi, Mohamed Ishmael, and Baratin, Aristide, and Rajeswar, Sai, and Ozair, Sherjil, and Bengio, Yoshua, and Courville, Aaron, and Hjelm, R. Devon (2018). "Mutual Infromation Neural Estimation." arXiv:1801.04062v4
-- Test the “functional constraints” implied by one’s causal graph if latent variables are present.
+- Test any "vanishing tetrads" implied by one's causal graph, if latent variables are present. This is based on notions of t-separation (i.e. trek-separation).
+    - Thoemmes, Felix and Rosseel, Yves and Textor, Johannes (2017). "Local Fit Evaluation of Structural Equation Models Using Graphical Criteria." Psychological Methods, 23:1, 27-41.
+    - Spirtes, Peter L. (2013). "Calculation of entailed rank constraints in partially non-linear and cyclic models." arXiv preprint arXiv:1309.7004.
+- Test the “functional constraints / inequalities” implied by one’s causal graph if latent variables are present.
     - Tian, Jin and Pearl, Judea (2002). “On the Testable Implications of Causal Models with Hidden Variables.” In Uncertainty in Artificial Intelligence.
     - Kang, Changsung, and Tian, Jin (?). “Inequality Constraints in Causal Models with Hidden Variables”
     - Shpistser, Ilya, and Richardson, Thomas S., and Robins, James M. (2009). "Testing Edges by Truncations". In Proceedings of the Twenty-First International Joint Conference on Artificial Intelligence.
