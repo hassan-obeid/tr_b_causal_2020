@@ -41,6 +41,7 @@ How to falsify a causal graph?
       - Belghazi, Mohamed Ishmael, and Baratin, Aristide, and Rajeswar, Sai, and Ozair, Sherjil, and Bengio, Yoshua, and Courville, Aaron, and Hjelm, R. Devon (2018). "Mutual Infromation Neural Estimation." arXiv:1801.04062v4
 - Test any "vanishing tetrads" implied by one's causal graph, if latent variables are present. This is based on notions of t-separation (i.e. trek-separation).
     - Thoemmes, Felix and Rosseel, Yves and Textor, Johannes (2017). "Local Fit Evaluation of Structural Equation Models Using Graphical Criteria." Psychological Methods, 23:1, 27-41.
+    - Spirtes, Peter L. (2013). "Calculation of entailed rank constraints in partially non-linear and cyclic models." arXiv preprint arXiv:1309.7004.
 - Test the “functional constraints / inequalities” implied by one’s causal graph if latent variables are present.
     - Tian, Jin and Pearl, Judea (2002). “On the Testable Implications of Causal Models with Hidden Variables.” In Uncertainty in Artificial Intelligence.
     - Kang, Changsung, and Tian, Jin (?). “Inequality Constraints in Causal Models with Hidden Variables”
