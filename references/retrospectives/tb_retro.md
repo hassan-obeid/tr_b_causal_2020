@@ -24,3 +24,9 @@ This document should store one's weekly reflections on the project. In particula
     2. Amine and Hassan made great progress on the project architecture and project workflow!
     3. I didn't ensure that I made time to test my implementation of the base model class.
     4. In our weekly meeting, we should decide which of our tasks we want to accomplish by midweek to make sure peer-reviews of each others work can happen! And we should schedule in time to review each others work.
+
+4. Week of March 8th, 2020
+   1. I learned about the notion of t-separation and how it can be used to identify "vanishing tetrads," aka how it can be ussed to derive testable implication from causal graphs with latent variables.
+   2. I think the mid-week deliverables worked well to allow time for review of each other's work and helped ensure the completion of risky tasks (i.e. tasks that could easily take longer than anticipated).
+   3. We are still lacking an exact plan that we expect to be doable within 3 weeks (Mar 15 and onwards) to produce the raw results to be used in the presentation for June.
+   4. On pull-request reviews, specify at least 1 concrete question that you want your reviewees to answer.
