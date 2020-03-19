@@ -11,3 +11,4 @@
       2. libcxxabi=4.0.1
       3. libgfortran=3.0.1
       4. llvm-openmp=4.0.1
+      5. appnope=0.1.0
