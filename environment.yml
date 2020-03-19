@@ -9,7 +9,6 @@ dependencies:
   - aiohttp=3.6.2
   - ansiwrap=0.8.4
   - appdirs=1.4.3
-  - appnope=0.1.0
   - async-timeout=3.0.1
   - attrs=19.3.0
   - backcall=0.1.0
