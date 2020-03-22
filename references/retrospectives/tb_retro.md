@@ -30,3 +30,9 @@ This document should store one's weekly reflections on the project. In particula
    2. I think the mid-week deliverables worked well to allow time for review of each other's work and helped ensure the completion of risky tasks (i.e. tasks that could easily take longer than anticipated).
    3. We are still lacking an exact plan that we expect to be doable within 3 weeks (Mar 15 and onwards) to produce the raw results to be used in the presentation for June.
    4. On pull-request reviews, specify at least 1 concrete question that you want your reviewees to answer.
+
+5. Week of March 15th, 2020
+   1. I learned about triad constraints and how they represent another class of, seemingly useful, testable implications of causal graphs with latent variables.
+   2. Amine was able to complute the utility level causal graphs for all utilities!
+   3. I did not thoroughly and explicitly justify my belief in why I expected changing the causal structure of our explanatory variables would impact our ability to recover **unbiased** estimates of our model parameters. More specifically, I conflated the inability to recover an unbiased estimate of a given causal effect with the inability to recover an unbiased estimate of generative model parameter. Choice modeller's already know about this though. See the CE264 hw on forecasting.
+   4. Spend 5 minutes reviewing one of the project planning documents each week. For example, the problem statement, vision, requirements etc. Will help us keep the big picture in mind.
