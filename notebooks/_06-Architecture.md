@@ -300,7 +300,7 @@ in testing any of the parts of the architecture.
 The guide provided by Timothy on how to debug code will be followed to move from finding the bug to testing it.
 
 ### 14.5 How will the software be reviewed in general (beyond automated tests) to reduce the probability of programming bugs into the code / increase the chance of producing correctly functioning software?
-cross-review between team members will help in detecting any bugs.
+Cross-review between team members will help in detecting any bugs.
 
 ## 15. Description of project-sharing procedures:
 ### 15.1 Is there a plan in place for producing documentation for the software?
