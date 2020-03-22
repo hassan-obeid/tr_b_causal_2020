@@ -297,7 +297,7 @@ Reading through available documentation and tutorials for pytest or other packag
 in testing any of the parts of the architecture.
 
 ### 14.4 How will discovered bugs be turned into test cases?
-The guide provided by timothy on how to debug code will be followed to move from finding the bug to testing it.
+The guide provided by Timothy on how to debug code will be followed to move from finding the bug to testing it.
 
 ### 14.5 How will the software be reviewed in general (beyond automated tests) to reduce the probability of programming bugs into the code / increase the chance of producing correctly functioning software?
 cross-review between team members will help in detecting any bugs.
