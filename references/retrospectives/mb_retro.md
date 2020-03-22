@@ -31,3 +31,9 @@ This document should store one's weekly reflections on the project. In particula
     2. Full simulation code, responded to comments on the architecture document and produced a workflow for the simulation based on the causal graph
     3. I failed at writing code to remove outliers from the simulated data, even if I think this might not be necessary anymore?
     4. I think we would have to move potential deadlines for important issues earlier in the week
+
+4. Week of March 15th, 2020
+    1. Learned about how we can set up our experimentation protocol within sacred and some of the simulation issues we can run into (e.g.:joint distribution simulations)
+    2. Finished writing code to simulate data from causal graph based on workflow
+    3. I failed at writing code to remove outliers from the simulated data, I also failed at following the exact workflow due to some challenges with storing data and the lack of flexibility within `causalgraphicalmodels`
+    4. Maybe daily checkins? even one sentence on the repo saying what you worked on that day, even if the work didn't result in any commits.
