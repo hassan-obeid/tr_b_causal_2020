@@ -175,7 +175,7 @@ step are met.
 ## 8. Description of experimentation protocols (if relevant):
 **If experiments need to be run (e.g. hyper-parameter tuning, model-selection, A/B tests, etc.):**
 ### 8.1 How will experiments be launched?
-We can store launch the experiment from a jupyter notebook, and **hopefully** from the command line.
+We can launch the experiment from a jupyter notebook, and **hopefully** from the command line.
 
 ### 8.2 How will experiment reproducibility be ensured?
 Simulated data, as well as any experiment output will be store either in csv/json/pickle file
