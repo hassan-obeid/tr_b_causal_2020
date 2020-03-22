@@ -60,7 +60,7 @@ Choice model estimation will try to recover the true parameters of the specified
 Each component(classes) will be written to be as independent as possible from other components. Functions within classes
 will depend on each other.
 However, we will write functions that test the output of each of our functions to make sure we get the expected output.
-In general, the interface between each of the project component will be some sort of data: dictionaries storing distribution parameters,
+In general, the interface between each of the project components will be some sort of data: dictionaries storing distribution parameters,
 simulated data, estimated model parameters, causal graphs, and arrays of statistics about estimated model parameters. **this list is not
 comprehsive yet** Answer to question 7.6 provides a checklist of data characteristics that will be checked.
 
