@@ -61,7 +61,7 @@ Each component(classes) will be written to be as independent as possible from ot
 will depend on each other.
 However, we will write functions that test the output of each of our functions to make sure we get the expected output.
 In general, the interface between each of the project component will be some sort of data: dictionaries storing distribution parameters,
-simulated data, estimated model paramters, causal graphs, and arrays of statistics abour estimated model parameters. **this list is not
+simulated data, estimated model parameters, causal graphs, and arrays of statistics about estimated model parameters. **this list is not
 comprehsive yet** Answer to question 7.6 provides a checklist of data characteristics that will be checked.
 
 ### 2.3 How do components use each other (if they do?), and which ones are allowed to use which other components?
