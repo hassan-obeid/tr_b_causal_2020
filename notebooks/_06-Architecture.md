@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.4.0
+      jupytext_version: 1.4.1
   kernelspec:
     display_name: Python 3
     language: python
@@ -332,7 +332,8 @@ The only "website" for the project will be its github repository.
 
 * All the plots will be generated using functions from the source code. Additional plots as needed will be generated
 using matplotlib/seaborn. 
-    - The plots generated will show the distribution of the recovered parameters and where the true parameters fall within that distribution. Or where the recovered parameters fall within the confidence intervals of the "true" parameters assumed in simulating the data.
+    - The plots generated will show the distribution of the recovered parameters and where the true parameters fall within that distribution.
+    - Plots will show the proportion of estimates where the true parameters fall within some percentile confidence interval (e.g. 95th percentile) around the estimate.
 * Tables will be generated as markdown tables, html tables, or any other way if found easier
     - The tables will show the different statistics about each of the recovered parameters. These tables will relate to the produced diagrams.
 * The diagrams that will be shown are causal diagrams showing the data generating process.
