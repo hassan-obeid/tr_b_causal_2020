@@ -8,9 +8,9 @@ jupyter:
       format_version: '1.2'
       jupytext_version: 1.4.0
   kernelspec:
-    display_name: Python 2
+    display_name: Python 3
     language: python
-    name: python2
+    name: python3
 ---
 
 # Purpose
@@ -33,9 +33,8 @@ MIN_SAMPLES_LEAF = 40
 NUM_PERMUTATIONS = 100
 
 # Declare the columns to be used for testing
-x1_col = 'total_travel_time'
-x2_col = 'total_travel_cost'
-z_col = 'total_travel_distance'
+x1_col = 'num_licensed_drivers'
+x2_col = 'num_cars'
 mode_id_col = 'mode_id'
 
 # Set the colors for plotting
@@ -91,35 +90,29 @@ def _make_regressor(x_2d, y, seed=None):
 def computed_vs_obs_r2(df,
                        x1_col,
                        x2_col,
-                       z_col,
                        mode_id_col,
                        seed,
                        progress=True):
     # Get the values to be used for testing
     filter_array = (df[mode_id_col] == 1).values
     obs_x1 = df[x1_col].values[filter_array]
-    obs_x2 = df[x2_col].values[filter_array]
-    obs_z = df[z_col].values[filter_array]
-
-    # Combine the various predictors
-    combined_obs_predictors =\
-        np.concatenate((obs_x2[:, None], obs_z[:, None]), axis=1)
+    obs_x2 = df[x2_col].values[filter_array][:, None]
 
     # Determine the number of rows being plotted
     num_rows = obs_x1.shape[0]
 
     # Create a regressor to be used to compute the conditional expectations
-    regressor = _make_regressor(combined_obs_predictors, obs_x1, seed)
+    regressor = _make_regressor(obs_x2, obs_x1, seed)
 
     # Get the observed expectations
-    obs_expectation = regressor.predict(combined_obs_predictors)
+    obs_expectation = regressor.predict(obs_x2)
     obs_r2 = r2_score(obs_x1, obs_expectation)
 
     # Initialize arrays to store the permuted expectations and r2's
     permuted_expectations = np.empty((num_rows, NUM_PERMUTATIONS))
     permuted_r2 = np.empty(NUM_PERMUTATIONS, dtype=float)
 
-    # Get the permuted expectations
+    # Get the permuted expectations and r^2s.
     shuffled_index_array = np.arange(num_rows)
 
     iterable = range(NUM_PERMUTATIONS)
@@ -130,15 +123,12 @@ def computed_vs_obs_r2(df,
         # Shuffle the index array
         np.random.shuffle(shuffled_index_array)
         # Get the new set of permuted X_2 values
-        current_x2 = obs_x2[shuffled_index_array]
-        # Get the current combined predictors
-        current_predictors =\
-            np.concatenate((current_x2[:, None], obs_z[:, None]), axis=1)
+        current_x2 = obs_x2[shuffled_index_array, :]
         # Fit a new model and store the current expectation
         current_regressor =\
-            _make_regressor(current_predictors, obs_x1, seed)
+            _make_regressor(current_x2, obs_x1, seed)
         permuted_expectations[:, i] =\
-            current_regressor.predict(current_predictors)
+            current_regressor.predict(current_x2)
         permuted_r2[i] = r2_score(obs_x1, permuted_expectations[:, i])
     return obs_r2, permuted_r2
 
@@ -181,7 +171,6 @@ def visualize_permutation_results(obs_r2,
 def visual_permutation_test(df,
                             x1_col,
                             x2_col,
-                            z_col,
                             mode_id_col,
                             seed=1038,
                             progress=True,
@@ -195,7 +184,7 @@ def visual_permutation_test(df,
     # Compute the observed r2 and the permuted r2's
     obs_r2, permuted_r2 =\
         computed_vs_obs_r2(
-            df, x1_col, x2_col, z_col,
+            df, x1_col, x2_col,
             mode_id_col, seed, progress=progress)
 
     # Visualize the results of the permutation test
@@ -209,19 +198,9 @@ def visual_permutation_test(df,
 ```
 
 ```python
-title_str = '{} vs {}, \nconditional on {}'
-print(title_str.format(x1_col, x2_col, z_col))
-visual_permutation_test(df, x1_col, x2_col, z_col, mode_id_col)
-```
-
-```python
-new_x1_col = 'total_travel_cost'
-new_x2_col = 'cross_bay'
-
-title_str = '{} vs {}, \nconditional on {}'
-print(title_str.format(new_x1_col, new_x2_col, z_col))
-
-visual_permutation_test(df, new_x1_col, new_x2_col, z_col, mode_id_col)
+title_str = '{} vs {}'
+print(title_str.format(x1_col, x2_col))
+visual_permutation_test(df, x1_col, x2_col, mode_id_col)
 ```
 
 ## Test `visual_permutation_test`
@@ -241,10 +220,9 @@ np.random.seed(340)
 # Compute the p-values of the visual permutation test when the
 # null-hypothesis is true.
 for i in tqdm(range(NUM_TEST_SIM)):
-    # Simulate data that, by construction, satisfies x2 indep x1 given z
-    sim_z = np.random.normal(size=num_drive_alone_obs)
-    sim_x1 = sim_z + 0.5 * np.random.normal(size=num_drive_alone_obs)
-    sim_x2 = sim_z - 0.01 * np.random.uniform(size=num_drive_alone_obs)
+    # Simulate data that, by construction, satisfies x2 indep x1
+    sim_x1 = 0.2 + 0.5 * np.random.normal(size=num_drive_alone_obs)
+    sim_x2 = -0.1 - 0.01 * np.random.uniform(size=num_drive_alone_obs)
 
     # Determine which simulations to plot.
     # Just plot 1 simulation for visual comparison with real data
@@ -252,8 +230,7 @@ for i in tqdm(range(NUM_TEST_SIM)):
 
     # Package the simulated data together for the test
     temp_df =\
-        pd.DataFrame({'sim_z': sim_z,
-                      'sim_x1': sim_x1,
+        pd.DataFrame({'sim_x1': sim_x1,
                       'sim_x2': sim_x2,
                       'mode_id': tuple(1 for x in sim_x2),
                     })
@@ -263,7 +240,6 @@ for i in tqdm(range(NUM_TEST_SIM)):
         visual_permutation_test(temp_df,
                                 'sim_x1',
                                 'sim_x2',
-                                'sim_z',
                                 mode_id_col,
                                 seed=None,
                                 progress=False,
@@ -329,9 +305,7 @@ pd.Series(test_p_vals).plot(kind='kde')
 ```
 
 ## Conclusions
-- From the last two plots, we can see that under the null hypothesis of $X_1$ independent of $X_2$ given $Z$, we get p-values that close to uniformly distributed.<br>
+- From the last two plots, we can see that under the null hypothesis of $X_1$ independent of $X_2$, we get p-values that close to uniformly distributed.<br>
 This means the permutation p-values in `visual_permutation_test` are unlikely to be overly-optimistic.<br>
 In other words, we can feel safe(r) about relying on this test to distinguish conditional dependence from independence.
-- From the first two plots of this notebook, we can see from applying the `visual_permutation_test` that:
-  - travel time and travel cost are not conditionally independent given travel distance.
-  - travel cost and `cross_bay` are not conditionally independent given travel distance (as one might expect since one's travel cost is a function of whether or not one pays tolls to cross the Bay Bridge).
+- From the first two plots of this notebook, we can see from applying the `visual_permutation_test` that the number of licensed drivers per household and number of automobiles per household are not marginally independent.
