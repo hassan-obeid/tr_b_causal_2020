@@ -52,6 +52,7 @@ How to falsify a causal graph?
     - Navascues, Miguel and Wolfe, Elie (2017). “The inflation technique solves completely the classical inference problem.” arXiv:1707.06476v1
     - Wolfe, Elie, and Pozas-Kerstjens, Alejandro, and Grinberg, Matan, and Rosset, Denis, and Acin, Antonio, and Navascues, Miguel (2019). “Quantum Inflation:  A General Approach to Quantum Causal Compatibility”. arXiv:1909.10519v1
     - Poverini, Davide, and Chaves, Rafael, and Agresti, Iris, and Carvacho, Gonzalo, and Sciarrino, Fabio (2019). “Exclusivity graph approach to Instrumental inequalities.” arXiv:1909.09120v1
+    - Cai, Ruichu, Feng Xie, Clark Glymour, Zhifeng Hao, and Kun Zhang (2019). "Triad Constraints for Learning Causal Structure of Latent Variables." In Advances in Neural Information Processing Systems, pp. 12863-12872.
 - Exploiting available over-identification tests based on one’s graph.
 - Test goodness of fit of a single, parameterized causal graph.
     - Posterior Predictive Model Checking (AKA Model-Based Confirmatory Testing since we’re confirming that Z alone is sufficient to predict X and the joint distribution looks alright.)
