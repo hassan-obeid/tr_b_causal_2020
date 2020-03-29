@@ -13,6 +13,16 @@
 #     name: python3
 # ---
 
+# # Goal 
+# The goal of this notebook is to investigate, using simulations, the effectiveness and usefuleness of the deconfounder approach to causal inference with latent confounding in recovering the true causal effects of variables. 
+#
+# The flow of this notebook is as follows: 
+# - Simulate observations based on a confounded structure, where one variable confounds all but one of the other variables. 
+# - Simulate a continuous outcome based on a linear model, where we know the true causal effect of each variable. 
+# - Ommit the confounder from the dataframe, and attempt to recover it using factor models (PCA). 
+# - Check the recovered (substitute) confounder against the true confounder using scatter plots. 
+# - Re-estimate the outcome regression model, controlling for the substitute confounder instead of the true confounder, and compare the estimated coefficients on the other confounded variables against the ground truth
+
 # +
 import pandas as pd
 import numpy as np
@@ -66,9 +76,12 @@ sns.set(style="white", palette=sns.xkcd_palette(color_names), color_codes = Fals
 
 import os
 os.listdir('.')
+# -
+
+# ## Specify the assumed causal graph of the data generation process
 
 # +
-drive_alone_graph = CausalGraphicalModel(
+data_generation_graph = CausalGraphicalModel(
     nodes=['a', 'b', 'c', 'confounder',
           'd',  'e', 'f', 'y'],
     edges=[
@@ -91,18 +104,21 @@ drive_alone_graph = CausalGraphicalModel(
 
         
         
-        ("confounder", "y"), 
-        ("confounder", "y"), 
+#         ("confounder", "y"), 
+#         ("confounder", "y"), 
     ]
 )
 
 # draw return a graphviz `dot` object, which jupyter can render
-drive_alone_graph.draw()
+data_generation_graph.draw()
+# -
+
+# ## Specifiy the paramteric relationship between the covariates. 
 
 # +
 sample_size = 10000
 
-confounder = np.random.normal(loc=20, scale = 5, size = sample_size)
+confounder = np.random.normal(loc=20, scale = 10, size = sample_size)
 
 # +
 a = .3*confounder + np.random.normal(loc=10,scale=3,size=sample_size)
@@ -111,32 +127,44 @@ c = np.random.normal(loc=15,scale=3,size=sample_size) # + .5*confounder
 d = .8*confounder + np.random.normal(loc=-10,scale=3,size=sample_size)
 e = .5*confounder + np.random.normal(loc=8,scale=3,size=sample_size)
 f= -.3*confounder + np.random.normal(loc=-12,scale=3,size=sample_size)
-y = 5 + 2*a + 2*b - 5*c + 3*d + 2*e - 5*f + 7*confounder + np.random.normal(loc=0,scale=1,size=sample_size)
 
-coeffs_true = [5,2,2,-5,3,2,-5,7]
+
+df = pd.DataFrame(np.array([a,b,c,d,e,f, confounder]).T, columns = ['a', 'b', 'c',
+          'd',  'e', 'f', 'confounder'])
+
+X_columns =['a', 'b', 'c',
+          'd',  'e', 'f', 'confounder']
+df = (df[X_columns] - df[X_columns].mean())/df[X_columns].std()
+
+# df['confounder'] = confounder - confounder.mean()/confounder.std()
+
+y = 5 + 2*df['a'] + 2*df['b'] - 5*df['c'] + 3*df['d'] + 2*df['e'] - 5*df['f'] + 7*df['confounder'] + np.random.normal(loc=0,scale=1,size=sample_size)
+
+df['y'] = y
+
+# coeffs_true = [5,2,2,-5,3,2,-5,7]
 
 # plt.hist(confounder, bins = 50)
 
 # plt.hist(f, bins = 50)
 # -
 
-df = pd.DataFrame(np.array([a,b,c,d,e,f,confounder, y]).T, columns = ['a', 'b', 'c',
-          'd',  'e', 'f', 'confounder', 'y'])
+# df = pd.DataFrame(np.array([a,b,c,d,e,f,confounder, y]).T, columns = ['a', 'b', 'c',
+#           'd',  'e', 'f', 'confounder', 'y'])
 df.head()
 
 # +
 # sns.pairplot(df, size=1.5)
-
-# +
-ols_formula = "y ~ a+b+c+d+e+f"#+confounder "
-
-model_full = smf.ols(ols_formula, data=df)
-results_full = model_full.fit()
-results_df = pd.DataFrame(results_full.params, columns = ['estimated_params'])
-results_df['std_errors'] = results_full.bse
-results_df['true_params'] = coeffs_true[:-1]
-results_df
 # -
+
+# ## Bias from ommitting the confounder without adjustment
+
+model_full = smf.ols("y ~ a+b+c+d+e+f + confounder", data=df)
+results_full = model_full.fit()
+results_df_full = pd.DataFrame(results_full.params, columns = ['estimated_params'])
+results_df_full['std_errors'] = results_full.bse
+results_df_full['true_params'] = coeffs_true
+results_df_full
 
 model_partial = smf.ols("y ~ a+b+c+d+e+f ", data=df)
 results_partial = model_partial.fit()
@@ -157,23 +185,47 @@ print("Bartlett sphericity test indicates potential latent confounder, with a p-
 # kmo_model
 # -
 
-# ## Fit PCA
+# ## Fitting a factor model using 3 PCA variations.
 #
 #
+
+# ### Variable transformation
+
+X_columns_red = ['a', 'b', 'c', 'd', 'e', 'f']
+
+X = np.array(df[X_columns_red])
 
 # +
-X_columns = [
-    'a',
-       'b', 
-    'c',
-    'd',
-    'e',
-    'f'
-            ]
+# X_columns = [
+#     'a',
+#        'b', 
+#     'c',
+#     'd',
+#     'e',
+#     'f'
+#             ]
 
 
-X = np.array((df[X_columns] - df[X_columns].mean())/df[X_columns].std())
+# X = np.array((df[X_columns] - df[X_columns].mean())/df[X_columns].std())
 
+
+# +
+# standardized_df = pd.DataFrame(X, columns = ['a','b','c','d','e','f'])
+
+# standardized_df['confounder'] = (df['confounder'] - df['confounder'].mean())/df['confounder'].std()
+
+# standardized_df.head()
+# -
+
+# ### estimate true coefficients on standardized variables
+
+# +
+# model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder ", data=standardized_df)
+# results_deconf = model_deconf.fit()
+# results_df_deconf = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
+# results_df_deconf['std_errors'] = results_deconf.bse
+# results_df_deconf['true_params'] = coeffs_true
+# results_df_deconf
 # -
 
 # ### Using sklearn
@@ -202,7 +254,7 @@ display.display(pd.Series(resid[:,1]).hist(bins=100))
 # +
 latent_dim = 1
 
-confounders, holdouts, holdoutmasks, holdoutrow= confounder(holdout_portion=0.2, X=X, latent_dim=latent_dim)
+confounders, holdouts, holdoutmasks, holdoutrow= confounder_ppca(holdout_portion=0.2, X=X, latent_dim=latent_dim)
 
 holdouts_req = [holdouts]
 display.display(len(holdouts_req))
@@ -273,7 +325,28 @@ for mode in range(len(holdouts_req)):
 print("P-value, average: ", pval_mode)
 
 display.display(sns.kdeplot(pvals[holdout_subjects]))
+
+# +
+np.random.seed(11)
+
+num_subjects = 5
+fig, axes = plt.subplots(nrows = num_subjects, ncols=1, figsize = (10,20))
+
+for i, ax in zip(range(num_subjects), axes.flat):
+    subject_no = npr.choice(holdout_subjects) 
+    sns.kdeplot(rep_ll_per_zi[:,subject_no], ax=ax).set_title("Predictive check for subject "+str(subject_no))
+    ax.axvline(x=obs_ll_per_zi[subject_no], linestyle='--')
+
+plt.show()
 # -
+
+# ## Visualizing the substitute confounder against the true confounder
+
+df.plot(kind='scatter', x = 'confounder_PCA_SKLEARN', y = 'confounder')
+
+df.plot(kind='scatter', x = 'confounder_PPCA', y = 'confounder')
+
+df.plot(kind='scatter', x = 'confounder_PCA_CV', y = 'confounder')
 
 # ## Re-estimating regression with and without confounder
 #
@@ -314,6 +387,27 @@ results_df_deconf = pd.DataFrame(results_deconf.params, columns = ['estimated_pa
 results_df_deconf['std_errors'] = results_deconf.bse
 results_df_deconf['true_params'] = coeffs_true
 results_df_deconf
+
+# ## Adding random noise to the confounder and seeing how it affects the coefficients on the other variables
+
+# +
+coef=0.5
+
+df['confounder_2'] = df['confounder'] + coef*np.random.normal(loc=0,scale = 1, size = len(df))
+
+
+# -
+
+model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_2", data=df)
+results_deconf = model_deconf.fit()
+results_df_deconf1 = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
+results_df_deconf1['std_errors'] = results_deconf.bse
+results_df_deconf1['true_params'] = coeffs_true
+results_df_deconf1
+
+df.plot(kind='scatter', x = 'confounder_PCA_SKLEARN', y = 'confounder')
+
+df[['confounder', 'confounder_PPCA']].corr()
 
 
 # ## Functions and fun stuff
@@ -420,7 +514,7 @@ def cv_pca(data, rank, M=None, p_holdout=0.3, nonneg=False, iterations = 1000):
 
 # -
 
-def confounder(X, latent_dim, holdout_portion):
+def confounder_ppca(X, latent_dim, holdout_portion):
     # randomly holdout some entries of X
     num_datapoints, data_dim = X.shape
 
@@ -590,3 +684,16 @@ def replace_latents(w, z):
         return rv_constructor(*rv_args, **rv_kwargs)
 
     return interceptor
+# -
+
+
+
+
+
+
+
+
+
+
+
+

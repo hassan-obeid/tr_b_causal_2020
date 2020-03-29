@@ -21,8 +21,9 @@ jupyter:
 ### Causal graphs are fundamental to any model where parameters are assigned causal interpretations, even under selection on observables.
 The goal here is to show that even for the same outcome model (e.g. mode choice model), the model’s ability to recover the true data generating parameters depends heavily on the data generating process. The idea here is to demonstrate that when we control for intermediate variables of some variable of interest, we never recover the true causal parameter on the variable of interest asymptotically. <br>
 We demonstrate this by simulation, where the work is split into two parts, both working off of the asymmetric paper data by Brathwaite (2018): <br>
--	In the first part, we simulate data from a causal graph where all explanatory variables are independent and observed (there are no structural relationships between the variables). We then simulate an outcome mode choice using a well-defined MNL model. This will be our population data. We then sample from this population multiple times and re-estimate the outcome model, and look at the percentage of time that we recover the true parameters on our variables of interest. We should find that we recover the parameters almost all the time.  <br>
--	In the second part, we use the same variables, but now we simulate the data based on a more realistic causal graph where some variables influence/cause the others. We then simulate choice data based on the same model used in part 1. Finally, we sample again from this population multiple times and re-estimate the outcome model, and look at the percentage of time that we recover the true parameters on our variables of interest. What we should find here is that asymptotically, we never recover the true parameters on any variables that have descendants in the causal graph that we control for. <br>
+-	In the first part, we simulate data from a causal graph where all explanatory variables are independent and observed (there are no structural relationships between the variables). We then simulate an outcome mode choice using a well-defined MNL model. This will be our population data. We then apply the do-operator to the variable of interest (multiple times), and show that the predictions we get capture the true change in our outcome to some degree of confidence.  <br>
+-	In the second part, we use the same variables, but now we simulate the data based on a more realistic causal graph where some variables influence/cause the others. We then simulate choice data based on the same model used in part 1. Finally, we apply to do-operator again to the variable of interest, which will change the values of its children node too, but without an data-generation model for our dependent variables, we won't be aware of those changes, and our predictions will be off.  <br>
+
 The conclusion from this is that even though the outcome model is the same for the data generation process, we can only assign causal interpretations to parameters if we have clearly drawn our assumptions on the data generating process. Without those, one may easily challenge any interpretation we assign to our parameters by simply asking the question “but what if the data generating process looked like this?”. By drawing a causal graph upfront, we limit this sort of questions to questions about the validity of one’s causal graph, which comes with testable implications and create much more interesting and focused discussions than those created when there’s no causal graph that clearly shows the modeler’s assumptions. 
 
 ##### Concrete steps:
@@ -38,7 +39,7 @@ Workflow <br>
     - One based on a realistic causal graph with confounders. Preferably focus on a case with one latent confounder (like distance? Age? Gender?) <br>
 -	For each of the two causal graphs above, simulate choice data based on the outcome model assumed. <br>
 -	Estimate the choice model for each of those two datasets using the assumed choice model specification. <br>
--	Repeat the process n times, and calculate the percentage of those times where the estimated parameters’ confidence intervals contain the true parameters from the assumed outcome choice model. <br>
+-	Apply the do-operator to the variable of interest, and show that the predicted outcome would be accurate only if our causal graph captures the dependency between the explanatory variables. <br>
 
 ### Dealing with latent confounders in the causal graph
 
@@ -64,7 +65,3 @@ Finally, we can repeat the above process, but now on the full, real bike dataset
 -	Once a non-falsifiable causal graph is nailed down, we proceed exactly as above. 
 
 
-
-```python
-
-```
