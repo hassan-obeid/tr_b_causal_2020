@@ -41,5 +41,5 @@ This document should store one's weekly reflections on the project. In particula
 4. Week of March 22nd, 2020
     1. Learned a little more on how to write better functions. More learning to come on how causal discovery works
     2. Finished the task list and the simulation efforts
-    3. I don't have functions fully incorporated in our src folders for all of our use directly from any branch
+    3. I wasn't able to all cases of logistic regression in our regression.
     4. Continue our daily checkins. I think they've been useful.
