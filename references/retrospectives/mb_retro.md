@@ -39,7 +39,7 @@ This document should store one's weekly reflections on the project. In particula
     4. Maybe daily checkins? even one sentence on the repo saying what you worked on that day, even if the work didn't result in any commits.
 
 4. Week of March 22nd, 2020
-    1. Learned a little more on how to write proper code. More learning to come on how causal discovery works
+    1. Learned a little more on how to write better functions. More learning to come on how causal discovery works
     2. Finished the task list and the simulation efforts
     3. I don't have functions fully incorporated in our src folders for all of our use directly from any branch
     4. Continue our daily checkins. I think they've been useful.
