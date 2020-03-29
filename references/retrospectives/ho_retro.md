@@ -28,8 +28,15 @@ This document should store one's weekly reflections on the project. In particula
     4. I think we're doing good progress in the right direction. I'm hoping we can nail down a procedure for validating factor models that aren't necessarily Bayesian (cross-validation scores?) -- I want to discuss this more. 
     
 4. Week of March 8th, 2020
-    1. Learned abot ICLVs and how they compare to our work. Working from home is hard. 
+    1. Learned about ICLVs and how they compare to our work. Working from home is hard. 
     2. The mini-project of simulation generated good insights and unveiled some potential issues we will face. The conversation with Joan opened up some interesting prospects.
     3. Still can't get the deconfounder to make sense, even on a simple simulation. Including it in the final regression is not changing the coefficients on the parameters of interest. Maybe need to try more confounders.
+    4. Nothing specific, we should just keep chugging along and making progress. 
+
+
+5. Week of March 22, 2020
+    1. Learning about mixed regressions and regressing on a distribution at the individual level. I have more to learn/ask about here. 
+    2. Gained a better understanding of the sensitivity of causal estimates to small changes in the confounder. 
+    3. Unclear how to make the deconfounder algorithm useful when we're bound to recover it with some degree of error. 
     4. Nothing specific, we should just keep chugging along and making progress. 
 
