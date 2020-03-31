@@ -33,6 +33,12 @@ This document should store one's weekly reflections on the project. In particula
 
 5. Week of March 15th, 2020
    1. I learned about triad constraints and how they represent another class of, seemingly useful, testable implications of causal graphs with latent variables.
-   2. Amine was able to complute the utility level causal graphs for all utilities!
+   2. Amine was able to create the utility level causal graphs for all utilities!
    3. I did not thoroughly and explicitly justify my belief in why I expected changing the causal structure of our explanatory variables would impact our ability to recover **unbiased** estimates of our model parameters. More specifically, I conflated the inability to recover an unbiased estimate of a given causal effect with the inability to recover an unbiased estimate of generative model parameter. Choice modeller's already know about this though. See the CE264 hw on forecasting.
    4. Spend 5 minutes reviewing one of the project planning documents each week. For example, the problem statement, vision, requirements etc. Will help us keep the big picture in mind.
+
+6. Week of March 22nd, 2020
+   1. I learned that prior and posterior predictive checks that depend on latent variables (i.e. so called discrepancy variables) can be used to test assumptions about the structure of one's causal graph. The idea is to use marginal or conditional independence tests on the simulated data + latent variabble vs the observed data + latent variable, integrated over the latent variable.
+   2. Hassan showed that when using the mean of an inferred distribution of one's deconfounder in one's outcome model, the deconfounder has to be recovered almost exactly in order to get outcome model parameter estimates that are close to one's data generating parameters. It's great to learn the conditions under which we expect the deconfounder technique to work.
+   3. We ran into yet more difficulties getting the deconfounder to work as expected.
+   4. We should revise the project requirements since we are unlikely to actually finish a successful demonstration of the deconfounder approach by our internal deadline (April 5th, 2020).
