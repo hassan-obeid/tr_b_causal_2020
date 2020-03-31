@@ -1,0 +1,30 @@
+name: causalTRB2020
+channels:
+  - bioconda
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - statsmodels=0.11.0
+  - snakemake=5.11.1
+  - pytest=5.4.1
+  - coverage=5.0
+  - jupyterlab=2.0.1
+  - click=7.1.1
+  - flake8=3.7.9
+  - attrs=19.3.0
+  - sh=1.12.14
+  - jupytext=1.4.0
+  - papermill=2.0.0
+  - tqdm=4.43.0
+  - pip=20.0.2
+  - python-dotenv=0.12.0
+  - pylogit=0.2.2
+  - seaborn=0.10.0
+  - scikit-learn=0.22.1
+  - ipywidgets=7.5.1
+  - tensorflow=2.0.0
+  - tensorflow-probability=0.8.0
+  - pip:
+    - causalgraphicalmodels==0.0.4
+prefix: /Users/tbrathwaite/anaconda2/envs/causalTRB2020
