@@ -34,14 +34,16 @@
 # 3. Visualize the distribution of the simulated and observed test statistics.
 # 4. Produce a scalar summary of the distribution of simulated test statistics if desired.
 
+# ## Declare notebook parameters
+
 # +
 # Declare hyperparameters for testing
 MIN_SAMPLES_LEAF = 40
 NUM_PERMUTATIONS = 100
 
 # Declare the columns to be used for testing
-x1_col = 'total_travel_time'
-x2_col = 'total_travel_cost'
+x1_col = 'num_licensed_drivers'
+x2_col = 'num_cars'
 mode_id_col = 'mode_id'
 
 # Set the colors for plotting
@@ -51,6 +53,9 @@ SIMULATED_COLOR = '#a6bddb'
 # Declare paths to data
 DATA_PATH =\
     '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
+# -
+
+# ## Execute needed imports
 
 # +
 import sys
@@ -58,7 +63,7 @@ from pdb import set_trace as bp
 
 import numpy as np
 import pandas as pd
-from scipy.stats import multinomial
+from scipy.stats import norm
 
 import seaborn as sbn
 import matplotlib.pyplot as plt
@@ -70,13 +75,20 @@ from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 
+from causalgraphicalmodels import CausalGraphicalModel
+
 sys.path.insert(0, '../../src/')
 import viz
 
 
+# -
+
+# ## Create needed functions for analysis
+
 # +
 def _make_regressor(x_2d, y, seed=None):
-    # regressor_kwargs =\	    regressor = LinearRegression()
+    # regressor_kwargs =\
+    #     regressor = LinearRegression()
     #     {'min_samples_leaf': MIN_SAMPLES_LEAF,
     #      'max_samples': 0.8}
     # if seed is not None:
@@ -226,7 +238,7 @@ def visualize_predictive_cit_results(
 
 def perform_visual_predictive_cit_test(
         samples,
-        obs_sample
+        obs_sample,
         seed=1038,
         verbose=True,
         show=True,
@@ -258,6 +270,8 @@ def perform_visual_predictive_cit_test(
 
 # -
 
+# ## Extract data for the factor model checks
+
 # Load the raw data
 df = pd.read_csv(DATA_PATH)
 
@@ -265,4 +279,77 @@ df = pd.read_csv(DATA_PATH)
 filter_array = (df[mode_id_col] == 1).values
 obs_x1 = df[x1_col].values[filter_array]
 obs_x2 = df[x2_col].values[filter_array]
-obs_sample = np.concatenate((obs_x1, obs_x2), axis=1)
+obs_sample =\
+    np.concatenate((obs_x1[:, None], obs_x2[:, None]), axis=1)
+
+# +
+# Note the variables that take part in the drive alone utility
+# The following cell is taken from 5.0pmab-simulation-causal-graph.ipynb
+V_Drive_Alone =\
+    CausalGraphicalModel(
+        nodes=["Total Travel Distance",
+               "Total Travel Time",
+               "Total Travel Cost",
+               "Number of Autos",
+               "Number of Licensed Drivers",
+               "Utility (Drive Alone)"],
+         edges=[("Total Travel Distance","Total Travel Time"),
+                ("Total Travel Distance","Total Travel Cost"),
+                ("Total Travel Time", "Utility (Drive Alone)"), 
+                ("Total Travel Cost", "Utility (Drive Alone)"), 
+                ("Number of Autos", "Utility (Drive Alone)"),
+                ("Number of Licensed Drivers","Utility (Drive Alone)")
+    ]
+)
+
+# draw the causal model
+V_Drive_Alone.draw()
+
+# +
+# Create a list of the variables in the drive alone utility
+drive_alone_variables =\
+    ['total_travel_distance',
+     'total_travel_cost',
+     'total_travel_time',
+     'num_cars',
+     'num_licensed_drivers'
+    ]
+
+# Create a sub-dataframe with those variables
+drive_alone_df =\
+    df.loc[df['mode_id'] == 1, drive_alone_variables]
+
+# Get the means and standard deviations of those variables
+drive_alone_means = drive_alone_df.mean()
+drive_alone_means.name = 'mean'
+
+drive_alone_stds = drive_alone_df.std()
+drive_alone_stds.name = 'std'
+
+# Look at the computed means and standard deviations
+print(pd.DataFrame([drive_alone_means, drive_alone_stds]))
+# -
+
+# ## Specify the factor model that is to be checked
+#
+# In Wang and Blei's deconfounder technique, we fit a factor model to the variables in one's outcome model.
+#
+# The factor model being considered here is:
+#
+# $
+# \begin{aligned}
+# X_{\textrm{standardized}} &= Z * W + \epsilon\\
+# \textrm{where } \epsilon &= \left[ \epsilon_1, \epsilon_2, ..., \epsilon_D \right]\\
+# \epsilon_d &\in \mathbb{R}^{\textrm{N x 1}}\\
+# \epsilon_d &\sim \mathcal{N} \left(0, \sigma \right) \forall d \in \left\lbrace 1, 2, ... D \right\rbrace\\
+# Z &\in \mathbb{R}^{\textrm{N x 1}}\\
+# Z &\sim \mathcal{N} \left(0, 1 \right)\\
+# W &\in \mathbb{R}^{1 x D}\\
+# W &\sim \mathcal{N} \left(0, 1 \right)\\
+# N &= \textrm{Number of rows in X_standardized}\\
+# D &= \textrm{Number of columns in X_standardized}
+# \end{aligned}
+# $
+
+# Specify the prior for the factor model of the standardized drive alone dataframe
+w_prior_dist = norm()
