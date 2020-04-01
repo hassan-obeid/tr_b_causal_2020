@@ -41,6 +41,7 @@ The posterior predictive checks are to really ensure that the observed data is w
 # Declare hyperparameters for testing
 MIN_SAMPLES_LEAF = 40
 NUM_PERMUTATIONS = 100
+NUM_PRIOR_SAMPLES = 100
 
 # Declare the columns to be used for testing
 x1_col = 'num_licensed_drivers'
@@ -136,7 +137,7 @@ def computed_vs_obs_r2(x1_array,
         current_x2 = x2_array[shuffled_index_array]
         # Get the current combined predictors
         current_predictors =\
-            np.concatenate((current_x2[:, None], obs_z[:, None]), axis=1)
+            np.concatenate((current_x2[:, None], z_array[:, None]), axis=1)
         # Fit a new model and store the current expectation
         current_regressor =\
             _make_regressor(current_predictors, x1_array, seed)
@@ -156,7 +157,7 @@ def compute_predictive_independence_test_values(samples, obs_sample, seed):
     """
     # Determine the number of samples in order to create an iterable for
     # getting and storing test samples
-    if len(samples.shape != 3):
+    if len(samples.shape) != 3:
         msg = '`samples` should have shape (num_rows, 3, num_samples).'
         raise ValueError(msg)
     num_samples = samples.shape[-1]
@@ -166,16 +167,16 @@ def compute_predictive_independence_test_values(samples, obs_sample, seed):
     obs_pvals = np.empty((num_samples,), dtype=float)
 
     # Create the iterable to be looped over to compute test values
-    iterable = range(NUM_PERMUTATIONS)
-    if progress:
-        iterable = tqdm(iterable)
+    iterable = viz.progress(range(NUM_PERMUTATIONS))
 
     # Populate the arrays of test statistics
     for i in iterable:
         # Get the data to be used to calculate this set of p-values
         current_sim_sample = samples[:, :, i]
         current_sim_z = current_sim_sample[:, -1]
-        current_augmented_obs = np.concatenate((obs_samples, current_sim_z))
+        current_augmented_obs =\
+            np.concatenate((obs_sample, current_sim_z[:, None]),
+                           axis=1)
 
         # Package the arguments to compute the predictive r2 values
         sim_args =\
@@ -197,10 +198,10 @@ def compute_predictive_independence_test_values(samples, obs_sample, seed):
         # Compute and store the p-values of the conditional independence
         # test for the current simulated and augmented dataset
         sampled_pvals[i] =\
-            compute_pvalue(computed_vs_obs_r2(*sim_args))
+            compute_pvalue(*computed_vs_obs_r2(*sim_args))
 
         obs_pvals[i] =\
-            compute_pvalue(computed_vs_obs_r2(*augmented_obs_args))
+            compute_pvalue(*computed_vs_obs_r2(*augmented_obs_args))
     return sampled_pvals, obs_pvals
 
 
@@ -210,6 +211,7 @@ def visualize_predictive_cit_results(
         verbose=True,
         show=True,
         close=False):
+    sbn.set_style('white')
     fig, ax = plt.subplots(figsize=(10, 6))
     overall_p_value = (obs_pvals < sampled_pvals).mean()
 
@@ -218,9 +220,9 @@ def visualize_predictive_cit_results(
             'The p-value of the predictive, permutation C.I.T. is {:.2f}.'
         print(msg.format(overall_p_value))
 
-    sbn.kdeplot(
-        sampled_pvals, ax=ax, color=SIMULATED_COLOR, label='Simulated')
-    sbn.kdeplot(
+    sbn.distplot(
+        sampled_pvals, ax=ax, color=SIMULATED_COLOR, label='Simulated', )
+    sbn.distplot(
         obs_pvals, ax=ax, color=ORIG_COLOR, label='Observed')
 
     ax.set_xlabel('Permutation P-value', fontsize=13)
@@ -263,7 +265,7 @@ def perform_visual_predictive_cit_test(
     overall_p_value =\
         visualize_predictive_cit_results(
             sampled_pvals, obs_pvals, verbose=verbose, show=show, close=close)
-    return p_value
+    return overall_p_value, sampled_pvals, obs_pvals
 
 
 
@@ -356,6 +358,125 @@ D &= \textrm{Number of columns in X_standardized}
 $
 
 ```python
-# Specify the prior for the factor model of the standardized drive alone dataframe
-w_prior_dist = norm()
+# Note the number of dimensions
+num_dimensions = len(drive_alone_variables)
+
+# Specify the prior distributions for the factor
+# model of the standardized drive alone dataframe
+w_dist_prior = norm(loc=0, scale=1)
+z_dist_prior = norm(loc=0, scale=1)
+
+sigma_prior = 0.1
+epsilon_dists_prior =\
+    [norm(loc=0, scale=sigma_prior) for i in range(num_dimensions)]
 ```
+
+## Generate prior predictive samples
+
+```python
+# Get the number of observations for this utility
+num_drive_alone_obs = drive_alone_df.shape[0]
+
+# Set a seed for reproducibility
+np.random.seed(721)
+
+# Get prior samples of X_standardized
+w_samples_prior =\
+    w_dist_prior.rvs((1, num_dimensions, NUM_PRIOR_SAMPLES))
+z_samples_prior =\
+    z_dist_prior.rvs((num_drive_alone_obs, 1, NUM_PRIOR_SAMPLES))
+
+epsilon_samples_prior =\
+    np.concatenate(
+        [dist.rvs((num_drive_alone_obs, NUM_PRIOR_SAMPLES))[:, None, :]
+         for dist in epsilon_dists_prior],
+        axis=1)
+
+x_standardized_samples_prior =\
+    (np.einsum('mnr,ndr->mdr', z_samples_prior, w_samples_prior) +
+     epsilon_samples_prior)
+
+# Get samples of X on the original scale of each variable
+x_samples_prior =\
+    (x_standardized_samples_prior *
+     drive_alone_stds[None, :, None] +
+     drive_alone_means[None, :, None])
+```
+
+```python
+# Look at the dimensions of the prior predictive samples
+print(x_samples_prior.shape)
+```
+
+## Visualize the prior predictive distribution
+
+```python
+# Visualize the prior predictive ditributions
+from viz.sim_cdf import _plot_single_cdf_on_axis
+
+# Choose colors
+orig_color = '#045a8d'
+sim_color = '#a6bddb'
+
+# Choose a column of data to compare
+current_col = 0
+
+# Create the figure
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Plot the simulated cdfs
+for sim_id in range(NUM_PRIOR_SAMPLES):
+    label = 'Simulated' if sim_id == 0 else None
+    _plot_single_cdf_on_axis(
+        x_samples_prior[:, current_col, sim_id], ax, color=sim_color, label=label, alpha=0.5)
+    
+# Plot the observed cdf
+_plot_single_cdf_on_axis(
+    drive_alone_df.iloc[:, current_col],
+    ax, color=orig_color, label='Observed', alpha=1.0)
+
+# Label the plot axes
+ax.set_xlabel("{}".format(drive_alone_variables[current_col]), fontsize=12)
+ax.set_ylabel("Cumulative\nDensity\nFunction",
+              rotation=0, labelpad=40, fontsize=12)
+
+# Show the line labels
+plt.legend(loc='best')
+
+sbn.despine()
+fig.show()
+```
+
+Based on the plot above, it's clear to that the currently chosen prior is quite poor.
+
+In other words, there are highly visible levels of prior-data conflict.
+
+This lets us know that the prior predictive check of the deconfounder assumptions is likely to fail since the prior in general is a poor one, even without considering specific checks like conditional independence tests.
+
+```python
+# Get the prior predictive values for the test
+prior_samples_triplet =\
+    np.concatenate((x_samples_prior[:, -2:, :],
+                    z_samples_prior),
+                   axis=1)
+
+# Test out the predictive conditional independence test
+pval, sampled_pvals, obs_pvals =\
+    perform_visual_predictive_cit_test(
+        prior_samples_triplet,
+        obs_sample)
+```
+
+```python
+sbn.kdeplot(sampled_pvals)
+```
+
+```python
+print(obs_pvals)
+```
+
+As indicated by the observed p-values, the observed data is strongly refuted (in absolute terms) by a conditional independence test. This is shown by the p-values of zero above.
+
+As indicated by the relative comparison of the observed p-values to the simulated p-values, the p-values generated by the observed data are very different from the p-values generated by the prior (which is known to satisfy the desired conditional independencies).
+
+However, both of these points are somewhat moot since the prior is in general terrible.
