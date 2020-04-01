@@ -441,7 +441,7 @@ sbn.despine()
 fig.show()
 # -
 
-# Based on the plot above, it's clear to that the currently chosen prior is quite poor.
+# Based on the plot above, it's clear that the currently chosen prior is quite poor.
 #
 # In other words, there are highly visible levels of prior-data conflict.
 #
