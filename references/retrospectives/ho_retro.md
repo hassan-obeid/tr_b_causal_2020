@@ -42,6 +42,9 @@ This document should store one's weekly reflections on the project. In particula
     
 6. Week of March 29, 2020
     1. 
+    
     2. Worked with Amine on nailing down the workflow for estimating the causal effects and proving the importance of having a data generation model (model of Xs) on top of an outcome model. I also brainstormed potential ideas to for our story and to make the work more relevant with steps that modelers can follow when looking to estimate causal effects. 
+    
     3. Nothing specifically went wrong this week. 
+    
     4. I'll start working on putting together a presentation that follows the flow of our story. I'll be presenting this to Joan's group in two weeks. 
