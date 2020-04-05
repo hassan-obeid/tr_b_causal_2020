@@ -48,7 +48,7 @@ This document should store one's weekly reflections on the project. In particula
    1. Somehow I might have accidentally failed to do a retro this week.
 
 8. Week of April 5th, 2020
-   1. I learned that building causal graphs with latent variables is likely to involve a ton of work that is not commonly spoken of. For instance, if one wants a causal graph with latent variables taht a-priori seems worthwhile investigating, then one will likely have to do a lot of work to create a generative model based on those latent variables that actually generates data that is similar to one's observed data. Standard factor models produce data that is far from realistic.
+   1. I learned that building causal graphs with latent variables is likely to involve a ton of work that is not commonly spoken of. For instance, if one wants a causal graph with latent variables that a-priori seems worthwhile investigating, then one will likely have to do a lot of work to create a generative model based on those latent variables that actually generates data that is similar to one's observed data. Standard factor models produce data that is far from realistic.
    2. Selection-on-observables simulation is prototype complete and so are the basic demonstrations of falsification checks for one's causal graph. Deconfounder investigation is almost complete as well. All in all, we appear on track for a June 1st completion of the presentation and planned work!
    3. The daily check-in's did not work. Four out of the 7 days since our last meeting, I was the only update on the issue.
    4. We should complete and revise/update the project planning documents (vision, requirements, architecture, project plan).
