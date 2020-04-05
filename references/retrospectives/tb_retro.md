@@ -13,6 +13,7 @@ This document should store one's weekly reflections on the project. In particula
    2. That Amine and Hassan both have a first draft of the structure for their simulations is great.
    3. I didn't schedule our weekly call in advance and coordinate to make sure everyone was available.
    4. Set up google calendar invite for weekly meeting.
+
 2. Week of February 24th, 2020
    1. I created a mental schema of the various approaches to falsifying one's causal graph, and I learned that causal graphs can be used to encode assumptions of various experimental designs / identification strategies such as propensity score matching, regression discontinuity, etc. This led me to think that we should use causal diagrams to depict model-based identification strategies and pictures of how the world works, e.g. showing the computational graph of our model as the subgraph between our outcome variable Y and its parents.
    2. I read a lot of new, informative papers on checking one's causal graph, graphical models of preferences and utility in computer science, and causal inference + reinforcement learning.
@@ -42,3 +43,12 @@ This document should store one's weekly reflections on the project. In particula
    2. Hassan showed that when using the mean of an inferred distribution of one's deconfounder in one's outcome model, the deconfounder has to be recovered almost exactly in order to get outcome model parameter estimates that are close to one's data generating parameters. It's great to learn the conditions under which we expect the deconfounder technique to work.
    3. We ran into yet more difficulties getting the deconfounder to work as expected.
    4. We should revise the project requirements since we are unlikely to actually finish a successful demonstration of the deconfounder approach by our internal deadline (April 5th, 2020).
+
+7. Week of March 29th, 2020
+   1. Somehow I might have accidentally failed to do a retro this week.
+
+8. Week of April 5th, 2020
+   1. I learned that building causal graphs with latent variables is likely to involve a ton of work that is not commonly spoken of. For instance, if one wants a causal graph with latent variables taht a-priori seems worthwhile investigating, then one will likely have to do a lot of work to create a generative model based on those latent variables that actually generates data that is similar to one's observed data. Standard factor models produce data that is far from realistic.
+   2. Selection-on-observables simulation is prototype complete and so are the basic demonstrations of falsification checks for one's causal graph. Deconfounder investigation is almost complete as well. All in all, we appear on track for a June 1st completion of the presentation and planned work!
+   3. The daily check-in's did not work. Four out of the 7 days since our last meeting, I was the only update on the issue.
+   4. We should complete and revise/update the project planning documents (vision, requirements, architecture, project plan).
