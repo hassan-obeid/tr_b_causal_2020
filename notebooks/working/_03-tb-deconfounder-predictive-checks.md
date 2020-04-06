@@ -222,6 +222,8 @@ def visualize_predictive_cit_results(
     sbn.distplot(
         obs_pvals, ax=ax, color=ORIG_COLOR, label='Observed', kde=False)
 
+    ax.set_xlim(left=0)
+
     ax.set_xlabel('Permutation P-value', fontsize=13)
     ax.set_ylabel(
         'Density', fontdict={'fontsize':13, 'rotation':0}, labelpad=40)
@@ -264,6 +266,8 @@ def perform_visual_predictive_cit_test(
             sampled_pvals, obs_pvals, verbose=verbose,
             show=show, close=close)
     return overall_p_value, sampled_pvals, obs_pvals
+
+
 
 ```
 
@@ -354,8 +358,7 @@ w_dist_prior = norm(loc=0, scale=1)
 z_dist_prior = norm(loc=0, scale=1)
 
 sigma_prior = 0.1
-epsilon_dists_prior =\
-    [norm(loc=0, scale=sigma_prior) for i in range(num_dimensions)]
+epsilon_dist_prior = norm(loc=0, scale=sigma_prior)
 ```
 
 ## Generate prior predictive samples
@@ -374,10 +377,9 @@ z_samples_prior =\
     z_dist_prior.rvs((num_drive_alone_obs, 1, NUM_PRIOR_SAMPLES))
 
 epsilon_samples_prior =\
-    np.concatenate(
-        [dist.rvs((num_drive_alone_obs, NUM_PRIOR_SAMPLES))[:, None, :]
-         for dist in epsilon_dists_prior],
-        axis=1)
+    epsilon_dist_prior.rvs(size=(num_drive_alone_obs,
+                                 num_dimensions,
+                                 NUM_PRIOR_SAMPLES))
 
 x_standardized_samples_prior =\
     (np.einsum('mnr,ndr->mdr', z_samples_prior, w_samples_prior) +
@@ -534,10 +536,9 @@ z_samples_post = z_samples_post[:, None, :]
 
 # Sample epsilon to form the posterior samples of X_standardized
 epsilon_samples_post =\
-    np.concatenate(
-        [dist.rvs((num_drive_alone_obs, NUM_PRIOR_SAMPLES))[:, None, :]
-         for dist in epsilon_dists_prior],
-        axis=1)
+    epsilon_dist_prior.rvs(size=(num_drive_alone_obs,
+                                 num_dimensions,
+                                 NUM_PRIOR_SAMPLES))
 
 x_standardized_samples_post =\
     (np.einsum('mnr,ndr->mdr', z_samples_post, w_samples_post) +
@@ -657,7 +658,6 @@ prior_obs_pvals_sim
 
 ```python
 # Test the predictive C.I.T with a prior sample
-%pdb on
 post_sim_sample = x_samples_post[:, cols_for_test, chosen_sim_idx]
 post_pval_sim, post_sampled_pvals_sim, post_obs_pvals_sim =\
     perform_visual_predictive_cit_test(
