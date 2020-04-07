@@ -38,4 +38,4 @@ We will investigate, through simulation, the usefulness, and pitfalls/sensitivit
 The final deliverable of our work will be an empirical demonstration of methods for falsifying one's causal graph.
 While such efforts are implicit in each of the deliverables above, we will draw special attention to them here.
 Our rationale is that modelers are likely to (1) skip this step without clear guidance and (2) begin statistical estimation before assumption falsification.
-Here, we will present simple techniques that modelers can use to avoid the catastrophic delusion and incorrect inferences that comes from using obviously incorrect causal graphs (e.g. see the first deliverable).
+Here, we will present simple techniques that modelers can use to avoid the incorrect inferences that come from using obviously incorrect causal graphs (e.g. see the first deliverable).
