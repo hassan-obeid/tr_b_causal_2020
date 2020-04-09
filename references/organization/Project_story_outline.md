@@ -19,9 +19,9 @@ jupyter:
 
 ### Part 1: Selection on observables
 
-We show that an outcome model, without a data generation model, is meaningless when it comes to causal inference. Inferences from an outcome model alone assume a very specific data-generation process (namely, one where all the covariates are independent), and it is important to make that clear for transparency. 
+We show that an outcome model, without a data generation model, is not enough when it comes to making causal inferences. Inferences from an outcome model alone assume a very specific data-generation process (namely, one where all the covariates are independent), and it is important to make that clear for transparency. 
 
-To do that, we simulate a mode-choice dataset from a known outcome (MNL) model as well as an assumed causal graph. We then re-estimate a logit model on the simulated dataset, and try to estimate the causal effect of perturbing travel distance on the mode share of auto, using in two ways:
+To do that, we simulate a mode-choice dataset from a known outcome (MNL) model as well as an assumed causal graph. We then re-estimate a logit model on the simulated dataset, and try to estimate the causal effect of perturbing travel distance on the mode share of auto, using two ways:
 
  - The first is when the change in travel distance doesn't affect any of the outcome variables.
  - The second is when the change in travel distance leads to a change in its descendants (namely like travel cost and time). Here, we're assuming that we somehow were able to know the causal graph as well as the parametric relationships between its nodes. In reality however, one needs to recover the causal graph by iterating through reasonable alternatives and attempting to falsify them using the conditional independence tests outlined [here: reference to Timothy cit notebooks]. Once a causal graph is obtained, the modeler has to then model the dependence between the variables using any parametric or non-parametric specifications that she deems appropriate, of course using appropriate tests of statistical goodness-of-fit. 
