@@ -57,6 +57,21 @@ What does this presentation mean for the audience?
 What can they now do that may have been mysterious / hard before?  
 How do we want the audience's behavior change as a result of this presentation?
 
+### <ins>Actual work/code:<ins>
+1. For simulation:
+    - Function to simulate data from structural models (mainly linear models -- MNL and regression).
+        - Input: X variables, coefficients.
+    - Output: Simulated variables
+2. For deconfounder
+    - Function for fitting factor model
+        - A class with a few of factor model methods: Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
+           1. Input: Vector of covariates, dimensionality of latent variable space
+           2. Output: A fitted factor model
+        - Function for posterior predictive checks for the factor models.  
+           1. Input: Factor model, test data
+           2. Output: P-values for predictive checks
+3. Tests for code
+
 ## Do the end user’s / stakeholders have firm time deadlines for the project? If so, note when the project must be delivered by.
 
 The original deadline for submitting the presentation materials for the conference was June 1st, 2020.  
