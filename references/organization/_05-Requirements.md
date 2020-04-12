@@ -24,6 +24,7 @@ Accordingly, should have an expectation of 20 slides, with 15 -30 slides (min, m
 
 The structure of the presentation should be as follows:
 - Motivation: Why is our problem important to the listener? (1 min)
+
 - Need: What is the need being addressed? (1 min)  
 Travel demand modelers wish and need to make causal inferences, but the field typically does not use techniques from the causal inference literature.
 
@@ -33,19 +34,24 @@ Travel demand modelers wish and need to make causal inferences, but the field ty
 
 - Main message of the talk (1 min):  
 Specify a causal graph, make sure the assumptions of that graph are not violated by one's data, and build one's model on the basis of the causal graph.
+
 - Point 1 (4 min):  
 Without taking into account the treatment assignment mechanism / causal structure of one's explanatory variables, one's estimated treatment effects may be completely wrong.
    - Amine's selection-on-observables simulation results and description.
+
 - Point 2 (6 min):  
 When dealing with latent confounders in one' causal graph, one generically applicable technique is to model the latent confounders.
 Pitfalls abound when applying such techniques, so we demonstrate / raise awareness of / and show how to detect such problems.
    - Hassan's deconfounder demo and simulation results.
+
 - Point 3 (4 min):  
 In order to use any of these techniques, having a well-specified causal graph is crucial. We demonstrate methods for checking / falsifying one's causal graph in order to avoid drawing erroneous or unsupported conclusions.
    - Conditional Independence Tests
    - Marginal Independence Tests
    - Prior and Posterior Predictive Conditional / Marginal Independence Tests
+
 - Recap (1 min)
+
 - Conclusion (1 min):  
 What does this presentation mean for the audience?  
 What can they now do that may have been mysterious / hard before?  
