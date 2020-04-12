@@ -63,18 +63,17 @@ How do we want the audience's behavior change as a result of this presentation?
    - We want them to use (and be able to use) our proposed causal inference workflow.
 
 ### <ins>Actual work/code:<ins>
-1. Public notebooks:
+1. Public notebooks
    1. Selection-on-observables simulation:
-      - Function to simulate data from structural models (mainly linear models -- MNL and regression).
-        - Input: X variables, coefficients.
-      - Output: Simulated variables
+      - How are our causal effect estimates impacted by using an incorrect causal graph, in the simplest and most ideal setting?
    2. Deconfounder demonstration with data from Brathwaite and Walker's asymmetric models paper.
       - Does the deconfounder approach substantially change the estimated causal effects and inferred sensititivities?
    3. Deconfounder investigation based on simplified simulations
-      - Simplified simulations to illutrate potential pitfalls of the deconfounder approach.
+      - What are the potential pitfalls of the deconfounder approach? How can we look out for them?
    4. Deconfounder demonstration using realistically simulated data based on data in Brathwaite and Walkders asymmetric models paper.
-      - Realistic simulation to confirm whether the results obtained with the real data are qualitatively consistent with results obtained on data that we know satisfy the deconfounders assumptions.
-   4. Demonstration of falsification techniques.
+      - Are our results obtained with the real data qualitatively consistent with results obtained on realistically simulated data that we know satisfy the deconfounders assumptions?
+   5. Demonstration of falsification techniques.
+      - How can we test the assumptions underlying our proposed / hypothesized causal graphs?
 2. Resulting plots / tables
    - Selection-on-observables simulation
       - Correctly estimated vs True causal effect of travel distance reduction on automobile mode shares (drive alone + shared_ride_2 + shared_ride_3+).
