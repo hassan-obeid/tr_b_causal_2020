@@ -48,3 +48,12 @@ This document should store one's weekly reflections on the project. In particula
     3. Nothing specifically went wrong this week. 
     
     4. I'll start working on putting together a presentation that follows the flow of our story. I'll be presenting this to Joan's group in two weeks. 
+    
+7. Week of April 5, 2020
+    1. Learned extensively about causal processes in time series analysis. 
+    
+    2. Thinking about a useful story that explicitely states our contributions, and coming up with a coherent structure for our presentation/the way we want to show our work in general. 
+    
+    3. Didn't get to finish my task list, specifically the refactoring I was planning on doing. 
+    
+    4. I'll start working on putting together a presentation that follows the flow of our story. I'll be presenting this to Joan's group in two weeks. 
