@@ -49,3 +49,9 @@ This document should store one's weekly reflections on the project. In particula
     2. Finished the causal effect estimation workflow.
     3. I didn't post daily checkins on a daily basis. 
     4. I think it's time we start actively thinking about the story we want to tell at the conference and start refactoring what needs to be refactored.
+    
+7. Week of April 5th, 2020
+    1. I learned how much I don't know is within pylogit, and how much I don't overall know about refactoring, refactoring to me was just writing better variable names with clear operations.
+    2. I started reading the refactoring guru guide, even if at times I found myself just staring at it because I didn't understand some of the refactoring techniques or their purpose.
+    3. I didn't update the architecture document.
+    4. I think we should probably start thinking of what the direction after the project should be, like how this project could lead to research work for our phd research/dissertations?
