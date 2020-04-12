@@ -28,10 +28,11 @@ The structure of the presentation should be as follows:
 - Need: What is the need being addressed? (1 min)  
 Travel demand modelers wish and need to make causal inferences, but the field typically does not use techniques from the causal inference literature.
 
-- Our Solution (1 min):
-   - Provide a demonstration of using causal inference techniques in travel demand modeling context.
-   - In particular, we demonstrate the causal inference workflow from Bratwaite and Walker (2018), with references to similar / equivalent ideas put forth by others, and with additional details from our experiences in this project.
-
+- Our Solution (1 min):  
+Provide a demonstration of using causal inference techniques in travel demand modeling context.
+   - In particular, we demonstrate the causal inference workflow from Bratwaite and Walker (2018a), with references to similar / equivalent ideas put forth by others, and with additional details from our experiences in this project.
+   - We use data from Brathwaite and Walker (2018b), a study of traveler mode choice in the San Francisco Bay Area.
+   The setting is one related to large tech companies considering how they could reduce the driving mode-share of their employees by moving them closer to work.
 - Main message of the talk (1 min):  
 Specify a causal graph, make sure the assumptions of that graph are not violated by one's data, and build one's model on the basis of the causal graph.
 
@@ -41,7 +42,8 @@ Without taking into account the treatment assignment mechanism / causal structur
 
 - Point 2 (6 min):  
 When dealing with latent confounders in one' causal graph, one generically applicable technique is to model the latent confounders.
-Pitfalls abound when applying such techniques, so we demonstrate / raise awareness of / and show how to detect such problems.
+Such techniques are may substantially change one's results.
+However, pitfalls abound when applying these methods, so we demonstrate / raise awareness of / and show how to detect such problems.
    - Hassan's deconfounder demo and simulation results.
 
 - Point 3 (4 min):  
@@ -56,6 +58,9 @@ In order to use any of these techniques, having a well-specified causal graph is
 What does this presentation mean for the audience?  
 What can they now do that may have been mysterious / hard before?  
 How do we want the audience's behavior change as a result of this presentation?
+   - We want them to check out our paper and github repo to see additional details.  
+   The presentation is an advertisement not a sufficient / stand-alone teaching tool.
+   - We want them to use (and be able to use) our proposed causal inference workflow.
 
 ### <ins>Actual work/code:<ins>
 1. Public notebooks:
@@ -64,17 +69,68 @@ How do we want the audience's behavior change as a result of this presentation?
         - Input: X variables, coefficients.
       - Output: Simulated variables
    2. Deconfounder demonstration with data from Brathwaite and Walker's asymmetric models paper.
-   3. Deconfounder investigation / simulations
-      - Function for fitting factor model
-          - A class with a few of factor model methods: Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
-             1. Input: Vector of covariates, dimensionality of latent variable space
-             2. Output: A fitted factor model
-          - Function for posterior predictive checks for the factor models.  
-             1. Input: Factor model, test data
-             2. Output: P-values for predictive checks
-   4. Demonstration of falsification techniques
+      - Does the deconfounder approach substantially change the estimated causal effects and inferred sensititivities?
+   3. Deconfounder investigation based on simplified simulations
+      - Simplified simulations to illutrate potential pitfalls of the deconfounder approach.
+   4. Deconfounder demonstration using realistically simulated data based on data in Brathwaite and Walkders asymmetric models paper.
+      - Realistic simulation to confirm whether the results obtained with the real data are qualitatively consistent with results obtained on data that we know satisfy the deconfounders assumptions.
+   4. Demonstration of falsification techniques.
 2. Resulting plots / tables
-3. Tests for all source code and notebooks.
+   - Selection-on-observables simulation
+      - Correctly estimated vs True causal effect of travel distance reduction on automobile mode shares (drive alone + shared_ride_2 + shared_ride_3+).
+      - Naively estimated vs True causal effect of travel distance reduction on automobile mode shares (drive alone + shared_ride_2 + shared_ride_3+).
+   - Simplified / Illustrative Deconfounder simulations
+   - Deconfounder demonstration with real data
+      - Plots of asymptotic distributions of model coefficients with and without the inferred deconfounders.
+      - Plots of predicted distributions (based on the asymptotic distribution of model coefficients) of causal effects with and without the inferred deconfounders.
+   - Deconfounder demonstration with realistically simulated data.
+      - Plots of asymptotic distributions of model coefficients with and without the inferred deconfounders.
+      - Plots of predicted distributions (based on the asymptotic distribution of model coefficients) of causal effects with and without the inferred deconfounders.
+      - Comparison of the two plots above next to those same plots based on the real data.  
+      We want to know if the results observed using the real data are qualitatively consistent with the results obtained using data that we know satisfies the deconfounder assumptions.
+   - Falsification tests
+      - Causal graph for Utility Drive Alone.
+      - Marginal independence test statistic distribution vs observed value, for causal graph of Utility Drive Alone graph.
+      - Conditional independence test statistic distribution vs observed value, for causal graph of Utility Drive Alone graph.
+      - Deconfounder causal graph for Utility Drive Alone
+      - Prior and posterior predictive test statistic distribution for conditional independence test statistics vs observed test statistic value.
+3. Supporting source code.
+   - Selection-on-observables
+      - Function(s) for estimating some statistical model for each treatment node given its parents.
+      - Function for simulating data from a specified causal graph, the estimated statistical models of each treatment node given its parents, and a given outcome model given the treatment nodes.
+      - Function for re-estimating a given outcome model, conditional on a set of simulated data for the parents of the outcome nodes.
+      - Function for estimating causal effects given a specified causal graph and relationships between  nodes and their parents.
+      - Function for plotting the distributions of estimated causal effects under various causal graphs and relationships between nodes and their parents.
+
+   - Deconfounder
+      - Function for fitting factor model  
+        A class with a few of factor model methods:  
+        Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
+          1. Inputs:
+             - Matrix of covariates
+             - Dimensionality of latent variable space
+             - Type of factor model to be estimated
+          2. Output: A fitted factor model
+      - Function for prior predictive checks of the factor models.
+         1. Inputs:
+            - Factor model
+            - Training data
+            - Prior distributions of factor model parameters
+         2. Outputs: P-values and plots for predictive checks
+      - Function for posterior predictive checks for the factor models.  
+         1. Inputs:
+            - Factor model
+            - Training and/or testing data
+            - Posterior distributions of factor model parameters
+          2. Output: P-values and plots for predictive checks
+   - Falsification of causal graphs
+      - Function for marginal independence tests
+      - Function for conditional independence tests
+      - Function for prior/posterior predictive conditional independence tests
+4. Tests for all source code and notebooks.
+   1. [At Minimum] Integration tests of public notebooks.
+   2. [At Minimum] Unit tests of all critical / top-level / non-trivial / non-standard functions.
+   3. [Ideally] Unit tests of all source code.
 
 ## Do the end user’s / stakeholders have firm time deadlines for the project? If so, note when the project must be delivered by.
 
