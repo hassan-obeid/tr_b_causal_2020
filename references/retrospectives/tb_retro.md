@@ -52,3 +52,11 @@ This document should store one's weekly reflections on the project. In particula
    2. Selection-on-observables simulation is prototype complete and so are the basic demonstrations of falsification checks for one's causal graph. Deconfounder investigation is almost complete as well. All in all, we appear on track for a June 1st completion of the presentation and planned work!
    3. The daily check-in's did not work. Four out of the 7 days since our last meeting, I was the only update on the issue.
    4. We should complete and revise/update the project planning documents (vision, requirements, architecture, project plan).
+
+9. Week of April 12th, 2020
+   1. I learned / realized that I have very little understanding of our presentation audience. I have not read or cannot easily summarize the causal inference related papers or thoughts of most conference attendees.
+   2. Revising the vision and requirements doc was very useful for me to firmly center the big picture of the project in my mind and remind me that we've completed most of the essential / minimally-viable work.
+   3. I failed to complete my assigned refactoring and review tasks for the week. This revealed that I made my plans without adequate respect/consideration for the additional activities that were bound to happen this week (prepping for the lecture in CE264). Moreover, I planned without any slack in the schedule so I also could not respond to the unexpected life-related tasks (taxes, coronavirus news and communication with loved-ones, miscellaneous necessary duties) that popped up and took much of my time.
+   4. We should probably complete one / two last piece of work for the project so travel demand modelers find it practically relevant.
+      - We should explicitly show the change in outcome model parameters and causal effects with our real dataset from using the deconfounder vs not. This will show whether the techniques are practically relevant.
+      - We should show whether our deconfounder results with real data vis-a-vis non-deconfounder results with real data are qualitatively consistent with our deconfounder results with realistically simulated data vis-avis non-deconfounder results with realistically simulated data. This will give us evidence about the trustworthiness of the qualitative conclusions of our results.
