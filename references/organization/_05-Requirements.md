@@ -79,6 +79,9 @@ How do we want the audience's behavior change as a result of this presentation?
       - Correctly estimated vs True causal effect of travel distance reduction on automobile mode shares (drive alone + shared_ride_2 + shared_ride_3+).
       - Naively estimated vs True causal effect of travel distance reduction on automobile mode shares (drive alone + shared_ride_2 + shared_ride_3+).
    - Simplified / Illustrative Deconfounder simulations
+      - Plots of misleading p-value conclusions when using posterior predictive checks.
+      - Plots of alternative posterior predictive checks of the factor model for one's deconfounder.
+      - Plots of the relationship between confounder inference error and outcome model parameter bias.
    - Deconfounder demonstration with real data
       - Plots of asymptotic distributions of model coefficients with and without the inferred deconfounders.
       - Plots of predicted distributions (based on the asymptotic distribution of model coefficients) of causal effects with and without the inferred deconfounders.
