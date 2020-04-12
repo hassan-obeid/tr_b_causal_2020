@@ -81,6 +81,18 @@ How do we want the audience's behavior change as a result of this presentation?
 The original deadline for submitting the presentation materials for the conference was June 1st, 2020.  
 The presentation and supporting code should be complete by then.
 
-## What are the non-goals for the project? What should we explicitly aim to not do?
+## What are non-goals for the project? What should we explicitly avoid?
 1. Causal discovery.  
 It is of the foremost importance to create a causal graph that describes the causal system, i.e. the treatment assignment process + outcome process that one is working with. However, we do not have time to do this well before June. Consequently, we will focus on simulations where we know the true causal graph, and we will provide a description and demonstration of the tools needed to carry out a complete causal discovery process. This will be done under point 3 of the presentation about falsifying one's causal graph.
+
+2. Estimating functional relationships between EACH treatment variable and its parents.  
+Corectly specifying the qualitative dependence relationships between each of the variables in one's system (i.e. drawing the correct causal graph) is only the beginning of the work needed to estimate one's desired causal effects. Next, one needs to estimate statistical models to describe the relationship between each treatment node and its parents and between the outcome nodes and their parents. As the estimation of statistical models is the most familiar aspect of causal inference problems, we will not dwell on it in this presentation. Instead our simulations will use the correct relationships between each treatment node and its parents for the sake of demonstration.
+
+3. Generating causal effect estimates that we believe are correct.  
+For our real data demonstration, our analysis will feature a number of known deficiencies.
+   - We will be using a causal graph that we know is incorrect, based on various falsification tests.
+   - We will be using functional relationships for treatment nodes given their parents that we know are incorrect based on posterior predictive checks.
+   - We believe that we suffer from latent confounding in our causal system, but we do not believe that we have an adequate causal graph that represents this latent confounding, based on both prior and posterior predictive independence tests of our hypothetical causal graph.
+
+   As a result, we do not expect nor hope to be making correct causal effect inferences.  
+   We merely aim to demonstrate the process of how one would correctly estimate causal inferences in a travel demand setting.
