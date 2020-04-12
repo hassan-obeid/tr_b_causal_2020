@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.3.3
+      jupytext_version: 1.4.0
   kernelspec:
     display_name: Python 3
     language: python
@@ -25,22 +25,41 @@ jupyter:
 
 
 ### <ins>For the presentation:</ins>
-- 20 minutes so expected 20 slides, 15 -30 slides (min, max).
-- Motivation and why we need this: we will talk about the disconnect between causal inference and demand modeling and why it’s important to pay attention to it. 
-- Outline of procedure and the value it brings. (both these steps are mostly from Brathwaite et al.)
-- Demo for application on simulated dataset.
-- Outline of deconfounder approach
-- Demo of deconfounder approach using simulation
-    - Sensitivity to number of deconfounder
-    - Sensitivity to different DAG assumptions. 
-- (Potentially) Application of deconfounder approach to real dataset. 
-- Conclude
+The presentation, per specification of the conference, can only be 20 minutes long.
+So we should have an expectation of 20 slides, with 15 -30 slides (min, max).
+
+The structure of the presentation should be as follows:
+- Motivation: Why is our problem important to the listener?
+- Need: What is the need being addressed?
+   - the disconnect between causal inference and travel demand modeling
+- Our Solution:
+   - Provide a demonstration of using causal inference techniques in travel demand modeling context.
+   - In particular, we demonstrate the causal inference workflow from Bratwaite and Walker (2018), with references to similar / equivalent ideas put forth by others, and with additional details from our experiences in this project.
+- Main message of the talk:  
+Specify a causal graph, make sure the assumptions of that graph are not violated by one's data, and build one's model on the basis of the causal graph.
+- Point 1:  
+Without taking into account the treatment assignment mechanism / causal structure of one's explanatory variables, one's estimated treatment effects may be completely wrong.
+   - Amine's selection-on-observables simulation results and description.
+- Point 2:  
+When dealing with latent confounders in one' causal graph, one generically applicable technique is to model the latent confounders.
+Pitfalls abound when applying such techniques, so we demonstrate / raise awareness of / and show how to detect such problems.
+   - Hassan's deconfounder demo and simulation results.
+- Point 3:  
+In order to use any of these techniques, having a well-specified causal graph is crucial. We demonstrate methods for checking / falsifying one's causal graph in order to avoid drawing erroneous or unsupported conclusions.
+   - Conditional Independence Tests
+   - Marginal Independence Tests
+   - Prior and Posterior Predictive Conditional / Marginal Independence Tests
+- Recap
+- Conclusion:  
+What does this presentation mean for the audience?  
+What can they now do that may have been mysterious / hard before?  
+How should they change as a result of this presentation?  
 
 ### <ins>Actual work/code:<ins>
 1. For simulation:
-    - Function to simulate data from structural models (mainly linear models -- MNL and regression). 
-        - Input: X variables, coefficients. 
-    - Output: Simulated variables 
+    - Function to simulate data from structural models (mainly linear models -- MNL and regression).
+        - Input: X variables, coefficients.
+    - Output: Simulated variables
 2. For deconfounder
     - Function for fitting factor model
         - A class with a few of factor model methods: Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
