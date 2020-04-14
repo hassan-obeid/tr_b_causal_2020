@@ -52,20 +52,26 @@ For a realistic causal graph with confounding:
 
 ## 2. Description of major components of the system and their relations:
 ### 2.1 What should each component do?
-Simulation work:
-Simulation functions will generate data to be used in modeling efforts
+1. The goal of showing the need of considering treatment assignment mechanism when estimating causal effects requires show an application of the steps outlined in Brathwaite and Walker (2018a) to a simulated dataset from Brathwaite and Walker (2018b). This application will consitute of the following classes/functions:
+   - Simulation functions will generate data based on any assumed causal graph (either with independent covariates or any relation between nodes)
+   - Function to fit regression between different nodes from a specified causal graph
+   - Function (based on pylogit) to estimate choice models based on desired specifications and specific data
+   - Function to compute causal effects due to perturbation in data
 Choice model estimation will try to recover the true parameters of the specified model
+   - Function to plot the distribution of estimated choice model paramaters
+   - Function to plot the distribution of causal effects (naive, true, and estimated)
 
 ### 2.2 What is the interface between each component and each other component?
 Each component(classes) will be written to be as independent as possible from other components. Functions within classes
 will depend on each other.
 However, we will write functions that test the output of each of our functions to make sure we get the expected output.
 In general, the interface between each of the project components will be some sort of data: dictionaries storing distribution parameters,
-simulated data, estimated model parameters, causal graphs, and arrays of statistics about estimated model parameters. **this list is not
+simulated data, estimated model parameters and causal effects, causal graphs, and arrays of statistics about estimated model parameters or estimated causal effects. **this list is not
 comprehsive yet** Answer to question 7.6 provides a checklist of data characteristics that will be checked.
 
 ### 2.3 How do components use each other (if they do?), and which ones are allowed to use which other components?
 Outputs of simulation classes/functions will be used in estimation classes/functions. 
+Outputs of estimation classes/functions will be used in plotting functions.
 
 ## 3. Description of needed development / computational environment:
 ### 3.1  Where will development take place (virtual environments? One’s laptop, etc.)?
@@ -458,7 +464,7 @@ We can not prove that no alternatives exist.
 - What were our objectives in choosing the given architecture?
 - What were the motivations for all major decisions?
 
-The objective is to make the code easily reusable and extensible for any user who has a basic knowledge of Python.
+The objective is to make the code easily reusable and extensible for any user who has a basic knowledge of Python. Additionally, we want to make it provide the three deliverables needed for the project.
 
 ## 24. Description of expected debugging protocol:
 ### Should detail the expected debugging process to be used when, despite all of our planning and checking, failure is experienced while using some piece of the implemented architecture.
