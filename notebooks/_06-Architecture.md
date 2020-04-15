@@ -42,9 +42,7 @@ For a causal graph with independent covariates:
 
 
 For a realistic causal graph with confounding:
- 1. Ingest data
- 2. Manipulate data as needed, the output of this step will be a cleaned dataset
- 3. Specify a choice model based on the data at hand, the specification should follow required conventions by third party dependencies
+Results from steps 1-3 above are reused.
  4. Specify the realistic causal graph with desired confounding structures. The causal graph will be saved as a causalgraphicalmodels object and can be saved as .png file
  5. The cleaned dataset will be used in a function that estimated the distributions for variables of interest that are nodes without any parents in the causal graph, this function will produce a parameter dictionary containing the type of variables, the best fitted distribution, and that distribution parameters.
  6. The cleaned dataset from step 2 will be used to estimate relationships between nodes in the specified causal graph from step 4.
