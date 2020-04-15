@@ -63,7 +63,7 @@ For a realistic causal graph with confounding:
 
 ## 2. Description of major components of the system and their relations:
 ### 2.1 What should each component do?
-1. The goal of showing the need of considering treatment assignment mechanism when estimating causal effects requires show an application of the steps outlined in Brathwaite and Walker (2018a) to a simulated dataset from Brathwaite and Walker (2018b). This application will consitute of the following classes/functions:
+1. Show the need for considering the treatment assignment mechanism when estimating causal effects. This requires an application of the steps outlined in Brathwaite and Walker (2018a) to a simulated dataset from Brathwaite and Walker (2018b). This application will contain the following classes/functions:
    - Simulation functions will generate data based on any assumed causal graph (either with independent covariates or any relation between nodes)
    - Function to fit regression between different nodes from a specified causal graph
    - Function (based on pylogit) to estimate choice models based on desired specifications and specific data
