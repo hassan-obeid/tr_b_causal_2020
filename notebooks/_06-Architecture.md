@@ -21,33 +21,44 @@ jupyter:
 - **List needed intermediate products (e.g. pseudo-code, unit tests, etc.)**
 - **Try to be concise but comprehensive?**
 
-The project is split into two tasks:
+The project is split into three main tasks:
 
-The first task will be based on simulation work and will go as follows:
+1. The first task is focused on a selection-on-observables problem:
 
-For a causal graph where all Xs are independent:
- - Ingest data
- - Manipulate data as needed, the output of this step will be a cleaned dataset
- - Specify a choice model based on the data at hand, the specification should follow required conventions by third party dependencies
- - The cleaned dataset will be used in a function that simulates choice data based on the specified model, resulting in a dataset with simulated choices
- - The dataset will be used to estimate a choice model and recover the necessary parameters. These parameters can be stored in a dictionary.
- - The previous two steps will be repeated for N times (say 100) and the parameters from each iteration will be stored in a dictionary entry.
- - A function that takes in the parameters of the estimated model and results in the percentage of time that the true parameter is recovered.
- - We will report parameter recovery percentages separately for each parameter, then build on that with aggregate percentaged for a subset of parameters 
-   then for all parameters.
+For a causal graph with independent covariates:
+ 1. Ingest data
+ 2. Manipulate data as needed, the output of this step will be a cleaned dataset
+ 3. Specify a choice model based on the data at hand, the specification should follow required conventions by third party dependencies
+ 4. The cleaned dataset will be used in a function that estimated the distributions for variables of interest, this function will produce a parameter dictionary containing the type of variables, the best fitted distribution, and that distribution parameters.
+ 5. The resulting parameter dictionary from the previous step will be used to simulate needed data
+ 6. Based on observed availability of allternatives, a function will use the cleaned dataset to simulate an availability matrix for alternatives for the simulated dataset
+ 7. The specified model from step 3 will be used to simulate choices for the simulated dataset.
+ 8. The dataset will be used to estimate a choice model and recover the necessary parameters. These parameters can be stored in a dictionary.
+ 9. Steps 5-8 will be repeated for N times (say 100) and the parameters from each iteration will be stored in a dictionary entry.
+ 10. These paramaters will be stored in a dictionary that will be used in a function to plot the original parameters used to simulate the choices (from step 3) along with any recovered parameters from step 9.
+ 11. One variable will be perturbed to simulate a potential external intervention. In this scenario, no other variables will be changes since all covariates are independent.
+ 12. Causal effects will be estimated using the models estimated in step 3 and 9.
+ 13. Plots will be produced to show the distribution of "naive" and "true" causal effects
 
 
 For a realistic causal graph with confounding:
- - Ingest data
- - Manipulate data as needed, the output of this step will be a cleaned dataset
- - Specify a choice model based on the data at hand, the specification should follow required conventions by third party dependencies
- - Specify the realistic causal graph with desired confounding structures. The causal graph will be saved as a causalgraphicalmodels object and can be saved as .png file
- - The cleaned dataset will be used in a function that simulates choice data based on the specified model, resulting in a dataset with simulated choices
- - The dataset will be used to estimate a choice model and recover the necessary parameters. These parameters can be stored in a dictionary.
- - The previous two steps will be repeated for N times (say 100) and the parameters from each iteration will be stored in a dictionary entry.
- - A function that takes in the parameters of the estimated model and results in the percentage of time that the true parameter is recovered.
- - We will report parameter recovery percentages separately for each parameter, then build on that with aggregate percentaged for a subset of parameters 
-   then for all parameters.
+ 1. Ingest data
+ 2. Manipulate data as needed, the output of this step will be a cleaned dataset
+ 3. Specify a choice model based on the data at hand, the specification should follow required conventions by third party dependencies
+ 4. Specify the realistic causal graph with desired confounding structures. The causal graph will be saved as a causalgraphicalmodels object and can be saved as .png file
+ 5. The cleaned dataset will be used in a function that estimated the distributions for variables of interest that are nodes without any parents in the causal graph, this function will produce a parameter dictionary containing the type of variables, the best fitted distribution, and that distribution parameters.
+ 6. The cleaned dataset from step 2 will be used to estimate relationships between nodes in the specified causal graph from step 4.
+ 7. The obtained distributions from step 5 will be used to simulate data for nodes without parents in the specified causal graph.
+ 8. Data from step 7, alongside with estimated relationships from step 6 will be used to estimate data for the remaining nodes in the causal graph (with the exception of the utility node)
+ 9. Based on observed availability of allternatives, a function will use the cleaned dataset to simulate an availability matrix for alternatives for the simulated dataset
+ 10. The specified model from step 3 will be used to simulate choices for the simulated dataset.
+ 11. The dataset will be used to estimate a choice model and recover the necessary parameters. These parameters can be stored in a dictionary.
+ 12. Steps 7-11 will be repeated for N times (say 100) and the parameters from each iteration will be stored in a dictionary entry.
+ 13. These paramaters will be stored in a dictionary that will be used in a function to plot the original parameters used to simulate the choices (from step 3) along with any recovered parameters from step 9.
+ 14. One variable will be perturbed to simulate a potential external intervention. In this scenario, descendant children nodes of the perturbed node will also be perturbed following the estimated relationships from step 8.
+ 15. Causal effects will be estimated using the models estimated in step 3 and 121.
+ 16. Plots will be produced to show the distribution of "estimated" and "true" causal effects
+
 
 
 ## 2. Description of major components of the system and their relations:
@@ -66,7 +77,7 @@ Each component(classes) will be written to be as independent as possible from ot
 will depend on each other.
 However, we will write functions that test the output of each of our functions to make sure we get the expected output.
 In general, the interface between each of the project components will be some sort of data: dictionaries storing distribution parameters,
-simulated data, estimated model parameters and causal effects, causal graphs, and arrays of statistics about estimated model parameters or estimated causal effects. **this list is not
+simulated data, estimated model parameters and causal effects, causal graphs, arrays of statistics about estimated model parameters or estimated causal effects, distribution statistics. **this list is not
 comprehsive yet** Answer to question 7.6 provides a checklist of data characteristics that will be checked.
 
 ### 2.3 How do components use each other (if they do?), and which ones are allowed to use which other components?
@@ -106,12 +117,12 @@ The classes are to be used in the simulation work are as follows:
  -  Class that contains functions to simulate data based on assumed causal graph
  -  Class to estimate the choice model based on specified utility equations and retrieve model statistics
 
+
 ## 5. Description of the minimally viable product (if any):
 - **Note the portions of the architecture responsible for producing the minimally viable product.**
 
- - A minimally viable product is a notebook that takes data from outside sources and imports scripts including classes
- from question 4, calls on the functions in each of the classes to simulate data, estimate models, and provide
- parameters and statistics relevant to the problem at hand.
+ - For objective 1, a minimally viable product is a notebook that takes data from outside sources and imports scripts including classes
+ from question 4, calls on the functions in each of the classes to simulate data, estimate models, estimate causal effects due to an intervention, and plot distribution of obtained causal effects.
 
 ## 6. Description of algorithms:
 ### 6.1  What, if any, computational algorithms are being implemented as part of this project instead of relying upon external implementations?
@@ -154,7 +165,7 @@ Causal graphs will be output to .png files and pushed to the repo
 
 Summaries of model estimate will be saved as markdown tables
 
-Plots of results will be saved as .png files and pushed to the repo
+Plots of results will be saved as .png files and pushed to the repo and included in the final presentation
 
 Previously estimated models will be stored in a dictionary that can be pickled and loaded later.
 ### 7.6 How will created data be validated?
@@ -187,6 +198,7 @@ We can launch the experiment from a jupyter notebook, and **hopefully** from the
 Simulated data, as well as any experiment output will be store either in csv/json/pickle file
 based on the nature of the object (dataset, model, etc..) and will be loaded into a notebook.
 A third party library called `sacred` can be used https://sacred.readthedocs.io/en/stable/
+Setting seed parameters in our functions will also be helpful in reproducing the results of our experiments.
 
 ### 8.3 How will experiment meta-data (e.g. launch configurations) be stored?
 The meta-data for the experiment could be stored in a requirements.txt, the source code,
@@ -217,7 +229,7 @@ will help in storing experiment paramters.
 
 ### 9.2 How will ease of changes be ensured (e.g. changing a given hyperparameter value in the source code of a model)?
 Each hyperparameter that needs to be tuned will be included in the parameter definition of a function. Users will be
-able to change these parameters directly from the notebook running the functions of interest.
+able to change these parameters directly from the notebook running the functions of interest. These parameters will be set as initial global notebook variables than can be easily changed by the users.
 
 ### 9.3 Is the user-interface self-contained so that other parts of the system are insulated from changes in the user-interface?
 Yes. Users will not be able to make any changes to the source code by interacting with the notebook.
@@ -231,9 +243,10 @@ The system will not have to deal with large amounts of data that personal laptop
 - **Model training**
 Any personal laptop should be able to execute the system. We don't envision the need for large memory requirements.
 It is unknown exactly how long it will take the system to run, but the objective is to have each sub-system take as little time as possible.
+As of now, the notebook representing the deliverable for objective 1 of the project runs in 20 minutes for 400 simulations. This time can be further reduced by refactoring the current functions responsible for achieving the objective of the notebook.
 
 ### 10.3 How will the system interact with the external world to acquire resources? (e.g. get data or spawn virtual machines
-We can access data directly from a specified weblink or path for the dataset within the established repo.
+We can access data directly from a specified weblink or path for the dataset within the established repo. relative paths using APIs if necessary can be set in the notebooks to make this happen.
 
 #### 10.3.1 How does the system decide how much of an external resource is needed? (e.g. how many virtual CPUs are required during training?) 
 N/A
@@ -260,8 +273,7 @@ N/A
 ## 13. Description of how errors will be handled:
 ### 13.1 What are common expected errors from users and how can we guard against them?
 Having a wrong specification for a desired model, pylogit has built-in mechanisms to guard against it
-Having a wrong specification for a causal graph, we can guard fro
-
+Having the wrong parameters or wrong parameter format in each of the functions/classes used in the project. Detailed docstrings will be used to help users figure out the needed parameters in each function along with their format. The initial parameter initialization will also help users see example use cases of the functions.
 ### 13.2 Will we try to fix errors or merely notify users of the error’s presence?
 We will only notify users of the error's presence.
 
@@ -269,6 +281,7 @@ We will only notify users of the error's presence.
 Quit immediately in the case of all errors.
 
 ### 13.4 What are the conventions for error messages that the system reports?
+No specific convention is set.
 <!-- #endregion -->
 
 ### 13.5 Where are errors processed? At the point of detection, by a central error handling class, by functions above in the call stack, etc.
@@ -289,10 +302,9 @@ Docstrings will suggest to the users what each of the function takes in as types
  - **minimizing reliance / use of stochasticity**
  - **fast to evaluate**
 
-This will be filled in as we learn more about tests. The first thing that comes to mind is running the same tests
+The first thing that comes to mind is running the same tests (probably using `hypothesis`?)
 many times and then verify that the output statistics match one's expectations. In order for tests to be fast, each
-test will need to focus on one functionality. We would need to use descriptive names to understand what the tests are
-doing. Each test should also be independent from other tests.
+test will need to focus on one functionality. We can have docstrings/clear names explaining what each test function is doing (the naming convention in pytest makes this easy). Each test should also be independent from other tests.
 
 ### 14.2 What are the various types of tests that are needed?
 Unit tests/Feature tests, integration tests.
@@ -306,7 +318,7 @@ in testing any of the parts of the architecture.
 The guide provided by Timothy on how to debug code will be followed to move from finding the bug to testing it.
 
 ### 14.5 How will the software be reviewed in general (beyond automated tests) to reduce the probability of programming bugs into the code / increase the chance of producing correctly functioning software?
-Cross-review between team members will help in detecting any bugs.
+Cross-review between team members will help in detecting any bugs or any testing gaps.
 
 ## 15. Description of project-sharing procedures:
 ### 15.1 Is there a plan in place for producing documentation for the software?
@@ -335,27 +347,87 @@ The only "website" for the project will be its github repository.
 - **Graphs, diagrams, images from the project, e.g.:**
  - **Plots of system performance**
  - **Model checking plots**
+ 
+**This was directly taken from the requirements document**
 
-* All the plots will be generated using functions from the source code. Additional plots as needed will be generated
-using matplotlib/seaborn. 
-    - The plots generated will show the distribution of the recovered parameters and where the true parameters fall within that distribution.
-    - Plots will show the proportion of estimates where the true parameters fall within some percentile confidence interval (e.g. 95th percentile) around the estimate.
-* Tables will be generated as markdown tables, html tables, or any other way if found easier
-    - The tables will show the different statistics about each of the recovered parameters. These tables will relate to the produced diagrams.
-* The diagrams that will be shown are causal diagrams showing the data generating process.
-* Final presentation could be developed either on powerpoint or as a set of slides using jupyter
+1. Public notebooks
+   1. Selection-on-observables simulation:
+      - How are our causal effect estimates impacted by using an incorrect causal graph, in the simplest and most ideal setting?
+   2. Deconfounder demonstration with data from Brathwaite and Walker's asymmetric models paper.
+      - Does the deconfounder approach substantially change the estimated causal effects and inferred sensititivities?
+   3. Deconfounder investigation based on simplified simulations
+      - What are the potential pitfalls of the deconfounder approach? How can we look out for them?
+   4. Deconfounder demonstration using realistically simulated data based on data in Brathwaite and Walkders asymmetric models paper.
+      - Are our results obtained with the real data qualitatively consistent with results obtained on realistically simulated data that we know satisfy the deconfounders assumptions?
+   5. Demonstration of falsification techniques.
+      - How can we test the assumptions underlying our proposed / hypothesized causal graphs?
+2. Resulting plots / tables
+   - Selection-on-observables simulation
+      - Correctly estimated vs True causal effect of travel distance reduction on automobile mode shares (drive alone + shared_ride_2 + shared_ride_3+).
+      - Naively estimated vs True causal effect of travel distance reduction on automobile mode shares (drive alone + shared_ride_2 + shared_ride_3+).
+   - Simplified / Illustrative Deconfounder simulations
+      - Plots of misleading p-value conclusions when using posterior predictive checks.
+      - Plots of alternative posterior predictive checks of the factor model for one's deconfounder.
+      - Plots of the relationship between confounder inference error and outcome model parameter bias.
+   - Deconfounder demonstration with real data
+      - Plots of asymptotic distributions of model coefficients with and without the inferred deconfounders.
+      - Plots of predicted distributions (based on the asymptotic distribution of model coefficients) of causal effects with and without the inferred deconfounders.
+   - Deconfounder demonstration with realistically simulated data.
+      - Plots of asymptotic distributions of model coefficients with and without the inferred deconfounders.
+      - Plots of predicted distributions (based on the asymptotic distribution of model coefficients) of causal effects with and without the inferred deconfounders.
+      - Comparison of the two plots above next to those same plots based on the real data.  
+      We want to know if the results observed using the real data are qualitatively consistent with the results obtained using data that we know satisfies the deconfounder assumptions.
+   - Falsification tests
+      - Causal graph for Utility Drive Alone.
+      - Marginal independence test statistic distribution vs observed value, for causal graph of Utility Drive Alone graph.
+      - Conditional independence test statistic distribution vs observed value, for causal graph of Utility Drive Alone graph.
+      - Deconfounder causal graph for Utility Drive Alone
+      - Prior and posterior predictive test statistic distribution for conditional independence test statistics vs observed test statistic value.
+3. Supporting source code.
+   - Selection-on-observables
+      - Function(s) for estimating some statistical model for each treatment node given its parents.
+      - Function for simulating data from a specified causal graph, the estimated statistical models of each treatment node given its parents, and a given outcome model given the treatment nodes.
+      - Function for re-estimating a given outcome model, conditional on a set of simulated data for the parents of the outcome nodes.
+      - Function for estimating causal effects given a specified causal graph and relationships between  nodes and their parents.
+      - Function for plotting the distributions of estimated causal effects under various causal graphs and relationships between nodes and their parents.
 
-* We will write functions that take outputs of the simulated models to produce graphs and tables. The `causalgraphicalmodels` library has an internal `draw`
-method that produces the needed causal graphs. We can write a function to save the output of this method as a .png file.
+   - Deconfounder
+      - Function for fitting factor model  
+        A class with a few of factor model methods:  
+        Probabilistic PCA, Deep exponential family, Poisson Matrix Factorization?
+          1. Inputs:
+             - Matrix of covariates
+             - Dimensionality of latent variable space
+             - Type of factor model to be estimated
+          2. Output: A fitted factor model
+      - Function for prior predictive checks of the factor models.
+         1. Inputs:
+            - Factor model
+            - Training data
+            - Prior distributions of factor model parameters
+         2. Outputs: P-values and plots for predictive checks
+      - Function for posterior predictive checks for the factor models.  
+         1. Inputs:
+            - Factor model
+            - Training and/or testing data
+            - Posterior distributions of factor model parameters
+          2. Output: P-values and plots for predictive checks
+   - Falsification of causal graphs
+      - Function for marginal independence tests
+      - Function for conditional independence tests
+      - Function for prior/posterior predictive conditional independence tests
+4. Tests for all source code and notebooks.
+   1. [At Minimum] Integration tests of public notebooks.
+   2. [At Minimum] Unit tests of all critical / top-level / non-trivial / non-standard functions.
+   3. [Ideally] Unit tests of all source code.
 
 ## 16 Description of maintenance plan:
 ### 16.1 How will the system / software be maintained after initial creation?
 
-The source code of the project will be improved/expanded by adding more capabilities as deemed needed during grad
-school
+The source code of the project will be improved/expanded by adding more capabilities as needed.
 
 ### 16.2 What needs to be done for maintenance?
-The source code will be modified following the github workflow.
+The source code for any functions/classes will be modified following the github workflow. One will submit an issue showing the bug/need for extension with a minimal working example or desired output, followed by a pull request with fixed code or added features. The pull request will be merged once code is reviewed by team. Refactoring will make this process easier as it will be smoother to isolate the issue and make any needed extensions of functionality. 
 
 ### 16.3 Who will perform needed maintenance activities?
 Hassan/Amine, and other interested students in Joan's group.
@@ -379,19 +451,19 @@ needed to work with them, the team will make sure to read any available document
 - **Based on the architecture, what are all needed resources?**
 
 The architecture is mainly based on third party dependencies that have proven to work. The needed resources will be
-one's laptop with an installed environments/requirements and compatible python version.
+one's laptop with an installed environments/requirements and compatible python version. For any functions/classes developed as part of this project, we will write tests that will ensure that we get the expected outputs.
 
 ### 18.2 What could render the project infeasible?
 - **Is there adequate resourcing?**
 
-We do not envision inadequare resourcing problems to occur.
+We do not envision inadequate resourcing problems to occur.
 
 ### 18.3 Are there known sources of difficulty based on the planned tasks?
 The sources of difficulty are related to learning proper software engineering practices and learning about new
-third party dependencies.
+third party dependencies. Additionally, getting comfortable with some of the methods used in the project has proven to be a roadblock at times.
 
 ### 18.4 Are there mismatches between prior knowledge and required tasks?
-Yes, this is mitigated by reading literature on needed methodology or documentation of any third party dependencies.
+Yes, this is mitigated by reading literature on methods to be used, or documentation of python or any third party dependencies used in the project.
 
 ### 18.5 What are the weakest areas of the architecture?
 - **Where is the project most vulnerable to failure?**
@@ -408,7 +480,7 @@ At this moment, the weakest areas of the architecture are as follows:
 ## 19. Description of the approach to over-engineering:
 ### To what extent should planning be done to prevent all errors versus to produce the simplest system necessitated by the requirements?
 Planning should be done at incremental levels to avoid missing any potential error when planning for a large system.
-Planning could be done at the function level for example.
+Planning could be done at the function/small task level for example.
 
 ## 20.  Description of change strategy:
 ### 20.1 What steps are being taken to ensure that the architecture is able to handle changes with maximal ease / flexibility? e.g.:
@@ -434,12 +506,12 @@ change and new feature can be merged to the master branch.
 
 ### 20.3 How will bug-fixes be handled? By whom?
 Bug fixes will be prioritized based on importance and urgency. Each bug fix will be handled by a team member most
-comfortable with the source code for the sake of efficiency.
+comfortable with the source code for the sake of efficiency. The debugging code shared by Timothy will be key in fixing any bugs in the code. Fixing bugs will also follow the github workflow starting with submitting an issue and creating a branch for fixing the bug, all the way until merging the branch to `master`.
 
 ## 21.  Description of reuse strategy:
 ### How is the architecture maximally leveraging previously completed work?
 The architecture makes uses of many third party dependencies for data ingestion, data processing, analysis, and 
-producing output. The team members are trying to write as little new code that replicates existing functions 
+producing output. The team members are trying to write as little new code that replicates existing functionality 
 as possible.
 
 ## 22. Description of architectural alternatives (i.e. alternatives to how to carry out the project):
@@ -464,7 +536,7 @@ We can not prove that no alternatives exist.
 - What were our objectives in choosing the given architecture?
 - What were the motivations for all major decisions?
 
-The objective is to make the code easily reusable and extensible for any user who has a basic knowledge of Python. Additionally, we want to make it provide the three deliverables needed for the project.
+The architecture was incrementally designed to respond to evolving project objectives. The main objective is to design the architecture in a way that satisfied the project objectives and makes the code easily reusable and extensible for any user who has a basic knowledge of Python. Additionally, we want to make it provide the three deliverables needed for the project.
 
 ## 24. Description of expected debugging protocol:
 ### Should detail the expected debugging process to be used when, despite all of our planning and checking, failure is experienced while using some piece of the implemented architecture.
