@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.3.4
+#       jupytext_version: 1.4.0
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -221,6 +221,8 @@ visual_permutation_test(df, new_x1_col, new_x2_col, z_col, mode_id_col)
 # -
 
 # ## Test `visual_permutation_test`
+#
+# The test below tries to check that the p-values derived from `visual_permutation_test` fit the criteria of a classical (i.e. frequentist) test statistic. In other words, the test below checks to see whether the p-values derived from `visual_permutation_test` are approximately uniformly distributed under the null-hypothesis. See https://jrnold.github.io/bayesian_notes/model-checking.html#posterior-predictive-checks (Section 9.2.3) for more information.
 
 # +
 # Figure out how many observations to simulate, based on real data
@@ -268,6 +270,9 @@ for i in tqdm(range(NUM_TEST_SIM)):
                                 close=current_close)
     # Store the resulting p-values
     test_p_vals[i] = current_p
+# -
+
+# ### Perform a visual test of `visual_permutation_test`
 
 # +
 # Create a distribution of p-values that is for sure are uniformly distributed
@@ -319,7 +324,29 @@ sbn.despine()
 fig.show()
 # -
 
+# Look at another representation, a KDE, of the p-values under the null hypothesis.
 pd.Series(test_p_vals).plot(kind='kde')
+
+# ### Perform a computational / programmatic test of `visual_permutation_test`
+
+# +
+# Figure out the number of p-values per bin
+bin_edges = [0.1 * x for x in range(11)]
+test_p_values_per_bin =\
+    np.histogram(test_p_vals, bins=bin_edges)[0]
+
+num_p_vals_outside_expectation =\
+    ((test_p_values_per_bin > null_hist_upper_bound) +
+     (test_p_values_per_bin < null_hist_lower_bound)).sum()
+
+# Given 10 bins, each representing a 95% chance of containing the
+# observed number of test_p_vals under the null distribution,
+# we would not really expect more than 2 bins to be outside the
+# range given by the uniform distribution.
+# The probability of 3 bins being outside the range is very low
+# scipy.stats.binom(n=10, p=0.05).pmf(3) = 0.0104
+assert num_p_vals_outside_expectation <= 2
+# -
 
 # ## Conclusions
 # - From the last two plots, we can see that under the null hypothesis of $X_1$ independent of $X_2$ given $Z$, we get p-values that close to uniformly distributed.<br>
