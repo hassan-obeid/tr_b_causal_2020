@@ -28,7 +28,7 @@ The project is split into three main tasks:
 For a causal graph with independent covariates:
  1. Ingest data
  2. Manipulate data as needed, the output of this step will be a cleaned dataset
- 3. Specify a choice model based on the data at hand, the specification should follow required conventions by third party dependencies
+ 3. Specify and estimate a choice model based on the data at hand, the specification should follow required conventions by third party dependencies
  4. The cleaned dataset will be used in a function that estimated the distributions for variables of interest, this function will produce a parameter dictionary containing the type of variables, the best fitted distribution, and that distribution parameters.
  5. The resulting parameter dictionary from the previous step will be used to simulate needed data
  6. Based on observed availability of allternatives, a function will use the cleaned dataset to simulate an availability matrix for alternatives for the simulated dataset
