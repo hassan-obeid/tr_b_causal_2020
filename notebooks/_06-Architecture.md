@@ -56,7 +56,7 @@ For a realistic causal graph with confounding:
  12. Steps 7-11 will be repeated for N times (say 100) and the parameters from each iteration will be stored in a dictionary entry.
  13. These paramaters will be stored in a dictionary that will be used in a function to plot the original parameters used to simulate the choices (from step 3) along with any recovered parameters from step 9.
  14. One variable will be perturbed to simulate a potential external intervention. In this scenario, descendant children nodes of the perturbed node will also be perturbed following the estimated relationships from step 8.
- 15. Causal effects will be estimated using the models estimated in step 3 and 121.
+ 15. Causal effects will be estimated using the models estimated in step 3 and 12.
  16. Plots will be produced to show the distribution of "estimated" and "true" causal effects
 
 
