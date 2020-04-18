@@ -171,8 +171,8 @@ model_full = smf.ols("y ~ a+b+c+d+e+f + confounder", data=df)
 results_full = model_full.fit()
 results_df_full = pd.DataFrame(results_full.params, columns = ['estimated_params'])
 results_df_full['std_errors'] = results_full.bse
-results_df_full['true_params'] = coeffs_true
-results_df_full
+results_df_full['True Coefficient'] = coeffs_true
+results_df_full[['True Coefficient']]
 
 model_partial = smf.ols("y ~ a+b+c+d+e+f ", data=df) ## Ommit the confounder from OLS
 results_partial = model_partial.fit()
@@ -349,12 +349,14 @@ results_df_deconf['std_errors'] = results_deconf.bse
 results_df_deconf['true_params'] = coeffs_true[:-1]
 results_df_deconf
 
-model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_PCA_CV ", data=df)
-results_deconf = model_deconf.fit()
-results_df_deconf = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
-results_df_deconf['std_errors'] = results_deconf.bse
-results_df_deconf['true_params'] = coeffs_true
-results_df_deconf
+# +
+# model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_PCA_CV ", data=df)
+# results_deconf = model_deconf.fit()
+# results_df_deconf = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
+# results_df_deconf['std_errors'] = results_deconf.bse
+# results_df_deconf['true_params'] = coeffs_true
+# results_df_deconf
+# -
 
 model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_PCA_SKLEARN ", data=df)
 results_deconf = model_deconf.fit()
@@ -398,6 +400,35 @@ results_df_deconf1['std_errors'] = results_deconf.bse
 results_df_deconf1['true_params'] = coeffs_true
 results_df_deconf1
 
+results_df_deconf1.loc['b']
+
+# +
+b_est = []
+b_std = []
+
+coef=np.arange(0,1,.05)
+for i in coef:
+    df['confounder_i'] = df['confounder'] + i*np.random.normal(loc=0,scale = 1, size = len(df))
+    model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_i", data=df)
+    results_deconf = model_deconf.fit()
+    results_df_deconf1 = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
+    results_df_deconf1['std_errors'] = results_deconf.bse
+    b_est.append(results_df_deconf1.loc['b'].iloc[0])
+    b_std.append(results_df_deconf1.loc['b'].iloc[1])
+
+
+# +
+fig, ax = plt.subplots(figsize=(16,9))
+ax.plot(coef, b_est, color = 'green', marker = 'o')
+ax.axhline(2, label = 'True Parameter', ls='--')
+
+ax.set_ylabel('Estimated Parameter', size = 18)
+ax.set_xlabel('Standard Deviation of Added Noise', size = 18)
+ax.set_title('Sensitivity of causal effect to random noise added to the confounder', size = 20)
+ax.legend()
+
+
+# -
 
 # ## Functions
 # Adapted from Blei et al and Alex Williams (http://alexhwilliams.info/itsneuronalblog/2018/02/26/censored-lstsq/)
@@ -655,24 +686,3 @@ def replace_latents(w, z):
         return rv_constructor(*rv_args, **rv_kwargs)
 
     return interceptor
-# -
-
-
-
-
-
-
-
-((npr.normal(confounder_req[mode][0], confounder_req[mode][1]))[0])
-
-confounder_req[mode][0]
-
-np.mean(stats.norm(holdoutmean_sample, \
-                            stddv_datapoints).logpdf(holdouts_req[mode]), axis=1).shape
-
-np.mean(stats.norm(holdoutmean_sample, \
-                            stddv_datapoints).logpdf(holdout_gen_util[mode]),axis=2).shape
-
-
-
-
