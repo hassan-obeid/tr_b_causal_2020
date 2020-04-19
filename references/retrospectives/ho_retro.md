@@ -57,3 +57,12 @@ This document should store one's weekly reflections on the project. In particula
     3. Didn't get to finish my task list, specifically the refactoring I was planning on doing. 
     
     4. I'll start working on putting together a presentation that follows the flow of our story. I'll be presenting this to Joan's group in two weeks. 
+    
+7. Week of April 12, 2020
+    1. Started reading about work done on the limits of the deconfounder algorithm. I have three papers to read on "the challenges of multiple causes", and will digest what applies to travel demand modeling when I read them. 
+    
+    2. Finishing up the presentation that has a clear story and key takeaways. Started working on refactoring.
+    
+    3. Nothing specific. 
+    
+    4. Will investigate setups where the deconfounder can work. It must work under some strict conditions and simulation scenarios, and I want to figure out what those are. 
