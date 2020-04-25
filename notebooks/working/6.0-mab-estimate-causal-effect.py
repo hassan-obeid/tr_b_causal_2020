@@ -1,52 +1,52 @@
----
-jupyter:
-  jupytext:
-    formats: ipynb,md,py:hydrogen
-    text_representation:
-      extension: .md
-      format_name: markdown
-      format_version: '1.2'
-      jupytext_version: 1.4.1
-  kernelspec:
-    display_name: Python 3
-    language: python
-    name: python3
----
+# ---
+# jupyter:
+#   jupytext:
+#     formats: ipynb,md,py:hydrogen
+#     text_representation:
+#       extension: .py
+#       format_name: hydrogen
+#       format_version: '1.3'
+#       jupytext_version: 1.4.1
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
+# ---
 
-# What I think needs to be refactored
+# %% [markdown]
+# # What I think needs to be refactored
 
+# %% [markdown]
+# - Each of the code under the for statements in the DistNodeNoParent can be its own function
+#   - Logic within each of the if statement could also be refactored into separate functions, for example, the logic for getting the distribution for discrete variables can be in a separate function, same for logic for getting distribution for any continuous variables.
+#   - The fitting function from fitter should be adjusted to avoid the excessive printing. Any way for using tqdm here?
+#
+# - The for loop within SimNodeNoParent should be a separate function
+#
+# - The SimulateAvailability Function should only produce an availability matrix, rather than concatenate it to the existing long format dataframe
+#
+# - Each of the if statements within FitAlternativeRegression should be it's own separate function for fitting logistic regression vs. linear...
+#
+# - We should write functions that take in a format of regression and produces the needed data. (for all regression equations)
+#
+# - The for loop that simulates data N times and estimates any models should be written as a helper function.
+#
+# - Helper function to plot the distribution of causal effects
+#
+# - Helper function to recompute the regressions after the perturbations of variables.
+#
+# - All the conditions are also to be written as separate methods.
+#
+# - We have plenty of parameters that repeat themselves in multiple methods. I think it would be beneficial to create a parameter object that would store all these parameters and allow us to call methods using only one parameter. This will be helpful (in my opinion) while experimenting with different model specifications for example; We would not have to create numerous variables each time for each of the models. Instead, we will create an object (it should be a class in my opinion) from a collection of parameters, then just insert that class in all of our methods for that specific model. The parameters will be attributes of the class.
 
-- Each of the code under the for statements in the DistNodeNoParent can be its own function
-  - Logic within each of the if statement could also be refactored into separate functions, for example, the logic for getting the distribution for discrete variables can be in a separate function, same for logic for getting distribution for any continuous variables.
-  - The fitting function from fitter should be adjusted to avoid the excessive printing. Any way for using tqdm here?
+# %% [markdown]
+# # Importing packages 
 
-- The for loop within SimNodeNoParent should be a separate function
-
-- The SimulateAvailability Function should only produce an availability matrix, rather than concatenate it to the existing long format dataframe
-
-- Each of the if statements within FitAlternativeRegression should be it's own separate function for fitting logistic regression vs. linear...
-
-- We should write functions that take in a format of regression and produces the needed data. (for all regression equations)
-
-- The for loop that simulates data N times and estimates any models should be written as a helper function.
-
-- Helper function to plot the distribution of causal effects
-
-- Helper function to recompute the regressions after the perturbations of variables.
-
-- All the conditions are also to be written as separate methods.
-
-- We have plenty of parameters that repeat themselves in multiple methods. I think it would be beneficial to create a parameter object that would store all these parameters and allow us to call methods using only one parameter. This will be helpful (in my opinion) while experimenting with different model specifications for example; We would not have to create numerous variables each time for each of the models. Instead, we will create an object (it should be a class in my opinion) from a collection of parameters, then just insert that class in all of our methods for that specific model. The parameters will be attributes of the class.
-
-
-# Importing packages 
-
-```python
+# %%
 import sys
 sys.path.append('../../src/')
-```
 
-```python
+# %%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -64,11 +64,12 @@ from collections import defaultdict, OrderedDict
 import pylogit as pl
 import viz
 from array import array
-```
 
-# 1. Define functions to be used in notebook
 
-```python
+# %% [markdown]
+# # 1. Define functions to be used in notebook
+
+# %%
 ## Functions to replace code within
 ## DistNodeNoParent
 ## Function for checking length
@@ -269,9 +270,9 @@ def tripSpecDist():
                 trip_spec_var_dic = getConstantDist(trip_var, trip_var_data, cont_dists)
         trip_spec_dict.update(trip_spec_var_dic)
     return trip_spec_dict
-```
 
-```python
+
+# %%
 ## Write functions to replace functionality
 ## in SimNodeNoParent
 
@@ -342,9 +343,9 @@ def SimNodeNoParent(params_dict, size=1000):
             else:    
                 Sim_Df[column] = SimContinuous(variable, size)
     return Sim_Df
-```
 
-```python
+
+# %%
 def FitAlternativeRegression(regressions, reg_types, data):
 
 def isLinear(variable):
@@ -390,9 +391,9 @@ def fitBinomialRegression(data[regressions[reg]]):
     #    fig = sm.graphics.plot_regress_exog(results, X[0], fig=fig)
     
     return regression_results
-```
 
-```python
+
+# %%
 ### Functions to replace within SimulateAvailability
 
 # Function to record number of available alternatives
@@ -448,9 +449,9 @@ def createFakeChoiceCol(AV_matrix):
     fake_choice = [random.choice(np.nonzero(a == 1)[0]) + 1 for a in np.array(AV_matrix)]
     fake_choice_df = pd.DataFrame(fake_choice, columns=['sim_choice'])
     return fake_choice_df
-```
 
-```python
+
+# %%
 def DistNodeNoParent(data_long,
                      alt_id_col,
                      obs_id_col,
@@ -950,20 +951,20 @@ def FindOutliers(data, threshold=3.5):
     z_score = abs_dev / data_mad
     z_score[data == m] = 0
     return z_score < threshold
-```
-
-# 2. MNL Model Estimation using Bike Data
 
 
-## 2.1. Data Ingestion and Exploration
+# %% [markdown]
+# # 2. MNL Model Estimation using Bike Data
 
-```python
+# %% [markdown]
+# ## 2.1. Data Ingestion and Exploration
+
+# %%
 # Create a variable for the path to the long format data for
 # the multinomial choice model
 PATH = '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
-```
 
-```python
+# %%
 # Reading data from the specified PATH
 bike_data_long = pd.read_csv(PATH)
 
@@ -974,9 +975,8 @@ if "Unnamed: 0" in bike_data_long.columns:
 
 print("The columns of bike_data are:")
 bike_data_long.columns
-```
 
-```python
+# %%
 # Look at the mode shares in the data set
 alt_id_to_mode_name = {1: "Drive Alone",
                        2: "Shared Ride 2",
@@ -994,11 +994,11 @@ mode_shares = mode_counts / bike_data_long.observation_id.max()
 mode_shares.index = [alt_id_to_mode_name[x] for x in mode_shares.index.values]
 mode_shares.name = "Mode Shares"
 mode_shares
-```
 
-## 2.2. MNL Model Specification 
+# %% [markdown]
+# ## 2.2. MNL Model Specification 
 
-```python
+# %%
 # Create my specification and variable names for the basic MNL model
 # NOTE: - Keys should be variables within the long format dataframe.
 #         The sole exception to this is the "intercept" key.
@@ -1049,11 +1049,11 @@ mnl_names["household_size"] = ['Household Size (Shared Ride 2 & 3+)']
 
 mnl_specification["num_kids"] = [[2, 3]]
 mnl_names["num_kids"] = ["Number of Kids in Household (Shared Ride 2 & 3+)"]
-```
 
-## 2.3. Model Estimation
+# %% [markdown]
+# ## 2.3. Model Estimation
 
-```python
+# %%
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
 mnl_model = pl.create_choice_model(data=bike_data_long,
                                    alt_id_col="mode_id",
@@ -1072,14 +1072,14 @@ mnl_model.fit_mle(np.zeros(num_vars),
 
 # Look at the estimation results
 mnl_model.get_statsmodels_summary()
-```
 
-# 3. Framework for Simulation from Causal Graph
+# %% [markdown]
+# # 3. Framework for Simulation from Causal Graph
 
+# %% [markdown]
+# ## 3.1. Causal Models for each Utility Function 
 
-## 3.1. Causal Models for each Utility Function 
-
-```python
+# %%
 # Define the causal model
 V_Drive_Alone = CausalGraphicalModel(nodes=["Total Travel Distance",
                                             "Total Travel Time",
@@ -1099,9 +1099,8 @@ V_Drive_Alone = CausalGraphicalModel(nodes=["Total Travel Distance",
 
 # draw the causal model
 V_Drive_Alone.draw()
-```
 
-```python
+# %%
 # Define the causal model
 V_Shared_2 = CausalGraphicalModel(nodes=["Total Travel Time",
                                          "Total Travel Distance",
@@ -1126,9 +1125,8 @@ V_Shared_2 = CausalGraphicalModel(nodes=["Total Travel Time",
 
 # draw the causal model
 V_Shared_2.draw()
-```
 
-```python
+# %%
 # Define the causal model
 V_Shared_3p = CausalGraphicalModel(nodes=["Total Travel Time",
                                          "Total Travel Distance",
@@ -1153,9 +1151,8 @@ V_Shared_3p = CausalGraphicalModel(nodes=["Total Travel Time",
 
 # draw the causal model
 V_Shared_3p.draw()
-```
 
-```python
+# %%
 # Define the causal model
 V_WTW = CausalGraphicalModel(nodes=["Total Travel Distance",
                                     "Total Travel Time",
@@ -1169,9 +1166,8 @@ V_WTW = CausalGraphicalModel(nodes=["Total Travel Distance",
 
 # draw the causal model
 V_WTW.draw()
-```
 
-```python
+# %%
 # Define the causal model
 V_DTW = CausalGraphicalModel(nodes=["Total Travel Time",
                                     "Total Travel Cost",
@@ -1184,9 +1180,8 @@ V_DTW = CausalGraphicalModel(nodes=["Total Travel Time",
 
 # draw the causal model
 V_DTW.draw()
-```
 
-```python
+# %%
 # Define the causal model
 V_WTD = CausalGraphicalModel(nodes=["Total Travel Time",
                                     "Total Travel Cost",
@@ -1199,9 +1194,8 @@ V_WTD = CausalGraphicalModel(nodes=["Total Travel Time",
 
 # draw the causal model
 V_WTD.draw()
-```
 
-```python
+# %%
 # Define the causal model
 V_Walk = CausalGraphicalModel(nodes=["Total Travel Distance",
                                      "Utility (Walk)"],
@@ -1211,9 +1205,8 @@ V_Walk = CausalGraphicalModel(nodes=["Total Travel Distance",
 
 # draw the causal model
 V_Walk.draw()
-```
 
-```python
+# %%
 # Define the causal model
 V_Bike = CausalGraphicalModel(nodes=["Total Travel Distance",
                                      "Utility (Bike)"],
@@ -1223,14 +1216,14 @@ V_Bike = CausalGraphicalModel(nodes=["Total Travel Distance",
 
 # draw the causal model
 V_Bike.draw()
-```
 
-## 3.2. Distribution of Nodes without parents
+# %% [markdown]
+# ## 3.2. Distribution of Nodes without parents
 
+# %% [markdown]
+# ### 3.2.1. Set up all needed variables
 
-### 3.2.1. Set up all needed variables
-
-```python
+# %%
 # Observation id column
 observation_id_col = 'observation_id'
 
@@ -1276,11 +1269,11 @@ variable_type = {'num_kids': 'categorical',
 
 # Distribution to be explored for continuous variables
 distributions = ['normal', 'alpha', 'beta', 'gamma', 'expon', 'gumbel']
-```
 
-### 3.2.2. Find Distributions of nodes without parents 
+# %% [markdown]
+# ### 3.2.2. Find Distributions of nodes without parents 
 
-```python
+# %%
 bike_data_params = DistNodeNoParent(data_long=bike_data_long,
                                     alt_id_col=alternative_id_col,
                                     obs_id_col=observation_id_col,
@@ -1290,13 +1283,11 @@ bike_data_params = DistNodeNoParent(data_long=bike_data_long,
                                     trip_spec=trip_specific_variables,
                                     var_types=variable_type,
                                     cont_dists=distributions)
-```
 
-```python
+# %%
 bike_data_params
-```
 
-```python
+# %%
 # bike_data_params = {'household_size': {'distribution': 'categorical',
 #   'parameters': [(0., 1., 2., 3., 4., 5., 6., 7., 8.),
 #    (0.        , 0.08341658, 0.2465035 , 0.20704296, 0.29220779,
@@ -1331,138 +1322,130 @@ bike_data_params
 #   'parameters': (0.3599999792235668, 5.810827941041648)},
 #  'cross_bay': {'distribution': 'categorical',
 #   'parameters': [np.array([0, 1]), np.array([0.94005994, 0.05994006])]}}
-```
 
-## 3.3. Regressions for each causal graph 
+# %% [markdown]
+# ## 3.3. Regressions for each causal graph 
 
+# %% [markdown]
+# ### 3.3.1. Drive Alone 
 
-### 3.3.1. Drive Alone 
-
-```python
+# %%
 V_Drive_Alone.draw()
-```
 
-```python
+# %%
 Drive_Alone_Df = bike_data_long[bike_data_long['mode_id']==1]
 Drive_Alone_Df.reset_index(drop=True,inplace=True)
 Drive_Alone_Reg = FitAlternativeRegression(regressions={1:('total_travel_distance','total_travel_cost'),
                                                         2:('total_travel_distance','total_travel_time')},
                                            reg_types={1:'linear',2:'linear'},
                                            data = Drive_Alone_Df)
-```
 
-### 3.3.2. Shared-2
+# %% [markdown]
+# ### 3.3.2. Shared-2
 
-```python
+# %%
 V_Shared_2.draw()
-```
 
-```python
+# %%
 Shared_2_Df = bike_data_long[bike_data_long['mode_id']==2]
 Shared_2_Df.reset_index(drop=True,inplace=True)
 Shared_2_Reg = FitAlternativeRegression(regressions={1:('total_travel_distance','total_travel_cost'),
                                                         2:('total_travel_distance','total_travel_time')},
                                            reg_types={1:'linear',2:'linear'},
                                            data = Shared_2_Df)
-```
 
-### 3.3.3. Shared-3+
+# %% [markdown]
+# ### 3.3.3. Shared-3+
 
-```python
+# %%
 V_Shared_3p.draw()
-```
 
-```python
+# %%
 Shared_3p_Df = bike_data_long[bike_data_long['mode_id']==3]
 Shared_3p_Df.reset_index(drop=True,inplace=True)
 Shared_3p_Reg = FitAlternativeRegression(regressions={1:('total_travel_distance','total_travel_cost'),
                                                         2:('total_travel_distance','total_travel_time')},
                                            reg_types={1:'linear',2:'linear'},
                                            data = Shared_3p_Df)
-```
 
-### 3.3.4. Walk-Transit-Walk 
+# %% [markdown]
+# ### 3.3.4. Walk-Transit-Walk 
 
-```python
+# %%
 V_WTW.draw()
-```
 
-```python
+# %%
 WTW_Df = bike_data_long[bike_data_long['mode_id']==4]
 WTW_Df.reset_index(drop=True,inplace=True)
 WTW_Reg = FitAlternativeRegression(regressions={1:('total_travel_time','total_travel_cost')},
                                            reg_types={1:'linear'},
                                            data = WTW_Df)
-```
 
-### 3.3.5. Drive-Transit-Walk 
+# %% [markdown]
+# ### 3.3.5. Drive-Transit-Walk 
 
-```python
+# %%
 V_DTW.draw()
-```
 
-```python
+# %%
 DTW_Df = bike_data_long[bike_data_long['mode_id']==5]
 DTW_Df.reset_index(drop=True,inplace=True)
 DTW_Reg = FitAlternativeRegression(regressions={1:('total_travel_time','total_travel_cost')},
                                            reg_types={1:'linear'},
                                            data = DTW_Df)
-```
 
-### 3.3.6. Walk-Transit-Drive 
+# %% [markdown]
+# ### 3.3.6. Walk-Transit-Drive 
 
-```python
+# %%
 V_WTD.draw()
-```
 
-```python
+# %%
 WTD_Df = bike_data_long[bike_data_long['mode_id']==6]
 WTD_Df.reset_index(drop=True,inplace=True)
 WTD_Reg = FitAlternativeRegression(regressions={1:('total_travel_time','total_travel_cost')},
                                            reg_types={1:'linear'},
                                            data = WTD_Df)
-```
 
-### 3.3.7. Walk
+# %% [markdown]
+# ### 3.3.7. Walk
 
-```python
+# %%
 V_Walk.draw()
-```
 
-No regressions needed under the Walk alternative since the travel distance will be simulated based on the original dataset and directly affects the utility function
+# %% [markdown]
+# No regressions needed under the Walk alternative since the travel distance will be simulated based on the original dataset and directly affects the utility function
 
+# %% [markdown]
+# ### 3.3.8. Bike
 
-### 3.3.8. Bike
-
-```python
+# %%
 V_Bike.draw()
-```
 
-<!-- #raw -->
-No regressions needed under the Bike alternative since the travel distance will be simulated based on the original dataset and directly affects the utility function
-<!-- #endraw -->
+# %% [raw]
+# No regressions needed under the Bike alternative since the travel distance will be simulated based on the original dataset and directly affects the utility function
 
-## 3.4. Simulate Nodes without Parents 
+# %% [markdown]
+# ## 3.4. Simulate Nodes without Parents 
 
-```python
+# %%
 sim_size = 8000
 sim_bike_data_no_parent = SimNodeNoParent(bike_data_params, size=sim_size)
-```
 
-## 3.5. Simulate data for each causal graph
+# %% [markdown]
+# ## 3.5. Simulate data for each causal graph
 
-```python
+# %%
 # Create a copy of the data to avoid any issues
 sim_bike_data_wide = copy.deepcopy(sim_bike_data_no_parent)
-```
 
-### 3.5.1. Drive Alone 
+# %% [markdown]
+# ### 3.5.1. Drive Alone 
 
-```python
+# %%
 V_Drive_Alone.draw()
-```
 
-```python
+# %%
 sim_bike_data_wide['total_travel_time_drive_alone'] = Drive_Alone_Reg['total_travel_time_on_total_travel_distance'].params[0] +\
                                                   Drive_Alone_Reg['total_travel_time_on_total_travel_distance'].params[1] *\
                                                   sim_bike_data_wide['total_travel_distance_drive_alone'] +\
@@ -1475,9 +1458,8 @@ sim_bike_data_wide['total_travel_cost_drive_alone'] = Drive_Alone_Reg['total_tra
                                                   np.random.normal(loc=0,
                                                                    scale = Drive_Alone_Reg['total_travel_cost_on_total_travel_distance'].resid.std(),
                                                                    size = sim_size)
-```
 
-```python
+# %%
 # ## Loading data into StructuralCausalModel
 # Drive_Alone_Model = StructuralCausalModel({
 #     "total_travel_distance": lambda   n_samples: bike_data_no_parent['total_travel_distance_drive_alone'],
@@ -1499,15 +1481,14 @@ sim_bike_data_wide['total_travel_cost_drive_alone'] = Drive_Alone_Reg['total_tra
 # })
 
 # Drive_Alone_Model.sample(n_samples=4000).head()
-```
 
-### 3.5.2. Shared-2 
+# %% [markdown]
+# ### 3.5.2. Shared-2 
 
-```python
+# %%
 V_Shared_2.draw()
-```
 
-```python
+# %%
 sim_bike_data_wide['total_travel_time_shared_2'] = Shared_2_Reg['total_travel_time_on_total_travel_distance'].params[0] +\
                                                Shared_2_Reg['total_travel_time_on_total_travel_distance'].params[1] *\
                                                   sim_bike_data_wide['total_travel_distance_shared_2'] +\
@@ -1520,9 +1501,8 @@ sim_bike_data_wide['total_travel_cost_shared_2'] = Shared_2_Reg['total_travel_co
                                                   np.random.normal(loc=0,
                                                                    scale = Shared_2_Reg['total_travel_cost_on_total_travel_distance'].resid.std(),
                                                                    size = sim_size)
-```
 
-```python
+# %%
 # ## Loading data into StructuralCausalModel
 # Shared_2_Model = StructuralCausalModel({
 #     "total_travel_distance": lambda   n_samples: bike_data_no_parent['total_travel_distance_shared_2'],
@@ -1546,15 +1526,14 @@ sim_bike_data_wide['total_travel_cost_shared_2'] = Shared_2_Reg['total_travel_co
 #     "utility_shared_2": total_travel_cost: lambda n_samples: np.zeros(shape=bike_data_no_parent['total_travel_distance_shared_2'].shape[0])
 # })
 # Shared_2_Model.sample(n_samples=4000).head()
-```
 
-### 3.5.3. Shared-3+
+# %% [markdown]
+# ### 3.5.3. Shared-3+
 
-```python
+# %%
 V_Shared_3p.draw()
-```
 
-```python
+# %%
 sim_bike_data_wide['total_travel_time_shared_3p'] = Shared_3p_Reg['total_travel_time_on_total_travel_distance'].params[0] +\
                                                Shared_3p_Reg['total_travel_time_on_total_travel_distance'].params[1] *\
                                                   sim_bike_data_wide['total_travel_distance_shared_3p'] +\
@@ -1567,9 +1546,8 @@ sim_bike_data_wide['total_travel_cost_shared_3p'] = Shared_3p_Reg['total_travel_
                                                   np.random.normal(loc=0,
                                                                    scale = Shared_3p_Reg['total_travel_cost_on_total_travel_distance'].resid.std(),
                                                                    size = sim_size)
-```
 
-```python
+# %%
 # ## Loading data into StructuralCausalModel
 # Shared_3p_Model = StructuralCausalModel({
 #     "total_travel_distance": lambda   n_samples: bike_data_no_parent['total_travel_distance_shared_3p'],
@@ -1592,74 +1570,71 @@ sim_bike_data_wide['total_travel_cost_shared_3p'] = Shared_3p_Reg['total_travel_
 #     "cross_bay": lambda n_samples: bike_data_no_parent['cross_bay'],
 #     "utility_shared_3+": lambda n_samples: np.zeros(shape=n_samples)
 # })
-```
 
-### 3.5.4. Walk-Transit-Walk
+# %% [markdown]
+# ### 3.5.4. Walk-Transit-Walk
 
-```python
+# %%
 V_WTW.draw()
-```
 
-```python
+# %%
 sim_bike_data_wide['total_travel_cost_wtw'] = WTW_Reg['total_travel_cost_on_total_travel_time'].params[0] +\
                                                   WTW_Reg['total_travel_cost_on_total_travel_time'].params[1] *\
                                                   sim_bike_data_wide['total_travel_time_wtw'] +\
                                                   np.random.normal(loc=0,
                                                                    scale = WTW_Reg['total_travel_cost_on_total_travel_time'].resid.std(),
                                                                    size = sim_size)
-```
 
-### 3.5.5. Drive-Transit-Walk
+# %% [markdown]
+# ### 3.5.5. Drive-Transit-Walk
 
-```python
+# %%
 V_DTW.draw()
-```
 
-```python
+# %%
 sim_bike_data_wide['total_travel_cost_dtw'] = DTW_Reg['total_travel_cost_on_total_travel_time'].params[0] +\
                                                   DTW_Reg['total_travel_cost_on_total_travel_time'].params[1] *\
                                                   sim_bike_data_wide['total_travel_time_dtw'] +\
                                                   np.random.normal(loc=0,
                                                                    scale = DTW_Reg['total_travel_cost_on_total_travel_time'].resid.std(),
                                                                    size = sim_size)
-```
 
-### 3.5.6. Walk-Transit-Drive
+# %% [markdown]
+# ### 3.5.6. Walk-Transit-Drive
 
-```python
+# %%
 V_WTD.draw()
-```
 
-```python
+# %%
 sim_bike_data_wide['total_travel_cost_wtd'] = WTD_Reg['total_travel_cost_on_total_travel_time'].params[0] +\
                                                   WTD_Reg['total_travel_cost_on_total_travel_time'].params[1] *\
                                                   sim_bike_data_wide['total_travel_time_wtd'] +\
                                                   np.random.normal(loc=0,
                                                                    scale = WTD_Reg['total_travel_cost_on_total_travel_time'].resid.std(),
                                                                    size = sim_size)
-```
 
-### 3.5.7. Walk
+# %% [markdown]
+# ### 3.5.7. Walk
 
-```python
+# %%
 V_Walk.draw()
-```
 
-No need to simulate any other variables since Walk Total Travel Distance was already simulated
+# %% [markdown]
+# No need to simulate any other variables since Walk Total Travel Distance was already simulated
 
+# %% [markdown]
+# ### 3.5.8. Bike
 
-### 3.5.8. Bike
-
-```python
+# %%
 V_Bike.draw()
-```
 
-No need to simulate any other variables since Bike Total Travel Distance was already simulated
+# %% [markdown]
+# No need to simulate any other variables since Bike Total Travel Distance was already simulated
 
+# %% [markdown]
+# ## 3.6. Simulate Availability of Alternatives 
 
-## 3.6. Simulate Availability of Alternatives 
-
-```python
+# %%
 # Simulate availability, add fake choice column
 # and return final simulated data with availability
 # and choices
@@ -1667,19 +1642,17 @@ wide_sim_data_availability = SimulateAvailability(data_long=bike_data_long,
                                      sim_data=sim_bike_data_wide,
                                      obs_id_col=observation_id_col,
                                      alt_name_dict=alternative_name_dict)
-```
 
-```python
+# %%
 bike_data_params
-```
 
-```python
+# %%
 sim_bike_data_wide.columns
-```
 
-## 3.7. Convert Simulated Data from Wide to Long
+# %% [markdown]
+# ## 3.7. Convert Simulated Data from Wide to Long
 
-```python
+# %%
 ind_variables = ['num_kids', 'household_size',
                  'num_cars', 'num_licensed_drivers', 'cross_bay']
 
@@ -1734,9 +1707,8 @@ wide_sim_data_availability[obs_id_column] = np.arange(wide_sim_data_availability
 
 # Declare choice column
 choice_column = "sim_choice"
-```
 
-```python
+# %%
 # Convert data from wide to long
 long_sim_data = pl.convert_wide_to_long(wide_sim_data_availability,
                                         ind_variables,
@@ -1745,16 +1717,14 @@ long_sim_data = pl.convert_wide_to_long(wide_sim_data_availability,
                                         obs_id_column,
                                         choice_column,
                                         new_alt_id_name=custom_alt_id)
-```
 
-```python
+# %%
 # Create a cars per licensed drivers column
 long_sim_data["cars_per_licensed_drivers"] = 0
 long_sim_data.loc[long_sim_data.num_licensed_drivers > 0,
                   "cars_per_licensed_drivers"] = long_sim_data.num_cars / long_sim_data.num_licensed_drivers.astype(float)
-```
 
-```python
+# %%
 # Add a variable representing cost divided by distance
 long_sim_data["cost_per_distance"] = 0
 long_sim_data.loc[long_sim_data.mode_id.isin([1, 2, 3]),
@@ -1762,25 +1732,24 @@ long_sim_data.loc[long_sim_data.mode_id.isin([1, 2, 3]),
                                                             "total_travel_cost"] /
                                           long_sim_data.loc[long_sim_data.mode_id.isin([1, 2, 3]),
                                                             "total_travel_distance"])
-```
 
-## 3.8. Simulate Choices 
+# %% [markdown]
+# ## 3.8. Simulate Choices 
 
-```python
+# %%
 # Calculate probabilities for each alternative
 # based on the estimated model
 posterior_probs = mnl_model.predict(long_sim_data)
-```
 
-```python
+# %%
 # Simulate choice data
 long_sim_data['sim_choice'] = viz.simulate_choice_vector(posterior_probs,
                                long_sim_data['observation_id'].values)
-```
 
-## 3.9. Estimate Model
+# %% [markdown]
+# ## 3.9. Estimate Model
 
-```python
+# %%
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
 mnl_model_sim = pl.create_choice_model(data=long_sim_data,
                                            alt_id_col=alternative_id_col,
@@ -1799,53 +1768,52 @@ mnl_model_sim.fit_mle(np.zeros(num_vars),
 
 # Look at the estimation results
 mnl_model_sim.get_statsmodels_summary()
-```
 
-# 4. Estimate Causal Effects
+# %% [markdown]
+# # 4. Estimate Causal Effects
 
+# %% [markdown]
+# ## 4.1 Compute Initial Probabilities Using Estimated Model on Simulated Data
 
-## 4.1 Compute Initial Probabilities Using Estimated Model on Simulated Data
-
-```python
+# %%
 initial_probabilities = mnl_model_sim.predict(long_sim_data)
-```
 
-## 4.2. Independently Generated Variables
+# %% [markdown]
+# ## 4.2. Independently Generated Variables
 
+# %% [markdown]
+# ### 4.2.1. Disturb X Independently
 
-### 4.2.1. Disturb X Independently
-
-```python
+# %%
 long_sim_data_naive = copy.deepcopy(long_sim_data)
 long_sim_data_naive['total_travel_distance'] = 0.95 * long_sim_data_naive['total_travel_distance']
-```
 
-### 4.2.2. Compute Naive Probabilities Using Disturbed data and Estimated Model on Simulated Data
+# %% [markdown]
+# ### 4.2.2. Compute Naive Probabilities Using Disturbed data and Estimated Model on Simulated Data
 
-```python
+# %%
 naive_probabilities = mnl_model_sim.predict(long_sim_data_naive)
 long_sim_data_naive['naive_probabilities'] = naive_probabilities
-```
 
-## 4.3. Based on Causal Graph and Estimated Model from Simulated
+# %% [markdown]
+# ## 4.3. Based on Causal Graph and Estimated Model from Simulated
 
-```python
+# %%
 long_sim_data_causal = copy.deepcopy(long_sim_data)
-```
 
-### 4.3.1. Perturb X and children nodes
+# %% [markdown]
+# ### 4.3.1. Perturb X and children nodes
 
-```python
+# %%
 long_sim_data_causal['total_travel_distance'] = 0.95 * long_sim_data['total_travel_distance']
-```
 
-### Drive Alone
+# %% [markdown]
+# ### Drive Alone
 
-```python
+# %%
 long_sim_data_causal.loc[long_sim_data_causal['mode_id']==1].shape[0]
-```
 
-```python
+# %%
 long_sim_data_causal.loc[long_sim_data_causal['mode_id']==1,'total_travel_time'] = \
                                                   (Drive_Alone_Reg['total_travel_time_on_total_travel_distance'].params[0] + \
                                                    Drive_Alone_Reg['total_travel_time_on_total_travel_distance'].params[1] * \
@@ -1861,11 +1829,11 @@ long_sim_data_causal.loc[long_sim_data_causal['mode_id']==1,'total_travel_cost']
                                                   np.random.normal(loc=0,
                                                                    scale = Drive_Alone_Reg['total_travel_cost_on_total_travel_distance'].resid.std(),
                                                                    size = long_sim_data_causal.loc[long_sim_data_causal['mode_id']==1].shape[0]))
-```
 
-### Shared-2
+# %% [markdown]
+# ### Shared-2
 
-```python
+# %%
 long_sim_data_causal.loc[long_sim_data_causal['mode_id']==2,'total_travel_time'] = \
                                                   (Shared_2_Reg['total_travel_time_on_total_travel_distance'].params[0] + \
                                                    Shared_2_Reg['total_travel_time_on_total_travel_distance'].params[1] * \
@@ -1881,11 +1849,11 @@ long_sim_data_causal.loc[long_sim_data_causal['mode_id']==2,'total_travel_cost']
                                                   np.random.normal(loc=0,
                                                                    scale = Shared_2_Reg['total_travel_cost_on_total_travel_distance'].resid.std(),
                                                                    size = long_sim_data_causal.loc[long_sim_data_causal['mode_id']==2].shape[0]))
-```
 
-### Shared-3+
+# %% [markdown]
+# ### Shared-3+
 
-```python
+# %%
 long_sim_data_causal.loc[long_sim_data_causal['mode_id']==3,'total_travel_time'] = \
                                                   (Shared_3p_Reg['total_travel_time_on_total_travel_distance'].params[0] + \
                                                    Shared_3p_Reg['total_travel_time_on_total_travel_distance'].params[1] * \
@@ -1901,11 +1869,11 @@ long_sim_data_causal.loc[long_sim_data_causal['mode_id']==3,'total_travel_cost']
                                                   np.random.normal(loc=0,
                                                                    scale = Shared_3p_Reg['total_travel_cost_on_total_travel_distance'].resid.std(),
                                                                    size = long_sim_data_causal.loc[long_sim_data_causal['mode_id']==3].shape[0]))
-```
 
-### Walk-Transit-Walk
+# %% [markdown]
+# ### Walk-Transit-Walk
 
-```python
+# %%
 long_sim_data_causal.loc[long_sim_data_causal['mode_id']==4,'total_travel_cost'] = \
                                                  (WTW_Reg['total_travel_cost_on_total_travel_time'].params[0] +\
                                                   WTW_Reg['total_travel_cost_on_total_travel_time'].params[1] *\
@@ -1913,11 +1881,11 @@ long_sim_data_causal.loc[long_sim_data_causal['mode_id']==4,'total_travel_cost']
                                                   np.random.normal(loc=0,
                                                                    scale = WTW_Reg['total_travel_cost_on_total_travel_time'].resid.std(),
                                                                    size = long_sim_data_causal.loc[long_sim_data_causal['mode_id']==4].shape[0]))
-```
 
-### Drive-Transit-Walk
+# %% [markdown]
+# ### Drive-Transit-Walk
 
-```python
+# %%
 long_sim_data_causal.loc[long_sim_data_causal['mode_id']==5,'total_travel_cost'] = \
                                                  (DTW_Reg['total_travel_cost_on_total_travel_time'].params[0] +\
                                                   DTW_Reg['total_travel_cost_on_total_travel_time'].params[1] *\
@@ -1925,11 +1893,11 @@ long_sim_data_causal.loc[long_sim_data_causal['mode_id']==5,'total_travel_cost']
                                                   np.random.normal(loc=0,
                                                                    scale = DTW_Reg['total_travel_cost_on_total_travel_time'].resid.std(),
                                                                    size = long_sim_data_causal.loc[long_sim_data_causal['mode_id']==5].shape[0]))
-```
 
-### Walk-Transit-Drive
+# %% [markdown]
+# ### Walk-Transit-Drive
 
-```python
+# %%
 long_sim_data_causal.loc[long_sim_data_causal['mode_id']==6,'total_travel_cost'] = \
                                                  (WTD_Reg['total_travel_cost_on_total_travel_time'].params[0] +\
                                                   WTD_Reg['total_travel_cost_on_total_travel_time'].params[1] *\
@@ -1937,49 +1905,48 @@ long_sim_data_causal.loc[long_sim_data_causal['mode_id']==6,'total_travel_cost']
                                                   np.random.normal(loc=0,
                                                                    scale = WTD_Reg['total_travel_cost_on_total_travel_time'].resid.std(),
                                                                    size = long_sim_data_causal.loc[long_sim_data_causal['mode_id']==6].shape[0]))
-```
 
-### Walk 
+# %% [markdown]
+# ### Walk 
 
+# %% [markdown]
+# No further change of variables since travel distance directly affects the utility.
 
-No further change of variables since travel distance directly affects the utility.
+# %% [markdown]
+# ### Bike 
 
+# %% [markdown]
+# No further change of variables since travel distance directly affects the utility.
 
-### Bike 
+# %% [markdown]
+# ### 4.3.2. Compute Estimated Probabilities
 
-
-No further change of variables since travel distance directly affects the utility.
-
-
-### 4.3.2. Compute Estimated Probabilities
-
-```python
+# %%
 estimated_probabilities = mnl_model_sim.predict(long_sim_data_causal)
 long_sim_data_causal['estimated_probabilities'] = estimated_probabilities
-```
 
-## 4.4. Based on True Causal Graph and Original Estimated Model
+# %% [markdown]
+# ## 4.4. Based on True Causal Graph and Original Estimated Model
 
-```python
+# %%
 true_probabilities = mnl_model.predict(long_sim_data_causal)
 long_sim_data_causal['true_probabilities'] = true_probabilities
-```
 
-```python
+# %%
 long_sim_data['initial_probabilities'] = initial_probabilities
-```
 
-## 4.5. Calculate Causal Effects
+# %% [markdown]
+# ## 4.5. Calculate Causal Effects
 
-```python
+# %%
 naive_effect = long_sim_data_naive.loc[long_sim_data_naive['mode_id'].isin([1, 2, 3]),'naive_probabilities'] - long_sim_data.loc[long_sim_data['mode_id'].isin([1, 2, 3]),'initial_probabilities']
 estimated_effect = long_sim_data_causal.loc[long_sim_data_causal['mode_id'].isin([1, 2, 3]),'estimated_probabilities'] - long_sim_data.loc[long_sim_data['mode_id'].isin([1, 2, 3]),'initial_probabilities']
 true_effect = long_sim_data_causal.loc[long_sim_data_causal['mode_id'].isin([1, 2, 3]),'true_probabilities'] - long_sim_data.loc[long_sim_data['mode_id'].isin([1, 2, 3]),'initial_probabilities']
-```
 
-## 4.6. Distribution of Causal Effect by observation
+# %% [markdown]
+# ## 4.6. Distribution of Causal Effect by observation
 
-```python
+# %%
 plt.figure(figsize=(15,10))
 sns.distplot(true_effect, kde=False, label ='True Effect', color='dodgerblue')
 sns.distplot(naive_effect, kde=False, label ='Naive Effect', color='goldenrod')
@@ -1995,14 +1962,14 @@ plt.xlabel('Causal Effect', fontdict={'fontsize': 12, 'fontweight':'bold'})
 plt.ylabel('Frequency', fontdict={'fontsize': 12, 'fontweight':'bold'})
 plt.legend(prop={'size': 14})
 plt.title('True Effect vs. Estimated Effect', fontdict={'fontsize': 14, 'fontweight':'bold'})
-```
 
-# 5. Repeat Simulation N times and compute Average Causal Effects
+# %% [markdown]
+# # 5. Repeat Simulation N times and compute Average Causal Effects
 
+# %% [markdown]
+# ### 5.1. Run the repeated simulation
 
-### 5.1. Run the repeated simulation
-
-```python jupyter={"outputs_hidden": true}
+# %% jupyter={"outputs_hidden": true}
 simulation_sizes = np.random.randint(low=3000, high=9000, size=400)
 sim_number = np.arange(1,401)
 models_dictionary = defaultdict(dict)
@@ -2290,9 +2257,8 @@ for sim_size, number in zip(simulation_sizes, sim_number):
     print('Simulation number', number , 'is complete!')
     print('==========================================')
     print('==========================================')
-```
 
-```python
+# %%
 causal_effects = pd.DataFrame(columns=['naive_effect','true_effect','estimated_effect'])
 for number in sim_number:
     initial_data=simulation_data[number]['long_sim_data']
@@ -2308,11 +2274,11 @@ for number in sim_number:
                                             'naive_effect': naive_effect.mean()}, ignore_index=True)
     
     
-```
 
-# 5. Plotting results of the simulation 
+# %% [markdown]
+# # 5. Plotting results of the simulation 
 
-```python
+# %%
 plt.figure(figsize=(20,10))
 sns.distplot(causal_effects.true_effect, label='True Effect', kde=False, color='#005AB5')
 sns.distplot(causal_effects.naive_effect, label='Naive Effect', kde=False, color='#DC3220')
@@ -2328,20 +2294,20 @@ plt.title('True Effect vs. Estimated Effect', fontdict={'fontsize': 14, 'fontwei
 plt.ylabel('Frequency', rotation=90, labelpad=5, fontdict={'fontsize': 12, 'fontweight':'bold'})
 plt.xlabel('Average Causal Effect', fontdict={'fontsize': 12, 'fontweight':'bold'})
 plt.legend(prop={'size': 14})
-```
 
-Assert that the absolute value of the difference between the naive and true causal effects is greater than the absolute value of the difference between estimated and true causal effects. This we can specify in the future what we think a significant difference between the sides of the inequality should be.
+# %% [markdown]
+# Assert that the absolute value of the difference between the naive and true causal effects is greater than the absolute value of the difference between estimated and true causal effects. This we can specify in the future what we think a significant difference between the sides of the inequality should be.
 
-```python
+# %%
 assert abs(np.mean(naive_effect) - np.mean(true_effect)) > abs(np.mean(estimated_effect) - np.mean(true_effect))
-```
 
-# Start writing the test suite 
+# %% [markdown]
+# # Start writing the test suite 
 
+# %% [markdown]
+# ## Test DistNodeNoParent 
 
-## Test DistNodeNoParent 
-
-```python
+# %%
 import unittest
 
 class TestSuite(unittest.TestCase):
@@ -2440,13 +2406,9 @@ class TestSuite(unittest.TestCase):
         for k in truth_params_dic.keys():
             np.testing.assert_string_equal(truth_params_dic[k]['distribution'], params_dic[k]['distribution'])
             np.testing.assert_array_almost_equal(truth_params_dic[k]['parameters'], params_dic[k]['parameters'])
-```
 
-```python
+# %%
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
-```
 
-```python
-
-```
+# %%
