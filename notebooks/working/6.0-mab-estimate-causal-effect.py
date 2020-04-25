@@ -835,7 +835,7 @@ def SimNodeNoParent(params_dict, size=1000):
         
         # Simulate variables for data with a single unique value
         elif params_dict[column]['distribution'] == 'constant':
-            data_sim = params_dict[column]['parameters'][0]
+            data_sim = params_dict[column]['parameters']
             Sim_Df[column] = data_sim
         
         # Simulate data using values from array, sampling
@@ -1408,13 +1408,10 @@ variable_type = {'num_kids': 'categorical',
                  'total_travel_cost': 'continuous'}
 
 # Distribution to be explored for continuous variables
-distributions = ['normal', 'alpha', 'beta', 'gamma', 'expon', 'gumbel']
+distributions = ['norm', 'alpha', 'beta', 'gamma', 'expon', 'gumbel']
 
 # %% [markdown]
 # ### 3.2.2. Find Distributions of nodes without parents 
-
-# %%
-alternative_specific_dict[1.0]
 
 # %%
 bike_data_params = DistNodeNoParent(data_long=bike_data_long,
@@ -1429,6 +1426,9 @@ bike_data_params = DistNodeNoParent(data_long=bike_data_long,
 
 # %%
 bike_data_params
+
+# %%
+bike_data_long[bike_data_long.mode_id==1]['total_travel_distance'].mean()
 
 # %%
 # bike_data_params = {'household_size': {'distribution': 'categorical',
@@ -2543,9 +2543,31 @@ class TestSuite(unittest.TestCase):
         for k in truth_params_dic.keys():
             np.testing.assert_string_equal(truth_params_dic[k]['distribution'], params_dic[k]['distribution'])
             np.testing.assert_array_almost_equal(truth_params_dic[k]['parameters'], params_dic[k]['parameters'])
+            
+    def test_SimNodeNoParent(self):
+        # Setup
+        params_dict = {'x':{'distribution': 'categorical',
+                            'parameters': [np.array([0, 1, 2]),
+                                           np.array([0.5, 0.25, 0.25])]},
+                       'y':{'distribution': 'constant',
+                            'parameters': 5 },
+                       'z':{'distribution': 'norm',
+                            'parameters': (20, 1.2)}
+                      }
+        
+        # Exercise
+        actual_data = SimNodeNoParent(params_dict, size=100000)
+        
+        # Verify
+        x = np.random.choice(a=[0, 1, 2], p=[0.5, 0.25, 0.25], size=100000)
+        y = [5]*100000
+        z = scipy.stats.norm.rvs(loc=20,scale=1.2, size=100000)
+        expected_data = pd.DataFrame(data={'x': x, 'y': y, 'z': z})
+        np.testing.assert_array_less(abs(expected_data['x'].mean() - actual_data['x'].mean()), 0.01)
+        np.testing.assert_array_equal(expected_data['y'].unique(), actual_data['y'].unique())
+        np.testing.assert_array_less(abs(expected_data['z'].mean() - actual_data['z'].mean()), 0.1) # the 0.1 can be discussed
+        np.testing.assert_array_less(abs(expected_data['z'].std() - actual_data['z'].std()), 0.1) # the 0.1 can be discussed
 
 # %%
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
-
-# %%
