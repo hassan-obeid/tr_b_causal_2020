@@ -65,6 +65,274 @@ import pylogit as pl
 import viz
 from array import array
 
+# %% [markdown]
+# # 0. Deprecated Functions 
+
+# %%
+# def DistNodeNoParent(data_long,
+#                      alt_id_col,
+#                      obs_id_col,
+#                      alt_spec_dic,
+#                      alt_name_dic,
+#                      ind_spec,
+#                      trip_spec,
+#                      var_types,
+#                      cont_dists=None):
+#     """
+#     Function to find the distribution of specific variables
+#     from a long format dataset.
+    
+#     Parameters
+#     ----------
+#     data_long: Pandas DataFrame
+#         Dataset in long format from which variable
+#         distribution is to be found.
+        
+#     alt_id_col: string
+#         Name of the column with alternative ids.
+        
+#     obs_id_col: string
+#         Name of the column with observation ids.
+        
+#     alt_spec_dic: dictionary
+#         Dictionary with keys as the ordered number
+#         of alternatives, and the value for each key
+#         is a list of strings representing the name of
+#         variables without parents per alternative.
+        
+#     alt_name_dic: dictionary
+#         Dictionary with keys as the ordered number
+#         of alternatives, and the value for each key
+#         is a string representing the name of the 
+#         alternative.
+        
+#     ind_spec: list
+#         List containing strings of the names of 
+#         individual specific variables.
+        
+#     trip_spec: list
+#         List containing string of the names of 
+#         trip specific variables.
+        
+#     var_types: dictionary
+#         Dictionary with keys as strings of names of variables
+#         from long format dataset, and values for each key are
+#         the type of variables (e.g.: 'categorical vs. continuous').
+        
+#     cont_dists: list
+#         List of continuous RVs distribution names from scipy.
+        
+#     Returns
+#     -------
+#     a nested dictionary with keys as variable names and values
+#     as dictionaries containing both the distribution name and
+#     its parameters.
+#     """
+    
+#     params_dict = {}
+
+#     # Code for Individual Specific Variables
+#     for ind in ind_spec:
+#         # generate array of values for individual specific variable
+#         ind_var = pd.Series([(data_long.loc[data_long[obs_id_col] == x][ind].unique()[0]) for x in data_long[obs_id_col].unique()])  
+#         # Get distribution if variable is categorical
+#         var_type = var_types[ind]
+#         if var_type in ['categorical', 'numerical']:
+#             # If only one category
+#             if len(ind_var.unique()) == 1:
+#                 params_dict.setdefault(ind,{})['distribution'] = 'constant'
+#                 params_dict.setdefault(ind,{})['parameters'] = ind_var.unique()
+#             # If more than one category
+#             else:
+#                 params_dict.setdefault(ind,{})['distribution'] = 'categorical'
+#                 # Count frequency of values and store it as paramater of distribution
+#                 np_array_range = np.arange(ind_var.max()+1)
+#                 array_bincount = np.bincount(ind_var)
+#                 probs = array_bincount / len(ind_var)
+#                 params_dict.setdefault(ind,{})['parameters'] = [np_array_range,
+#                                                   probs]
+#         else:
+#             # If not categorical but just one unique value
+#             if len(ind_var.unique()) == 1:
+#                 params_dict.setdefault(ind,{})['distribution'] = 'constant'
+#                 params_dict.setdefault(ind,{})['parameters'] = ind_var.unique()
+#             # If not categorical but not one unique value
+#             else:
+#                 # Use the Fitter library to fit distributions
+#                 # to the data
+#                 fitter_object = Fitter(data=ind_var,
+#                                        distributions=cont_dists,
+#                                        timeout=60)
+#                 fitter_object.fit()
+#                 # Get the best distribution and store in dictionary
+#                 BestDict = fitter_object.get_best()
+#                 params_dict.setdefault(ind,{})['distribution'] = list(BestDict.items())[0][0]
+#                 params_dict.setdefault(ind,{})['parameters'] = list(BestDict.items())[0][1]
+
+#     # Code for Alternative Specific Variables
+#     # Loop around the different available alternatives
+#     for alt in data_long[alt_id_col].unique():
+#         # Store data for specific alternative (mode)
+#         mode_data = data_long.loc[data_long[alt_id_col] == alt]
+#         # Loop around the alternative specific variables in the input dictionary
+#         for var in alt_spec_dic[alt]:
+#             # If data is to be taken as empirical values
+#             if var_types[var] == 'empirical':
+#                 # If only one value
+#                 if len(mode_data[var].unique()) == 1:
+#                     # Add name of alternative to variable and store distriburion & parameters
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'constant'
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = mode_data[var].unique()
+#                 else:
+#                     # Add name of alternative to variable and store distriburion & parameters
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'empirical'
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = np.array(mode_data[var])
+#             # If data is categorical
+#             elif var_types[var] == 'categorical':
+#                 # If only one category
+#                 if len(mode_data[var].unique()) == 1:
+#                     # Add name of alternative to variable and store distriburion & parameters
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'constant'
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = mode_data[var].unique()
+#                 else:
+#                     # If more than one category, compute the frequency of values
+#                     # and store as parameters
+#                     # Add name of alternative to variable and store distriburion & parameters
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'categorical'
+#                     np_array_range = np.arange(mode_data[var].max()+1)
+#                     array_bincount = np.bincount(mode_data[var])
+#                     probs = array_bincount / len(mode_data[var])
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = [np_array_range,
+#                                                                             probs]
+#             else:
+#                 # If data is not categorical but has one unique value
+#                 if len(mode_data[var].unique()) == 1:
+#                     # Add name of alternative to variable and store distriburion & parameters
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'constant'
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = mode_data[var].unique()
+#                 # If data is not categorical but has more than one unique value
+#                 else:
+#                     # Use the Fitter library to fit distributions
+#                     # to the data
+#                     fitter_object = Fitter(data=mode_data[var],
+#                                            distributions=cont_dists,
+#                                            timeout=60)
+#                     fitter_object.fit()
+#                     # Get the best distribution and store in dictionary
+#                     BestDict = fitter_object.get_best()
+#                     # Add name of alternative to variable and store distriburion & parameters
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = list(BestDict.items())[0][0]
+#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = list(BestDict.items())[0][1]
+
+#     # Trip Specific Variable (maybe combine with individual specific variables)
+#     # Loop around trip (observation) specific variables
+#     for var in trip_spec:
+#         # generate array of values for trip specific variable
+#         trip_var = pd.Series([(data_long.loc[data_long[obs_id_col] == x][var].unique()[0]) for x in data_long[obs_id_col].unique()])
+#         # If data is to be taken as empirical values
+#         if var_types[var] == 'empirical':
+#             # If data has one unique value
+#             if trip_var.unique() == 1:
+#                 params_dict.setdefault(var, {})['distribution'] = 'constant'
+#                 params_dict.setdefault(var, {})['parameters'] = np.array(trip_var.unique())
+#             # If data has more than one unique value
+#             else:
+#                 params_dict.setdefault(var, {})['distribution'] = 'empirical'
+#                 params_dict.setdefault(var, {})['parameters'] = np.array(trip_var)
+#         # Get distribution if variable is categorical
+#         elif var_types[var] == 'categorical':
+#             # If only one category
+#             if len(trip_var.unique()) == 1:
+#                 params_dict.setdefault(var, {})['distribution'] = 'constant'
+#                 params_dict.setdefault(var, {})['parameters'] = trip_var.unique()
+#             # If more than one category
+#             else:
+#                 params_dict.setdefault(var, {})['distribution'] = 'categorical'
+#                 # Count frequency of values and store it as paramater of distribution
+#                 np_array_range = np.arange(trip_var.max()+1)
+#                 array_bincount = np.bincount(trip_var)
+#                 probs = array_bincount / len(trip_var)
+#                 params_dict.setdefault(var, {})['parameters'] = [np_array_range,
+#                                                   probs]
+#         else:
+#             # If not categorical but just one unique value
+#             if len(trip_var.unique()) == 1:
+#                 params_dict.setdefault(var, {})['distribution'] = 'constant'
+#                 params_dict.setdefault(var, {})['parameters'] = trip_var.unique()
+#             # If not categorical but just one unique value
+#             else:
+#                 # Use the Fitter library to fit distributions
+#                 # to the data
+#                 fitter_object = Fitter(data=trip_var,
+#                                        distributions=cont_dists,
+#                                        timeout=60)
+#                 fitter_object.fit()
+#                 # Get the best distribution and store in dictionary
+#                 BestDict = fitter_object.get_best()
+#                 params_dict.setdefault(var, {})['distribution'] = list(BestDict.items())[0][0]
+#                 params_dict.setdefault(var, {})['parameters'] = list(BestDict.items())[0][1]
+
+#     return params_dict
+
+
+# def SimNodeNoParent(params_dict, size=1000):
+#     """
+#     Funtion to simulate data of size N based on specified
+#     distribution/parameters found by the fitter package.
+    
+#     Paremeters
+#     ----------
+#     dist_params: dictionary
+#         The variable distribution dictionary resulting from
+#         `FindLongDataDist`.
+        
+#     size: int
+#         Size of the desired simulated dataset, default value
+#         is 1000 observations.
+    
+#     Returns
+#     -------
+#     DataFrame object with simulated data based on specified distributions
+#     """
+#     # Create Empty DataFrame with keys from params_dict
+#     Sim_Df = pd.DataFrame(columns=list(params_dict.keys()))
+#     Sim_Df = Sim_Df.fillna(0)
+    
+#     # Loop around each of the variables in params_dict
+#     # and simulate data for them
+#     for column in list(params_dict.keys()):
+#         # Simulate data for categorical variables
+#         if params_dict[column]['distribution'] == 'categorical':
+#             value = params_dict[column]['parameters'][0]
+#             freq = params_dict[column]['parameters'][1]
+#             data_sim = np.random.choice(a=value,
+#                                         p=freq,
+#                                         size=size)
+#             Sim_Df[column] = data_sim
+        
+#         # Simulate variables for data with a single unique value
+#         elif params_dict[column]['distribution'] == 'constant':
+#             data_sim = params_dict[column]['parameters']
+#             Sim_Df[column] = data_sim
+        
+#         # Simulate data using values from array, sampling
+#         # with replacement
+#         elif params_dict[column]['distribution'] == 'empirical':
+#             data_sim = np.random.choice(params_dict[column]['paramaters'], size=size)
+#             Sim_Df[column] = data_sim
+        
+#         # Simulate data for continuous variables
+#         else:
+#             # Get scipy distribution from its
+#             # name in the params dictionary
+#             dist = getattr(scipy.stats,
+#                            params_dict[column]['distribution'])
+#             data_sim = dist.rvs(*params_dict[column]['parameters'],
+#                                 size=size)
+#             Sim_Df[column] = data_sim
+        
+#     return Sim_Df
+
 
 # %% [markdown]
 # # 1. Define functions to be used in notebook
@@ -78,6 +346,14 @@ def isUnique(var_values):
     Checks whether a variable has one unique value.
     """
     return len(var_values.unique()) == 1
+
+def isConstant(var_type):
+    """
+    Checks whether the variable type for the
+    variable of interest is to be taken
+    as a constant value or as numerical values.
+    """
+    return var_type == 'constant'
 
 def isEmpirical(var_type):
     """
@@ -417,28 +693,46 @@ def DistNodeNoParent(data_long,
 ## Write functions to replace functionality
 ## in SimNodeNoParent
 
-def SimCategorical(variable, size):
-    value = variable['parameters'][0]
-    freq = variable['parameters'][1]
+def SimCategorical(var_dist_params, size):
+    """
+    Function to simulate data for
+    a categorical/Discrete variable.
+    """
+    value = var_dist_params[0]
+    freq = var_dist_params[1]
     data_sim = np.random.choice(a=value,
                                 p=freq,
                                 size=size)
     return data_sim
 
-def SimConstant(variable):
-    data_sim = variable['parameters'][0]
+def SimConstant(var_dist_params):
+    """
+    Function to simulate data for a 
+    'constant' variable, in other words,
+    a variable that has one empirical value.
+    """
+    data_sim = var_dist_params
     return data_sim
 
-def SimEmpirical(variable, size):
-    data_sim = np.random.choice(variable['paramaters'], size=size)
+def SimEmpirical(var_dist_params, size):
+    """
+    Function to sample with replacement 
+    for a variable.
+    """
+    data_sim = np.random.choice(var_dist_params, size=size)
     return data_sim
 
-def SimContinuous(variable, size):
+def SimContinuous(var_dist, var_dist_params, size):
+    """
+    Function to simulate data from a continuous
+    distribution.
+    """
     # Get scipy distribution from its
     # name in the params dictionary
     dist = getattr(scipy.stats,
-                   variable['distribution'])
-    data_sim = dist.rvs(*variable['parameters'],
+                   var_dist)
+    
+    data_sim = dist.rvs(*var_dist_params,
                         size=size)
     return data_sim
 
@@ -468,21 +762,23 @@ def SimNodeNoParent(params_dict, size=1000):
     for column in list(params_dict.keys()):
             # Simulate data for categorical variables
             variable = params_dict[column]
-            if isCategorical(variable['distribution']):
-                Sim_Df[column] = SimCategorical(variable, size)
+            var_dist = variable['distribution']
+            var_dist_params = variable['parameters']
+            if isCategorical(var_dist):
+                Sim_Df[column] = SimCategorical(var_dist_params, size)
 
             # Simulate variables for data with a single unique value
-            elif isConstant(variable['distribution']):
-                Sim_Df[column] = SimConstant(variable)
+            elif isConstant(var_dist):
+                Sim_Df[column] = SimConstant(var_dist_params)
 
             # Simulate data using values from array, sampling
             # with replacement
-            elif isEmpirical(variable['distribution']):
-                Sim_Df[column] = SimEmpirical(variable, size)
+            elif isEmpirical(var_dist):
+                Sim_Df[column] = SimEmpirical(var_dist_params, size)
 
             # Simulate data for continuous variables
             else:    
-                Sim_Df[column] = SimContinuous(variable, size)
+                Sim_Df[column] = SimContinuous(var_dist, var_dist_params, size)
     return Sim_Df
 
 
@@ -591,272 +887,8 @@ def createFakeChoiceCol(AV_matrix):
     fake_choice_df = pd.DataFrame(fake_choice, columns=['sim_choice'])
     return fake_choice_df
 
+
 # %%
-# def DistNodeNoParent(data_long,
-#                      alt_id_col,
-#                      obs_id_col,
-#                      alt_spec_dic,
-#                      alt_name_dic,
-#                      ind_spec,
-#                      trip_spec,
-#                      var_types,
-#                      cont_dists=None):
-#     """
-#     Function to find the distribution of specific variables
-#     from a long format dataset.
-    
-#     Parameters
-#     ----------
-#     data_long: Pandas DataFrame
-#         Dataset in long format from which variable
-#         distribution is to be found.
-        
-#     alt_id_col: string
-#         Name of the column with alternative ids.
-        
-#     obs_id_col: string
-#         Name of the column with observation ids.
-        
-#     alt_spec_dic: dictionary
-#         Dictionary with keys as the ordered number
-#         of alternatives, and the value for each key
-#         is a list of strings representing the name of
-#         variables without parents per alternative.
-        
-#     alt_name_dic: dictionary
-#         Dictionary with keys as the ordered number
-#         of alternatives, and the value for each key
-#         is a string representing the name of the 
-#         alternative.
-        
-#     ind_spec: list
-#         List containing strings of the names of 
-#         individual specific variables.
-        
-#     trip_spec: list
-#         List containing string of the names of 
-#         trip specific variables.
-        
-#     var_types: dictionary
-#         Dictionary with keys as strings of names of variables
-#         from long format dataset, and values for each key are
-#         the type of variables (e.g.: 'categorical vs. continuous').
-        
-#     cont_dists: list
-#         List of continuous RVs distribution names from scipy.
-        
-#     Returns
-#     -------
-#     a nested dictionary with keys as variable names and values
-#     as dictionaries containing both the distribution name and
-#     its parameters.
-#     """
-    
-#     params_dict = {}
-
-#     # Code for Individual Specific Variables
-#     for ind in ind_spec:
-#         # generate array of values for individual specific variable
-#         ind_var = pd.Series([(data_long.loc[data_long[obs_id_col] == x][ind].unique()[0]) for x in data_long[obs_id_col].unique()])  
-#         # Get distribution if variable is categorical
-#         var_type = var_types[ind]
-#         if var_type in ['categorical', 'numerical']:
-#             # If only one category
-#             if len(ind_var.unique()) == 1:
-#                 params_dict.setdefault(ind,{})['distribution'] = 'constant'
-#                 params_dict.setdefault(ind,{})['parameters'] = ind_var.unique()
-#             # If more than one category
-#             else:
-#                 params_dict.setdefault(ind,{})['distribution'] = 'categorical'
-#                 # Count frequency of values and store it as paramater of distribution
-#                 np_array_range = np.arange(ind_var.max()+1)
-#                 array_bincount = np.bincount(ind_var)
-#                 probs = array_bincount / len(ind_var)
-#                 params_dict.setdefault(ind,{})['parameters'] = [np_array_range,
-#                                                   probs]
-#         else:
-#             # If not categorical but just one unique value
-#             if len(ind_var.unique()) == 1:
-#                 params_dict.setdefault(ind,{})['distribution'] = 'constant'
-#                 params_dict.setdefault(ind,{})['parameters'] = ind_var.unique()
-#             # If not categorical but not one unique value
-#             else:
-#                 # Use the Fitter library to fit distributions
-#                 # to the data
-#                 fitter_object = Fitter(data=ind_var,
-#                                        distributions=cont_dists,
-#                                        timeout=60)
-#                 fitter_object.fit()
-#                 # Get the best distribution and store in dictionary
-#                 BestDict = fitter_object.get_best()
-#                 params_dict.setdefault(ind,{})['distribution'] = list(BestDict.items())[0][0]
-#                 params_dict.setdefault(ind,{})['parameters'] = list(BestDict.items())[0][1]
-
-#     # Code for Alternative Specific Variables
-#     # Loop around the different available alternatives
-#     for alt in data_long[alt_id_col].unique():
-#         # Store data for specific alternative (mode)
-#         mode_data = data_long.loc[data_long[alt_id_col] == alt]
-#         # Loop around the alternative specific variables in the input dictionary
-#         for var in alt_spec_dic[alt]:
-#             # If data is to be taken as empirical values
-#             if var_types[var] == 'empirical':
-#                 # If only one value
-#                 if len(mode_data[var].unique()) == 1:
-#                     # Add name of alternative to variable and store distriburion & parameters
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'constant'
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = mode_data[var].unique()
-#                 else:
-#                     # Add name of alternative to variable and store distriburion & parameters
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'empirical'
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = np.array(mode_data[var])
-#             # If data is categorical
-#             elif var_types[var] == 'categorical':
-#                 # If only one category
-#                 if len(mode_data[var].unique()) == 1:
-#                     # Add name of alternative to variable and store distriburion & parameters
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'constant'
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = mode_data[var].unique()
-#                 else:
-#                     # If more than one category, compute the frequency of values
-#                     # and store as parameters
-#                     # Add name of alternative to variable and store distriburion & parameters
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'categorical'
-#                     np_array_range = np.arange(mode_data[var].max()+1)
-#                     array_bincount = np.bincount(mode_data[var])
-#                     probs = array_bincount / len(mode_data[var])
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = [np_array_range,
-#                                                                             probs]
-#             else:
-#                 # If data is not categorical but has one unique value
-#                 if len(mode_data[var].unique()) == 1:
-#                     # Add name of alternative to variable and store distriburion & parameters
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = 'constant'
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = mode_data[var].unique()
-#                 # If data is not categorical but has more than one unique value
-#                 else:
-#                     # Use the Fitter library to fit distributions
-#                     # to the data
-#                     fitter_object = Fitter(data=mode_data[var],
-#                                            distributions=cont_dists,
-#                                            timeout=60)
-#                     fitter_object.fit()
-#                     # Get the best distribution and store in dictionary
-#                     BestDict = fitter_object.get_best()
-#                     # Add name of alternative to variable and store distriburion & parameters
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['distribution'] = list(BestDict.items())[0][0]
-#                     params_dict.setdefault(var +'_'+ alt_name_dic[alt], {})['parameters'] = list(BestDict.items())[0][1]
-
-#     # Trip Specific Variable (maybe combine with individual specific variables)
-#     # Loop around trip (observation) specific variables
-#     for var in trip_spec:
-#         # generate array of values for trip specific variable
-#         trip_var = pd.Series([(data_long.loc[data_long[obs_id_col] == x][var].unique()[0]) for x in data_long[obs_id_col].unique()])
-#         # If data is to be taken as empirical values
-#         if var_types[var] == 'empirical':
-#             # If data has one unique value
-#             if trip_var.unique() == 1:
-#                 params_dict.setdefault(var, {})['distribution'] = 'constant'
-#                 params_dict.setdefault(var, {})['parameters'] = np.array(trip_var.unique())
-#             # If data has more than one unique value
-#             else:
-#                 params_dict.setdefault(var, {})['distribution'] = 'empirical'
-#                 params_dict.setdefault(var, {})['parameters'] = np.array(trip_var)
-#         # Get distribution if variable is categorical
-#         elif var_types[var] == 'categorical':
-#             # If only one category
-#             if len(trip_var.unique()) == 1:
-#                 params_dict.setdefault(var, {})['distribution'] = 'constant'
-#                 params_dict.setdefault(var, {})['parameters'] = trip_var.unique()
-#             # If more than one category
-#             else:
-#                 params_dict.setdefault(var, {})['distribution'] = 'categorical'
-#                 # Count frequency of values and store it as paramater of distribution
-#                 np_array_range = np.arange(trip_var.max()+1)
-#                 array_bincount = np.bincount(trip_var)
-#                 probs = array_bincount / len(trip_var)
-#                 params_dict.setdefault(var, {})['parameters'] = [np_array_range,
-#                                                   probs]
-#         else:
-#             # If not categorical but just one unique value
-#             if len(trip_var.unique()) == 1:
-#                 params_dict.setdefault(var, {})['distribution'] = 'constant'
-#                 params_dict.setdefault(var, {})['parameters'] = trip_var.unique()
-#             # If not categorical but just one unique value
-#             else:
-#                 # Use the Fitter library to fit distributions
-#                 # to the data
-#                 fitter_object = Fitter(data=trip_var,
-#                                        distributions=cont_dists,
-#                                        timeout=60)
-#                 fitter_object.fit()
-#                 # Get the best distribution and store in dictionary
-#                 BestDict = fitter_object.get_best()
-#                 params_dict.setdefault(var, {})['distribution'] = list(BestDict.items())[0][0]
-#                 params_dict.setdefault(var, {})['parameters'] = list(BestDict.items())[0][1]
-
-#     return params_dict
-
-
-def SimNodeNoParent(params_dict, size=1000):
-    """
-    Funtion to simulate data of size N based on specified
-    distribution/parameters found by the fitter package.
-    
-    Paremeters
-    ----------
-    dist_params: dictionary
-        The variable distribution dictionary resulting from
-        `FindLongDataDist`.
-        
-    size: int
-        Size of the desired simulated dataset, default value
-        is 1000 observations.
-    
-    Returns
-    -------
-    DataFrame object with simulated data based on specified distributions
-    """
-    # Create Empty DataFrame with keys from params_dict
-    Sim_Df = pd.DataFrame(columns=list(params_dict.keys()))
-    Sim_Df = Sim_Df.fillna(0)
-    
-    # Loop around each of the variables in params_dict
-    # and simulate data for them
-    for column in list(params_dict.keys()):
-        # Simulate data for categorical variables
-        if params_dict[column]['distribution'] == 'categorical':
-            value = params_dict[column]['parameters'][0]
-            freq = params_dict[column]['parameters'][1]
-            data_sim = np.random.choice(a=value,
-                                        p=freq,
-                                        size=size)
-            Sim_Df[column] = data_sim
-        
-        # Simulate variables for data with a single unique value
-        elif params_dict[column]['distribution'] == 'constant':
-            data_sim = params_dict[column]['parameters']
-            Sim_Df[column] = data_sim
-        
-        # Simulate data using values from array, sampling
-        # with replacement
-        elif params_dict[column]['distribution'] == 'empirical':
-            data_sim = np.random.choice(params_dict[column]['paramaters'], size=size)
-            Sim_Df[column] = data_sim
-        
-        # Simulate data for continuous variables
-        else:
-            # Get scipy distribution from its
-            # name in the params dictionary
-            dist = getattr(scipy.stats,
-                           params_dict[column]['distribution'])
-            data_sim = dist.rvs(*params_dict[column]['parameters'],
-                                size=size)
-            Sim_Df[column] = data_sim
-        
-    return Sim_Df
-
-
 def FitAlternativeRegression(regressions, reg_types, data):
     
     """
@@ -2571,3 +2603,5 @@ class TestSuite(unittest.TestCase):
 # %%
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
+
+# %%
