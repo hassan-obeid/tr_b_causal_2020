@@ -779,6 +779,7 @@ def SimNodeNoParent(params_dict, size=1000):
             # Simulate data for continuous variables
             else:    
                 Sim_Df[column] = SimContinuous(var_dist, var_dist_params, size)
+
     return Sim_Df
 
 
@@ -889,6 +890,99 @@ def createFakeChoiceCol(AV_matrix):
 
 
 # %%
+def SimulateAvailability(data_long, sim_size, obs_id_col, alt_name_dict):
+    """
+    Function to simulate alternative availability based on a long format
+    dataset and join the availability data to the simulated dataset
+    resulting from SimDf.
+    
+    Parameters
+    ----------
+    data_long: Pandas DataFrame
+        Long format dataframe used for simulating
+        alternative availability.
+    
+    sim_size: int
+        Size of the simulated dataset
+    
+    obs_id_col: string
+        Name of the column in data_long with 
+        observation ids.
+    
+    alt_name_dic: dictionary
+        Dictionary with keys as the ordered number
+        of alternatives, and the value for each key
+        is a string representing the name of the 
+        alternative.
+        
+    Returns
+    -------
+    Wide format Pandas DataFrame with additional availability
+    columns for each of the alternatives.
+    
+    """
+    
+    # Create empty Series to hold number of available alternatives
+    series = pd.Series([])
+    
+    # Loop around each observation to record the
+    # available number of alternatives for each observation
+    for i, obs in zip(np.arange(len(data_long[obs_id_col].unique())), data_long[obs_id_col].unique()):
+        series[i] = data_long[data_long[obs_id_col] == obs].shape[0]
+
+    # Simulate number of available alternatives for
+    # each observation in sim_data
+    av_size = sim_size
+    alts_sim = np.random.choice(a=np.arange(series.max()+1),
+                                p=np.bincount(series)/len(series),
+                                size=av_size)
+
+    # Simulate the availability matrix based on number 
+    # of available alternatives
+    N = len(alt_name_dict)
+    av_sim = [np.array([1] * K + [0]*(N-K)) for K in alts_sim]
+    
+    # Shuffle the available alternatives for each observation
+    # because av_sim will always start with 1s
+    for x in av_sim:
+        np.random.shuffle(x)
+
+    # Shuffle the availability across different observations
+    np.random.shuffle(av_sim)
+    
+    # Create columns for the availability matrix
+    AV_columns = [alt_name_dict[i]+'_AV' for i in alt_name_dict.keys()]
+    
+    # Create alternative availability matrix with AV_columns
+    AV_Df = pd.DataFrame(av_sim, columns=AV_columns)
+    
+    # Create an random choice column based on available
+    # alternatives for each observation - This column will
+    # be needed when converting to long data
+    #fake_choice = [random.choice(np.nonzero(a == 1)[0]) + 1 for a in np.array(AV_Df)]
+    #fake_choice_df = pd.DataFrame(fake_choice, columns=['sim_choice'])
+    
+    # Concatenate the simulated data with availability data and fake choice data
+    # and return Sim_DF_AV
+    #Sim_DF_AV = pd.concat([sim_data, AV_Df, fake_choice_df], axis=1, sort=False)
+    return AV_Df
+
+
+
+# %%
+df = SimulateAvailability(data_long=bike_data_long,
+                     sim_size=4004,
+                     obs_id_col=observation_id_col,
+                     alt_name_dict=alternative_name_dict)
+
+# %%
+df.values.sum() / bike_data_long.groupby('observation_id').count()['mode_id'].sum()
+
+# %%
+bike_data_long.groupby('observation_id').count()['mode_id'].sum()
+
+
+# %%
 def FitAlternativeRegression(regressions, reg_types, data):
     
     """
@@ -957,83 +1051,82 @@ def FitAlternativeRegression(regressions, reg_types, data):
     
     return regression_results
 
-
-def SimulateAvailability(data_long, sim_data, obs_id_col, alt_name_dict):
-    """
-    Function to simulate alternative availability based on a long format
-    dataset and join the availability data to the simulated dataset
-    resulting from SimDf.
+# def SimulateAvailability(data_long, sim_data, obs_id_col, alt_name_dict):
+#     """
+#     Function to simulate alternative availability based on a long format
+#     dataset and join the availability data to the simulated dataset
+#     resulting from SimDf.
     
-    Parameters
-    ----------
-    data_long: Pandas DataFrame
-        Long format dataframe used for simulating
-        alternative availability.
+#     Parameters
+#     ----------
+#     data_long: Pandas DataFrame
+#         Long format dataframe used for simulating
+#         alternative availability.
     
-    sim_data: Pandas DataFrame
-        Wide format dataframe resulting from SimDf
+#     sim_data: Pandas DataFrame
+#         Wide format dataframe resulting from SimDf
     
-    obs_id_col: string
-        Name of the column in data_long with 
-        observation ids.
+#     obs_id_col: string
+#         Name of the column in data_long with 
+#         observation ids.
     
-    alt_name_dic: dictionary
-        Dictionary with keys as the ordered number
-        of alternatives, and the value for each key
-        is a string representing the name of the 
-        alternative.
+#     alt_name_dic: dictionary
+#         Dictionary with keys as the ordered number
+#         of alternatives, and the value for each key
+#         is a string representing the name of the 
+#         alternative.
         
-    Returns
-    -------
-    Wide format Pandas DataFrame with additional availability
-    columns for each of the alternatives.
+#     Returns
+#     -------
+#     Wide format Pandas DataFrame with additional availability
+#     columns for each of the alternatives.
     
-    """
+#     """
     
-    # Create empty Series to hold number of available alternatives
-    series = pd.Series([])
+#     # Create empty Series to hold number of available alternatives
+#     series = pd.Series([])
     
-    # Loop around each observation to record the
-    # available number of alternatives for each observation
-    for i, obs in zip(np.arange(len(data_long[obs_id_col].unique())), data_long[obs_id_col].unique()):
-        series[i] = data_long[data_long[obs_id_col] == obs].shape[0]
+#     # Loop around each observation to record the
+#     # available number of alternatives for each observation
+#     for i, obs in zip(np.arange(len(data_long[obs_id_col].unique())), data_long[obs_id_col].unique()):
+#         series[i] = data_long[data_long[obs_id_col] == obs].shape[0]
 
-    # Simulate number of available alternatives for
-    # each observation in sim_data
-    av_size = sim_data.shape[0]
-    alts_sim = np.random.choice(a=np.arange(series.max()+1),
-                                p=np.bincount(series)/len(series),
-                                size=av_size)
+#     # Simulate number of available alternatives for
+#     # each observation in sim_data
+#     av_size = sim_data.shape[0]
+#     alts_sim = np.random.choice(a=np.arange(series.max()+1),
+#                                 p=np.bincount(series)/len(series),
+#                                 size=av_size)
 
-    # Simulate the availability matrix based on number 
-    # of available alternatives
-    N = len(alt_name_dict)
-    av_sim = [np.array([1] * K + [0]*(N-K)) for K in alts_sim]
+#     # Simulate the availability matrix based on number 
+#     # of available alternatives
+#     N = len(alt_name_dict)
+#     av_sim = [np.array([1] * K + [0]*(N-K)) for K in alts_sim]
     
-    # Shuffle the available alternatives for each observation
-    # because av_sim will always start with 1s
-    for x in av_sim:
-        np.random.shuffle(x)
+#     # Shuffle the available alternatives for each observation
+#     # because av_sim will always start with 1s
+#     for x in av_sim:
+#         np.random.shuffle(x)
 
-    # Shuffle the availability across different observations
-    np.random.shuffle(av_sim)
+#     # Shuffle the availability across different observations
+#     np.random.shuffle(av_sim)
     
-    # Create columns for the availability matrix
-    AV_columns = [alt_name_dict[i]+'_AV' for i in alt_name_dict.keys()]
+#     # Create columns for the availability matrix
+#     AV_columns = [alt_name_dict[i]+'_AV' for i in alt_name_dict.keys()]
     
-    # Create alternative availability matrix with AV_columns
-    AV_Df = pd.DataFrame(av_sim, columns=AV_columns)
+#     # Create alternative availability matrix with AV_columns
+#     AV_Df = pd.DataFrame(av_sim, columns=AV_columns)
     
-    # Create an random choice column based on available
-    # alternatives for each observation - This column will
-    # be needed when converting to long data
-    fake_choice = [random.choice(np.nonzero(a == 1)[0]) + 1 for a in np.array(AV_Df)]
-    fake_choice_df = pd.DataFrame(fake_choice, columns=['sim_choice'])
+#     # Create an random choice column based on available
+#     # alternatives for each observation - This column will
+#     # be needed when converting to long data
+#     fake_choice = [random.choice(np.nonzero(a == 1)[0]) + 1 for a in np.array(AV_Df)]
+#     fake_choice_df = pd.DataFrame(fake_choice, columns=['sim_choice'])
     
-    # Concatenate the simulated data with availability data and fake choice data
-    # and return Sim_DF_AV
-    Sim_DF_AV = pd.concat([sim_data, AV_Df, fake_choice_df], axis=1, sort=False)
-    return Sim_DF_AV
+#     # Concatenate the simulated data with availability data and fake choice data
+#     # and return Sim_DF_AV
+#     Sim_DF_AV = pd.concat([sim_data, AV_Df, fake_choice_df], axis=1, sort=False)
+#     return Sim_DF_AV
 
 def PlotParams(sim_par, model, fig_size):
     """
@@ -2599,6 +2692,29 @@ class TestSuite(unittest.TestCase):
         np.testing.assert_array_equal(expected_data['y'].unique(), actual_data['y'].unique())
         np.testing.assert_array_less(abs(expected_data['z'].mean() - actual_data['z'].mean()), 0.1) # the 0.1 can be discussed
         np.testing.assert_array_less(abs(expected_data['z'].std() - actual_data['z'].std()), 0.1) # the 0.1 can be discussed
+        
+    def test_SimulateAvailability(self):
+        # Setup
+        alternative_id_col = "mode_id"
+        observation_id_col = "observation_id"
+        alternative_name_dic = {1: 'drive_alone',
+                                2: 'shared_2',
+                                3: 'shared_3p',
+                                4: 'wtw',
+                                5: 'dtw',
+                                6: 'wtd',
+                                7: 'walk',
+                                8: 'bike'}
+        # Exercise
+        actual_av_matrix = SimulateAvailability(data_long=self.data_long, sim_size=4004, obs_id_col=observation_id_col, alt_name_dict=alternative_name_dic)
+        
+        # Verify
+        actual_sum = actual_av_matrix.values.sum()
+        expected_sum = self.data_long.groupby(observation_id_col).count()[alternative_id_col].sum()
+        ratio = expected_sum/actual_sum
+        difference = abs(ratio-1)
+        np.testing.assert_array_less(difference, 0.05) # 0.05 can be discussed
+        
 
 # %%
 if __name__ == '__main__':
