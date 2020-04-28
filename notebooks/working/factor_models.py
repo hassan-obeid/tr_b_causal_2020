@@ -22,8 +22,6 @@ def confounder_ppca(X, latent_dim, holdout_portion):
         holdout_mask: sparse (nxm) matrix with 1 on the heldout entries and
                       0 elsewhere, s.t x_vad = X*holdout_mask
         holdout_rows: row indeces of the heldout entries
-    
-    
     """
     
     

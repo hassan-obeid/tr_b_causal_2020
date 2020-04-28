@@ -125,26 +125,39 @@ data_generation_graph.draw()
 sample_size = 10000
 
 confounder = np.random.normal(loc=20, scale = 10, size = sample_size)
+# -
 
-# +
+## Confounding structure
 a = .3*confounder + np.random.normal(loc=10,scale=3,size=sample_size)
 b = -1*confounder + np.random.normal(loc=6,scale=3,size=sample_size)
 c = np.random.normal(loc=15,scale=3,size=sample_size) # + .5*confounder 
 d = .8*confounder + np.random.normal(loc=-10,scale=3,size=sample_size)
 e = .5*confounder + np.random.normal(loc=8,scale=3,size=sample_size)
-f= -.3*confounder + np.random.normal(loc=-12,scale=3,size=sample_size)
+f = -.3*confounder + np.random.normal(loc=-12,scale=3,size=sample_size)
 
+# +
+## Generating coefficients
+beta_a = np.random.normal(loc=2, scale=1, size=sample_size)
+beta_b = np.random.normal(loc=2, scale=1, size=sample_size)
+beta_c = np.random.normal(loc=-5, scale=1, size=sample_size)
+beta_d = np.random.normal(loc=3, scale=1, size=sample_size)
+beta_e = np.random.normal(loc=2, scale=1, size=sample_size)
+beta_f = np.random.normal(loc=-5, scale=1, size=sample_size)
 
+beta_confounder = np.random.normal(loc=7, scale=1, size=sample_size)
+
+# +
 df = pd.DataFrame(np.array([a,b,c,d,e,f, confounder]).T, columns = ['a', 'b', 'c',
           'd',  'e', 'f', 'confounder'])
 
-X_columns =['a', 'b', 'c',
+X_columns = ['a', 'b', 'c',
           'd',  'e', 'f', 'confounder']
 df = (df[X_columns] - df[X_columns].mean())/df[X_columns].std()
 
 # df['confounder'] = confounder - confounder.mean()/confounder.std()
 
-y = 5 + 2*df['a'] + 2*df['b'] - 5*df['c'] + 3*df['d'] + 2*df['e'] - 5*df['f'] + 7*df['confounder'] + np.random.normal(loc=0,scale=1,size=sample_size)
+y = (beta_a*df['a'] + beta_b*df['b'] + beta_c*df['c'] + beta_d*df['d'] + beta_e*df['e']
+     + beta_f*df['f'] + beta_confounder*df['confounder'] + np.random.normal(loc=0,scale=1,size=sample_size) )
 
 df['y'] = y
 
@@ -157,7 +170,7 @@ coeffs_true = [5,2,2,-5,3,2,-5,7]
 
 # df = pd.DataFrame(np.array([a,b,c,d,e,f,confounder, y]).T, columns = ['a', 'b', 'c',
 #           'd',  'e', 'f', 'confounder', 'y'])
-df.head()
+df.describe()
 
 # +
 # sns.pairplot(df, size=1.5)
@@ -172,7 +185,7 @@ results_full = model_full.fit()
 results_df_full = pd.DataFrame(results_full.params, columns = ['estimated_params'])
 results_df_full['std_errors'] = results_full.bse
 results_df_full['True Coefficient'] = coeffs_true
-results_df_full[['True Coefficient']]
+results_df_full
 
 model_partial = smf.ols("y ~ a+b+c+d+e+f ", data=df) ## Ommit the confounder from OLS
 results_partial = model_partial.fit()
@@ -225,7 +238,8 @@ principalComponents = pca.fit_transform(X)
 # +
 latent_dim = 1
 
-confounders, holdouts, holdoutmasks, holdoutrow= confounder_ppca(holdout_portion=0.2, X=X, latent_dim=latent_dim)
+confounders, holdouts, holdoutmasks, holdoutrow= confounder_ppca(holdout_portion=0.2, X=X, 
+                                                                 latent_dim=latent_dim, linear = False)
 
 holdouts_req = [holdouts]
 display.display(len(holdouts_req))
@@ -249,7 +263,8 @@ for j in range(len(holdouts_req)):
         with ed.interception(replace_latents(w_sample, z_sample)):
             generate = ppca_model(
                 data_dim=data_dim_temp, latent_dim=latent_dim_temp,
-                num_datapoints=num_datapoints_temp, stddv_datapoints=0.1, holdout_mask=holdoutmasks)
+                num_datapoints=num_datapoints_temp, 
+                stddv_datapoints=0.1, holdout_mask=holdoutmasks, linear = False)
 
         with tf.Session() as sess:
             x_generated, _ = sess.run(generate)
@@ -298,7 +313,7 @@ print("P-value, average: ", pval_mode)
 display.display(sns.kdeplot(pvals[holdout_subjects]))
 
 # +
-np.random.seed(10)
+np.random.seed(12)
 
 num_subjects = 5
 fig, axes = plt.subplots(nrows = num_subjects, ncols=1, figsize = (10,20))
@@ -535,7 +550,7 @@ def cv_pca(data, rank, M=None, p_holdout=0.3, nonneg=False, iterations = 1000):
 
 # -
 
-def confounder_ppca(X, latent_dim, holdout_portion):
+def confounder_ppca(X, latent_dim, holdout_portion, linear = True):
     # randomly holdout some entries of X
     num_datapoints, data_dim = X.shape
 
@@ -553,16 +568,25 @@ def confounder_ppca(X, latent_dim, holdout_portion):
     x_train = np.multiply(1-holdout_mask, X)
     x_vad = np.multiply(holdout_mask, X)
 
-    def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints):
+    def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints, linear = linear):
         w = ed.Normal(loc=tf.zeros([latent_dim, data_dim]),
                     scale=tf.ones([latent_dim, data_dim]),
                     name="w")  # parameter
         z = ed.Normal(loc=tf.zeros([num_datapoints, latent_dim]),
                     scale=tf.ones([num_datapoints, latent_dim]), 
                     name="z")  # local latent variable / substitute confounder
-        x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
+        ## linear or quadratic factor model?
+        if linear:
+            x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
                     scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),
                     name="x")  # (modeled) data
+        else: 
+            x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask) 
+                          + tf.multiply(tf.matmul(z**2, w**2), 1-holdout_mask),
+                    scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),
+                    name="x")
+            
+            
         return x, (w, z)
 
     log_joint = ed.make_log_joint_fn(ppca_model)
@@ -573,7 +597,8 @@ def confounder_ppca(X, latent_dim, holdout_portion):
     model = ppca_model(data_dim=data_dim,
                        latent_dim=latent_dim,
                        num_datapoints=num_datapoints,
-                       stddv_datapoints=stddv_datapoints)
+                       stddv_datapoints=stddv_datapoints,
+                      linear = linear)
 
     def variational_model(qw_mean, qw_stddv, qz_mean, qz_stddv):
         qw = ed.Normal(loc=qw_mean, scale=qw_stddv, name="qw")
@@ -659,16 +684,24 @@ def confounder_ppca(X, latent_dim, holdout_portion):
 
 
 # +
-def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints, holdout_mask):
+def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints, holdout_mask, linear = True):
     w = ed.Normal(loc=tf.zeros([latent_dim, data_dim]),
                 scale=tf.ones([latent_dim, data_dim]),
                 name="w")  # parameter
     z = ed.Normal(loc=tf.zeros([num_datapoints, latent_dim]),
                 scale=tf.ones([num_datapoints, latent_dim]), 
                 name="z")  # local latent variable / substitute confounder
-    x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
+    if linear:
+        x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
                 scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),
                 name="x")  # (modeled) data
+    else: 
+        x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask) 
+                      + tf.multiply(tf.matmul(z**2, w**2), 1-holdout_mask),
+                scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),
+                name="x")
+
+
     return x, (w, z)
 
 
@@ -686,3 +719,9 @@ def replace_latents(w, z):
         return rv_constructor(*rv_args, **rv_kwargs)
 
     return interceptor
+# -
+
+
+
+
+
