@@ -180,11 +180,11 @@ df.describe()
 #
 # Here, we show that if we ommit the confounder, and attempt to estimate a new model for y, the coefficients obtained on each of the variables a, b, d, e, and f are all biased and do not represent the causal effect associated with each of those variables. The coefficient on c remains unbiased since c does not depend on the confounder. The purpose of this is to demonstrate that you indeed need to control for the confounder, or account for it somehow, if one knows you have confounded variables and is looking to assign causal interpretations to those variables
 
-model_full = smf.ols("y ~ a+b+c+d+e+f + confounder", data=df)
+model_full = smf.ols("y ~ -1 + a+b+c+d+e+f + confounder", data=df)
 results_full = model_full.fit()
 results_df_full = pd.DataFrame(results_full.params, columns = ['estimated_params'])
 results_df_full['std_errors'] = results_full.bse
-results_df_full['True Coefficient'] = coeffs_true
+# results_df_full['True Coefficient'] = coeffs_true
 results_df_full
 
 model_partial = smf.ols("y ~ a+b+c+d+e+f ", data=df) ## Ommit the confounder from OLS
