@@ -56,8 +56,14 @@ This document should store one's weekly reflections on the project. In particula
     3. I didn't update the architecture document.
     4. I think we should probably start thinking of what the direction after the project should be, like how this project could lead to research work for our phd research/dissertations?
 
-9. Week of April 5th, 2020
+9. Week of April 12th, 2020
     1. Some more learning about how refactoring is supposed to be done/how much time it takes.
     2. I finished rewriting all relevant functions to be refactored. Pending test writing.
     3. Did not finish the presentation.
     4. I think it's time to bring in Joan/Vij this week for discussion/suggestion.
+    
+10. 9. Week of Apr 26th, 2020
+    1. Nothing specific
+    2. Generated dataset for Hassan to work on deconfounder
+    3. Did not finish refactoring
+    4. N/A
