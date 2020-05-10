@@ -66,3 +66,12 @@ This document should store one's weekly reflections on the project. In particula
     3. Nothing specific. 
     
     4. Will investigate setups where the deconfounder can work. It must work under some strict conditions and simulation scenarios, and I want to figure out what those are. 
+    
+8. Week of May 3rd, 2020
+    1. Learned more about collider bias in an attempt to think about how to find an example where not paying attention to causality can lead to serious mistakes and bias.
+    
+    2. The bigger group conversation was useful and we got some good feedback on how to more clearly define and communicate our contribution to the field. 
+    
+    3. Nothing specific. 
+    
+    4. Wrapping up the first stage of the work (the work we've done so far) and have it in a format that is ready for public viewing. 
