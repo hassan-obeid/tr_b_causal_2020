@@ -14,7 +14,7 @@
 # ---
 
 # # Goal 
-# The goal of this notebook is to investigate, using simulations, the effectiveness and usefuleness of the deconfounder approach to causal inference with latent confounding in recovering the true causal effects of variables. 
+# The goal of this notebook is to investigate, using simulations, the effectiveness and usefuleness of the deconfounder approach to causal inference with latent confounding in recovering the true causal effects of variables. This approach was proposed by Blei et al. in 2018 (incert reference here)
 #
 # The flow of this notebook is as follows: 
 # - Simulate observations based on a confounded structure, where one variable confounds all but one of the other variables. 
@@ -39,7 +39,6 @@ from math import ceil
 from IPython import display
 import seaborn as sns
 
-import tensorflow as tf
 import numpy as np
 import numpy.random as npr
 import pandas as pd
@@ -79,6 +78,7 @@ os.listdir('.')
 # -
 
 # ## Specify the assumed causal graph of the data generation process
+# The causal graph below represents the true data generating process that we'll be using for simulation. Notice how the confounder affects variables a, b, d, e, and f, as well as the outcome y. 
 
 # +
 data_generation_graph = CausalGraphicalModel(
@@ -114,6 +114,12 @@ data_generation_graph.draw()
 # -
 
 # ## Specifiy the paramteric relationship between the covariates. 
+#
+# This is where we specify the relationship between the variables in the Causal graph above. Specifically, we have an equation that relates each two connected nodes on the graph (so an equation for each edge).
+#
+# In the outcome model for y, the coefficient on each of the variables a, b, c, d, e and f represents it's $true$ causal effect. The coefficient on the confounder, however, does not represent its causal effect, because it has 5 decendents that are part of the outcome model. 
+#
+# We are not ultimately interested in the causal effect of the confounder for this exercice, and instead are interested in the coefficients on each of its descendents. 
 
 # +
 sample_size = 10000
@@ -142,7 +148,7 @@ y = 5 + 2*df['a'] + 2*df['b'] - 5*df['c'] + 3*df['d'] + 2*df['e'] - 5*df['f'] + 
 
 df['y'] = y
 
-# coeffs_true = [5,2,2,-5,3,2,-5,7]
+coeffs_true = [5,2,2,-5,3,2,-5,7]
 
 # plt.hist(confounder, bins = 50)
 
@@ -158,15 +164,17 @@ df.head()
 # -
 
 # ## Bias from ommitting the confounder without adjustment
+#
+# Here, we show that if we ommit the confounder, and attempt to estimate a new model for y, the coefficients obtained on each of the variables a, b, d, e, and f are all biased and do not represent the causal effect associated with each of those variables. The coefficient on c remains unbiased since c does not depend on the confounder. The purpose of this is to demonstrate that you indeed need to control for the confounder, or account for it somehow, if one knows you have confounded variables and is looking to assign causal interpretations to those variables
 
 model_full = smf.ols("y ~ a+b+c+d+e+f + confounder", data=df)
 results_full = model_full.fit()
 results_df_full = pd.DataFrame(results_full.params, columns = ['estimated_params'])
 results_df_full['std_errors'] = results_full.bse
-results_df_full['true_params'] = coeffs_true
-results_df_full
+results_df_full['True Coefficient'] = coeffs_true
+results_df_full[['True Coefficient']]
 
-model_partial = smf.ols("y ~ a+b+c+d+e+f ", data=df)
+model_partial = smf.ols("y ~ a+b+c+d+e+f ", data=df) ## Ommit the confounder from OLS
 results_partial = model_partial.fit()
 results_df_partial = pd.DataFrame(results_partial.params, columns = ['estimated_params'])
 results_df_partial['std_errors'] = results_partial.bse
@@ -174,6 +182,14 @@ results_df_partial['true_params'] = coeffs_true[:-1]
 results_df_partial
 
 # ## Factor analysis: Is there evidence of latent factors?
+#
+# How do we go about checking for whether a confounder exists (in this example, we know that a confounder exist since we defined the data generating process, but in the real world, the data generating process is more often than now unknown to the analyst). 
+#
+# There are a multitude of tests and ways to go about answering this question. A simple, off-the-shelf check is the bartlett sphericity test, which essentially just compares the correlation matrix of our covariates to the identity matrix. This test is used to check whether our covariate space can be reduced to a lower-dimensional space of factors that explain the variation in our data. 
+#
+# ### Tim, this would be a good place to add your other tests. I'm thinking of the bullet points below:
+# - We can hypothesize a causal graph, and run conditional independence tests. 
+# - Prior predictive checks? 
 
 from factor_analyzer.factor_analyzer import calculate_bartlett_sphericity,calculate_kmo
 
@@ -187,46 +203,15 @@ print("Bartlett sphericity test indicates potential latent confounder, with a p-
 
 # ## Fitting a factor model using 3 PCA variations.
 #
+# We fit three variations of PCA. This is not necessary indeed, but we wanted to see the robustness of our final estimates and their sensitivities to different variations of fitting the factor models. 
 #
-
-# ### Variable transformation
+# Notice that we use all of our X variables to fit the factor model (including variable c), consistent with the recommendation in Blei et al. 
+#
+#
 
 X_columns_red = ['a', 'b', 'c', 'd', 'e', 'f']
 
 X = np.array(df[X_columns_red])
-
-# +
-# X_columns = [
-#     'a',
-#        'b', 
-#     'c',
-#     'd',
-#     'e',
-#     'f'
-#             ]
-
-
-# X = np.array((df[X_columns] - df[X_columns].mean())/df[X_columns].std())
-
-
-# +
-# standardized_df = pd.DataFrame(X, columns = ['a','b','c','d','e','f'])
-
-# standardized_df['confounder'] = (df['confounder'] - df['confounder'].mean())/df['confounder'].std()
-
-# standardized_df.head()
-# -
-
-# ### estimate true coefficients on standardized variables
-
-# +
-# model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder ", data=standardized_df)
-# results_deconf = model_deconf.fit()
-# results_df_deconf = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
-# results_df_deconf['std_errors'] = results_deconf.bse
-# results_df_deconf['true_params'] = coeffs_true
-# results_df_deconf
-# -
 
 # ### Using sklearn
 
@@ -234,20 +219,6 @@ from sklearn.decomposition import PCA
 
 pca = PCA(n_components=1)
 principalComponents = pca.fit_transform(X)
-
-# ### Using the cross-validation: see function specified below
-
-U, Vt, train_err, test_err, M, resid = cv_pca(data=X, rank=1)
-train_err, test_err
-
-
-# +
-fig, ax = plt.subplots()
-display.display(pd.Series(resid[:,0]).hist(bins=100))
-
-# fig, ax = plt.subplots()
-display.display(pd.Series(resid[:,1]).hist(bins=100))
-# -
 
 # ### Using PPCA from Blei et. al's tutorial
 
@@ -327,7 +298,7 @@ print("P-value, average: ", pval_mode)
 display.display(sns.kdeplot(pvals[holdout_subjects]))
 
 # +
-np.random.seed(11)
+np.random.seed(10)
 
 num_subjects = 5
 fig, axes = plt.subplots(nrows = num_subjects, ncols=1, figsize = (10,20))
@@ -338,27 +309,38 @@ for i, ax in zip(range(num_subjects), axes.flat):
     ax.axvline(x=obs_ll_per_zi[subject_no], linestyle='--')
 
 plt.show()
+
+# +
+overall_ll_est = rep_ll_per_zi.mean(axis=1)
+
+overall_ll_obs = obs_ll_per_zi.mean()
+
+sns.kdeplot(overall_ll_est).set_title("Predictive check: Population")
+plt.axvline(x=overall_ll_obs, linestyle='--')
 # -
 
+overall_ll_est.shape
+
 # ## Visualizing the substitute confounder against the true confounder
+# Since we do know the values for the absolute confouder, we can actually in this case plot the recovered values against the true ones in a scatter plot and compare the fit. This is not possible in a real problem however, and we'll have to use the tests outlined in the previous sections (posterior predictive checks, etc.). 
+#
+# We can see that the confounder values recovered are highly correlated with the true confounder, suggesting that we $successfully$ recovered the confounder. 
+
+# +
+df['confounder_PCA_SKLEARN'] = principalComponents[:,0]
+
+df['confounder_PPCA'] = confounders[2]
+# -
 
 df.plot(kind='scatter', x = 'confounder_PCA_SKLEARN', y = 'confounder')
 
 df.plot(kind='scatter', x = 'confounder_PPCA', y = 'confounder')
 
-df.plot(kind='scatter', x = 'confounder_PCA_CV', y = 'confounder')
-
 # ## Re-estimating regression with and without confounder
 #
-# Notice I designed the simulation such that ommitting the confounder will flip the sign of the coefficient on $b$. When we add the confounder, estimated using any PCA variation, the coefficient on $b$ remains flipped. 
-
-# +
-df['confounder_PCA_SKLEARN'] = principalComponents[:,0]
-
-df['confounder_PCA_CV'] = U[:,0]
-
-df['confounder_PPCA'] = confounders[2]
-# -
+# Notice that the simulation was designed such that ommitting the confounder will flip the sign of the coefficient on $b$. When we add the confounder, estimated using any PCA variation, the coefficient on $b$ remains flipped. 
+#
+# In addition, the bias on the coefficient estimates on our variables of interest $a, b, d, e, and f$ did not necessarily decrease in a significant way. This is surprising, since the confounder we recovered does actually correlate very well with the true confounder. The next section explores the sensitivity of those coefficients to random noise added to the true confounder.
 
 model_deconf = smf.ols("y ~ a+b+c+d+e+f ", data=df)
 results_deconf = model_deconf.fit()
@@ -367,12 +349,14 @@ results_df_deconf['std_errors'] = results_deconf.bse
 results_df_deconf['true_params'] = coeffs_true[:-1]
 results_df_deconf
 
-model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_PCA_CV ", data=df)
-results_deconf = model_deconf.fit()
-results_df_deconf = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
-results_df_deconf['std_errors'] = results_deconf.bse
-results_df_deconf['true_params'] = coeffs_true
-results_df_deconf
+# +
+# model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_PCA_CV ", data=df)
+# results_deconf = model_deconf.fit()
+# results_df_deconf = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
+# results_df_deconf['std_errors'] = results_deconf.bse
+# results_df_deconf['true_params'] = coeffs_true
+# results_df_deconf
+# -
 
 model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_PCA_SKLEARN ", data=df)
 results_deconf = model_deconf.fit()
@@ -389,14 +373,25 @@ results_df_deconf['true_params'] = coeffs_true
 results_df_deconf
 
 # ## Adding random noise to the confounder and seeing how it affects the coefficients on the other variables
+#
+# Here, we simply create a new variable, which is the original confounder plus small random noise, and substitute the true confounder with the newly created confounder in the original regression to evaluate the sensitivity of the bias of our coefficients of interest to small random deviations from the true confounder. 
+#
+# We find that even with very small values of the random noise (mean of 0 and standard deviation of 0.2), we still get biased estimates of our effects of interest, especially on $b$. 
 
 # +
-coef=0.5
+"""
+We add random noise from a normal distribution of mean zero. We control the spread of this distribution
+using the parameter 'coef', which represents the standard deviation of this normal distribution of the noise. 
+"""
+
+coef=0.2
 
 df['confounder_2'] = df['confounder'] + coef*np.random.normal(loc=0,scale = 1, size = len(df))
 
 
 # -
+
+df.plot(kind='scatter', x = 'confounder_2', y = 'confounder')
 
 model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_2", data=df)
 results_deconf = model_deconf.fit()
@@ -405,12 +400,38 @@ results_df_deconf1['std_errors'] = results_deconf.bse
 results_df_deconf1['true_params'] = coeffs_true
 results_df_deconf1
 
-df.plot(kind='scatter', x = 'confounder_PCA_SKLEARN', y = 'confounder')
+results_df_deconf1.loc['b']
 
-df[['confounder', 'confounder_PPCA']].corr()
+# +
+b_est = []
+b_std = []
+
+coef=np.arange(0,1,.05)
+for i in coef:
+    df['confounder_i'] = df['confounder'] + i*np.random.normal(loc=0,scale = 1, size = len(df))
+    model_deconf = smf.ols("y ~ a+b+c+d+e+f+confounder_i", data=df)
+    results_deconf = model_deconf.fit()
+    results_df_deconf1 = pd.DataFrame(results_deconf.params, columns = ['estimated_params'])
+    results_df_deconf1['std_errors'] = results_deconf.bse
+    b_est.append(results_df_deconf1.loc['b'].iloc[0])
+    b_std.append(results_df_deconf1.loc['b'].iloc[1])
 
 
-# ## Functions and fun stuff
+# +
+fig, ax = plt.subplots(figsize=(16,9))
+ax.plot(coef, b_est, color = 'green', marker = 'o')
+ax.axhline(2, label = 'True Parameter', ls='--')
+
+ax.set_ylabel('Estimated Parameter', size = 18)
+ax.set_xlabel('Standard Deviation of Added Noise', size = 18)
+ax.set_title('Sensitivity of causal effect to random noise added to the confounder', size = 20)
+ax.legend()
+
+
+# -
+
+# ## Functions
+# Adapted from Blei et al and Alex Williams (http://alexhwilliams.info/itsneuronalblog/2018/02/26/censored-lstsq/)
 
 # +
 def create_confounded_df(x, y, slope, groups):
@@ -652,25 +673,6 @@ def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints, holdout_m
 
 
 
-def variational_model(qw_mean, qw_stddv, qz_mean, qz_stddv):
-    qw = ed.Normal(loc=qw_mean, scale=qw_stddv, name="qw")
-    qz = ed.Normal(loc=qz_mean, scale=qz_stddv, name="qz")
-    return qw, qz
-
-
-
-def target(w, z):
-    """Unnormalized target density as a function of the parameters."""
-    return log_joint(data_dim=data_dim,
-                   latent_dim=latent_dim,
-                   num_datapoints=num_datapoints,
-                   stddv_datapoints=stddv_datapoints,
-                   w=w, z=z, x=x_train)
-
-def target_q(qw, qz):
-    return log_q(qw_mean=qw_mean, qw_stddv=qw_stddv,
-               qz_mean=qz_mean, qz_stddv=qz_stddv,
-               qw=qw, qz=qz)
 
 def replace_latents(w, z):
 
@@ -684,16 +686,3 @@ def replace_latents(w, z):
         return rv_constructor(*rv_args, **rv_kwargs)
 
     return interceptor
-# -
-
-
-
-
-
-
-
-
-
-
-
-
