@@ -62,8 +62,8 @@ This document should store one's weekly reflections on the project. In particula
     3. Did not finish the presentation.
     4. I think it's time to bring in Joan/Vij this week for discussion/suggestion.
     
-10. 9. Week of Apr 26th, 2020
-    1. Nothing specific
-    2. Generated dataset for Hassan to work on deconfounder
+10. Week of May 3rd, 2020
+    1. Learned little more about refactoring
+    2. Worked on refactoring
     3. Did not finish refactoring
-    4. N/A
+    4. Align on objectives past 6/1 regarding extensibility of project and deep cleaning of repo.
