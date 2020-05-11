@@ -80,18 +80,18 @@ This document should store one's weekly reflections on the project. In particula
    1. Life was crazy, and I never updated the retrospective.
 
 13. Week of May 10th, 2020
-   1. This week, I learned more about myself. Specifically, I learned what I believe our contributions in this project are:
-      1. clearly demonstrating, in the context of discrete choice models, that one should care about the causal mechanism generating your explanatory variables.
-      The point being demonstrated is not new, but I believe the clear demonstration itself is a contribution.
-      2. demonstrating that drawing credible causal inferences in the face of unobserved confounding is hard AND that recent techniques for doing so (i.e. the deconfounder) do not immediately work well.
-      I do not believe this point about the deconfounder not immediately working well (for the reasons you found) has been made anywhere else; I therefore think it is a contribution.
-      3. demonstrating (again in the context of discrete choice) that there are fast, easy to use tests that show when one’s causal assumptions are grossly violated.
-      I believe this information can be critically useful, yet it is not widely known or written about in the discrete choice literature.
-   2. Talking with Joan and Vij last week was great for bringing up points where traditional choice modellers may (i) take issue with our work and (ii) see value in our work:
-      - thinking that the emphasis on the generating model for explanatory variables is old news due to the existence of activity based models.
-      - thinking that the methods for dealing with unobserved confounding are "just" hybrid choice models where the indicators are themselves explanatory variables
-      - being excited about ways to test different causal structures / orderings in an activity based model (e.g. destination choice before mode choice or vice versa).
-   3. It was again the case that I accomplished less than I wanted to in the week.
-   Job hunting, interview prepping, and doing research on the side is harder than I imagined.
-   4. This week, I think I should only attempt to do one thing: refactor my code.
-   It is unlikely that I can review the code of others and edit my own code, given the other job-search-related demands on my time.
+    1. This week, I learned more about myself. Specifically, I learned what I believe our contributions in this project are:
+       1. clearly demonstrating, in the context of discrete choice models, that one should care about the causal mechanism generating your explanatory variables.
+       The point being demonstrated is not new, but I believe the clear demonstration itself is a contribution.
+       2. demonstrating that drawing credible causal inferences in the face of unobserved confounding is hard AND that recent techniques for doing so (i.e. the deconfounder) do not immediately work well.
+       I do not believe this point about the deconfounder not immediately working well (for the reasons you found) has been made anywhere else; I therefore think it is a contribution.
+       3. demonstrating (again in the context of discrete choice) that there are fast, easy to use tests that show when one’s causal assumptions are grossly violated.
+       I believe this information can be critically useful, yet it is not widely known or written about in the discrete choice literature.
+    2. Talking with Joan and Vij last week was great for bringing up points where traditional choice modellers may (i) take issue with our work and (ii) see value in our work:
+       - thinking that the emphasis on the generating model for explanatory variables is old news due to the existence of activity based models.
+       - thinking that the methods for dealing with unobserved confounding are "just" hybrid choice models where the indicators are themselves explanatory variables
+       - being excited about ways to test different causal structures / orderings in an activity based model (e.g. destination choice before mode choice or vice versa).
+    3. It was again the case that I accomplished less than I wanted to in the week.
+    Job hunting, interview prepping, and doing research on the side is harder than  I imagined.
+    4. This week, I think I should only attempt to do one thing: refactor my code.
+    It is unlikely that I can review the code of others and edit my own code, given the other job-search-related demands on my time.
