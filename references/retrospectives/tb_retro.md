@@ -71,13 +71,13 @@ This document should store one's weekly reflections on the project. In particula
       - We should show whether our deconfounder results with real data vis-a-vis non-deconfounder results with real data are qualitatively consistent with our deconfounder results with realistically simulated data vis-a-vis non-deconfounder results with realistically simulated data. This will give us evidence about the trustworthiness of the qualitative conclusions of our results.
 
 10. Week of April 19th, 2020
-   1. Life was crazy, and I never updated the retrospective.
+    1. Life was crazy, and I never updated the retrospective.
 
 11. Week of April 26th, 2020
-   1. Life was crazy, and I never updated the retrospective.
+    1. Life was crazy, and I never updated the retrospective.
 
 12. Week of May 3rd, 2020
-   1. Life was crazy, and I never updated the retrospective.
+    1. Life was crazy, and I never updated the retrospective.
 
 13. Week of May 10th, 2020
     1. This week, I learned more about myself. Specifically, I learned what I believe our contributions in this project are:
