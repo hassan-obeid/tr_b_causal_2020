@@ -73,8 +73,13 @@ df = pd.read_csv(DATA_PATH)
 title_str = '{} vs {}, \nconditional on {}\n'
 print(title_str.format(x1_col, x2_col, z_col))
 
+drive_alone_filter = df[mode_id_col] == 1
+time_array = df.loc[drive_alone_filter, x1_col].values
+cost_array = df.loc[drive_alone_filter, x2_col].values
+distance_array = df.loc[drive_alone_filter, z_col].values
+
 ci.visual_permutation_test(
-    df, x1_col, x2_col, z_col, mode_id_col,
+    time_array, cost_array, distance_array,
     num_permutations=NUM_PERMUTATIONS,
     permutation_color=permuted_color)
 
@@ -82,11 +87,17 @@ ci.visual_permutation_test(
 new_x1_col = 'total_travel_cost'
 new_x2_col = 'cross_bay'
 
+drive_alone_filter = df[mode_id_col] == 1
+cost_array = df.loc[drive_alone_filter, new_x1_col].values
+cross_bay_array = df.loc[drive_alone_filter, new_x2_col].values
+distance_array = df.loc[drive_alone_filter, z_col].values
+
+
 title_str = '{} vs {}, \nconditional on {}\n'
 print(title_str.format(new_x1_col, new_x2_col, z_col))
 
 ci.visual_permutation_test(
-    df, new_x1_col, new_x2_col, z_col, mode_id_col,
+    cost_array, cross_bay_array, distance_array,
     num_permutations=NUM_PERMUTATIONS,
     permutation_color=permuted_color)
 # -
@@ -119,22 +130,12 @@ for i in tqdm(range(NUM_TEST_SIM)):
     # Just plot 1 simulation for visual comparison with real data
     current_close = True if i != 0 else False
 
-    # Package the simulated data together for the test
-    temp_df =\
-        pd.DataFrame({'sim_z': sim_z,
-                      'sim_x1': sim_x1,
-                      'sim_x2': sim_x2,
-                      'mode_id': tuple(1 for x in sim_x2),
-                    })
-
     # Carry out the permutation test
     current_p =\
         ci.visual_permutation_test(
-            temp_df,
-            'sim_x1',
-            'sim_x2',
-            'sim_z',
-             mode_id_col,
+             sim_x1,
+             sim_x2,
+             sim_z,
              num_permutations=NUM_PERMUTATIONS,
              seed=None,
              progress=False,
