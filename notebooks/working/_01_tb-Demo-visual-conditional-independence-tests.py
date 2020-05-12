@@ -14,9 +14,9 @@
 # ---
 
 # # Purpose
-# The point of this notebook is to demonstrate how to perform at least one type of visual, conditional independence test.
+# The point of this notebook is to demonstrate how to perform permutation-based, visual, conditional independence tests.
 #
-# In particular, the notebook will show how to visually test the following implication<br>
+# In particular, the notebook will show one way to visually and numerically test the following implication<br>
 # $
 # \begin{aligned}
 # P \left( X_1 \mid X_2, Z \right) &= P \left( X_1 \mid Z \right) \\
@@ -25,7 +25,11 @@
 # \end{aligned}
 # $
 #
-# In other words, if $X_1$ is conditionally independent of $X_2$ given $Z$, then the expectation of $X_1$ conditional on $X_2$ and $Z$ is equal to the expectation of $X_1$ conditional on just $Z$. This implies that shuffling the $X_2$ columns should make no difference to predicting $X_1$ once we've included the $Z$ column while predicting. This implies that we can permute the $X_2$ column and that it shouldn't substantively matter for predicting $X_1$ given that we've included $Z$ as a predictor.
+# In other words, if $X_1$ is conditionally independent of $X_2$ given $Z$, then the expectation of $X_1$ conditional on $X_2$ and $Z$ is equal to the expectation of $X_1$ conditional on just $Z$.
+# This implies that shuffling / permuting $X_2$ should make no difference for predicting $X_1$ once we've included $Z$ while predicting.
+#
+# In other words, one's ability predict to predict $X_1$ should not depend on whether one uses the original $X_2$ or the permuted $X_2$, as long as one conditions on $Z$ when predicting $X_1$.
+# This invariance will be tested by using a simple predictive model, linear regression, and comparing $r^2$ as a measure of predictive ability when using $Z$ and the original $X_2$ versus $r^2$ when using $Z$ and the permuted $X_2$.
 
 # +
 # Declare hyperparameters for testing
@@ -39,7 +43,6 @@ z_col = 'total_travel_distance'
 mode_id_col = 'mode_id'
 
 # Set the colors for plotting
-orig_color = '#045a8d'
 permuted_color = '#a6bddb'
 
 # Declare paths to data
@@ -48,7 +51,6 @@ DATA_PATH =\
 
 # +
 import sys
-from pdb import set_trace as bp
 
 import numpy as np
 import pandas as pd
@@ -60,164 +62,33 @@ import matplotlib.pyplot as plt
 
 from tqdm.notebook import tqdm
 
-from sklearn.ensemble import ExtraTreesRegressor, RandomForestRegressor
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
-
-# sys.path.insert(0, '../../src/')
-# import viz
+sys.path.insert(0, '../../src/')
+import testing.conditional_independence as ci
 # -
 
 # Load the raw data
 df = pd.read_csv(DATA_PATH)
 
-
 # +
-def _make_regressor(x_2d, y, seed=None):
-    # regressor_kwargs =\	    regressor = LinearRegression()
-    #     {'min_samples_leaf': MIN_SAMPLES_LEAF,
-    #      'max_samples': 0.8}
-    # if seed is not None:
-    #     regressor_kwargs['random_state'] = seed + 10
-    # regressor =\
-    #     RandomForestRegressor(**regressor_kwargs)
-    regressor = LinearRegression()
-    regressor.fit(x_2d, y)
-    return regressor
-
-
-def computed_vs_obs_r2(df,
-                       x1_col,
-                       x2_col,
-                       z_col,
-                       mode_id_col,
-                       seed,
-                       progress=True):
-    # Get the values to be used for testing
-    filter_array = (df[mode_id_col] == 1).values
-    obs_x1 = df[x1_col].values[filter_array]
-    obs_x2 = df[x2_col].values[filter_array]
-    obs_z = df[z_col].values[filter_array]
-
-    # Combine the various predictors
-    combined_obs_predictors =\
-        np.concatenate((obs_x2[:, None], obs_z[:, None]), axis=1)
-
-    # Determine the number of rows being plotted
-    num_rows = obs_x1.shape[0]
-
-    # Create a regressor to be used to compute the conditional expectations
-    regressor = _make_regressor(combined_obs_predictors, obs_x1, seed)
-
-    # Get the observed expectations
-    obs_expectation = regressor.predict(combined_obs_predictors)
-    obs_r2 = r2_score(obs_x1, obs_expectation)
-
-    # Initialize arrays to store the permuted expectations and r2's
-    permuted_expectations = np.empty((num_rows, NUM_PERMUTATIONS))
-    permuted_r2 = np.empty(NUM_PERMUTATIONS, dtype=float)
-
-    # Get the permuted expectations
-    shuffled_index_array = np.arange(num_rows)
-
-    iterable = range(NUM_PERMUTATIONS)
-    if progress:
-        iterable = tqdm(iterable)
-
-    for i in iterable:
-        # Shuffle the index array
-        np.random.shuffle(shuffled_index_array)
-        # Get the new set of permuted X_2 values
-        current_x2 = obs_x2[shuffled_index_array]
-        # Get the current combined predictors
-        current_predictors =\
-            np.concatenate((current_x2[:, None], obs_z[:, None]), axis=1)
-        # Fit a new model and store the current expectation
-        current_regressor =\
-            _make_regressor(current_predictors, obs_x1, seed)
-        permuted_expectations[:, i] =\
-            current_regressor.predict(current_predictors)
-        permuted_r2[i] = r2_score(obs_x1, permuted_expectations[:, i])
-    return obs_r2, permuted_r2
-
-
-def visualize_permutation_results(obs_r2,
-                                  permuted_r2,
-                                  verbose=True,
-                                  show=True,
-                                  close=False):
-    fig, ax = plt.subplots(figsize=(10, 6))
-    p_value = (obs_r2 < permuted_r2).mean()
-
-    if verbose:
-        msg =\
-            'The p-value of the permutation C.I.T. is {:.2f}.'
-        print(msg.format(p_value))
-
-    sbn.kdeplot(
-        permuted_r2, ax=ax, color=permuted_color, label='Simulated')
-    ax.vlines(obs_r2,
-              ax.get_ylim()[0],
-              ax.get_ylim()[1],
-              linestyle='dashed',
-              color='black',
-              label='Observed\np-val: {:0.3f}'.format(p_value,
-                                                      precision=1))
-
-    ax.set_xlabel(r'$r^2$', fontsize=13)
-    ax.set_ylabel(
-        'Density', fontdict={'fontsize':13, 'rotation':0}, labelpad=40)
-    ax.legend(loc='best')
-    sbn.despine()
-    if show:
-        fig.show()
-    if close:
-        plt.close(fig=fig)
-    return p_value
-
-
-def visual_permutation_test(df,
-                            x1_col,
-                            x2_col,
-                            z_col,
-                            mode_id_col,
-                            seed=1038,
-                            progress=True,
-                            verbose=True,
-                            show=True,
-                            close=False):
-    # Set a random seed for reproducibility
-    if seed is not None:
-        np.random.seed(seed)
-
-    # Compute the observed r2 and the permuted r2's
-    obs_r2, permuted_r2 =\
-        computed_vs_obs_r2(
-            df, x1_col, x2_col, z_col,
-            mode_id_col, seed, progress=progress)
-
-    # Visualize the results of the permutation test
-    p_value =\
-        visualize_permutation_results(
-            obs_r2, permuted_r2, verbose=verbose, show=show, close=close)
-    return p_value
-
-
-
-# -
-
-title_str = '{} vs {}, \nconditional on {}'
+title_str = '{} vs {}, \nconditional on {}\n'
 print(title_str.format(x1_col, x2_col, z_col))
-visual_permutation_test(df, x1_col, x2_col, z_col, mode_id_col)
+
+ci.visual_permutation_test(
+    df, x1_col, x2_col, z_col, mode_id_col,
+    num_permutations=NUM_PERMUTATIONS,
+    permutation_color=permuted_color)
 
 # +
 new_x1_col = 'total_travel_cost'
 new_x2_col = 'cross_bay'
 
-title_str = '{} vs {}, \nconditional on {}'
+title_str = '{} vs {}, \nconditional on {}\n'
 print(title_str.format(new_x1_col, new_x2_col, z_col))
 
-visual_permutation_test(df, new_x1_col, new_x2_col, z_col, mode_id_col)
+ci.visual_permutation_test(
+    df, new_x1_col, new_x2_col, z_col, mode_id_col,
+    num_permutations=NUM_PERMUTATIONS,
+    permutation_color=permuted_color)
 # -
 
 # ## Test `visual_permutation_test`
@@ -258,16 +129,19 @@ for i in tqdm(range(NUM_TEST_SIM)):
 
     # Carry out the permutation test
     current_p =\
-        visual_permutation_test(temp_df,
-                                'sim_x1',
-                                'sim_x2',
-                                'sim_z',
-                                mode_id_col,
-                                seed=None,
-                                progress=False,
-                                verbose=False,
-                                show=False,
-                                close=current_close)
+        ci.visual_permutation_test(
+            temp_df,
+            'sim_x1',
+            'sim_x2',
+            'sim_z',
+             mode_id_col,
+             num_permutations=NUM_PERMUTATIONS,
+             seed=None,
+             progress=False,
+             verbose=False,
+             permutation_color=permuted_color,
+             show=False,
+             close=current_close)
     # Store the resulting p-values
     test_p_vals[i] = current_p
 # -
@@ -323,9 +197,6 @@ ax.set_ylabel('Num Observations', rotation=0, labelpad=70, fontsize=13)
 sbn.despine()
 fig.show()
 # -
-
-# Look at another representation, a KDE, of the p-values under the null hypothesis.
-pd.Series(test_p_vals).plot(kind='kde')
 
 # ### Perform a computational / programmatic test of `visual_permutation_test`
 
