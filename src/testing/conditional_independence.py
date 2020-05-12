@@ -113,7 +113,7 @@ def visualize_permutation_results(obs_r2,
     ax.legend(loc='best')
     sbn.despine()
     if show:
-        fig.show()
+        plt.show()
     if close:
         plt.close(fig=fig)
     return p_value
