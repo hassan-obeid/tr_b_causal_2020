@@ -13,6 +13,20 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
+def _check_array_lengths(array_1, array_2, array_3):
+    if (array_1.size != array_2.size) or (array_1.size != array_3.size):
+        msg = 'All arrays MUST be of the same size.'
+        raise ValueError(msg)
+    return
+
+
+def _ensure_is_array(array_arg, name):
+    if not isinstance(array_arg, np.ndarray):
+        msg = '{} MUST be an instance of np.ndarray.'.format(name)
+        raise TypeError(msg)
+    return
+
+
 def _make_regressor(x_2d, y):
     # Note, linear regression used instead of Random Forest Regression since
     # the conditional independence test based on RandomForest regression did
@@ -23,37 +37,35 @@ def _make_regressor(x_2d, y):
     return regressor
 
 
-def computed_vs_obs_r2(df,
-                       x1_col,
-                       x2_col,
-                       z_col,
-                       mode_id_col,
+def computed_vs_obs_r2(x1_array,
+                       x2_array,
+                       z_array,
                        seed,
                        num_permutations=100,
                        progress=True):
+    # Validate argument type and lengths
+    _ensure_is_array(x1_array, 'x1_array')
+    _ensure_is_array(x2_array, 'x2_array')
+    _ensure_is_array(z_array, 'z_array')
+    _check_array_lengths(x1_array, x2_array, z_array)
+
     # Set a random seed for reproducibility
     if seed is not None:
         np.random.seed(seed)
 
-    # Get the values to be used for testing
-    filter_array = (df[mode_id_col] == 1).values
-    obs_x1 = df[x1_col].values[filter_array]
-    obs_x2 = df[x2_col].values[filter_array]
-    obs_z = df[z_col].values[filter_array]
-
     # Combine the various predictors
     combined_obs_predictors =\
-        np.concatenate((obs_x2[:, None], obs_z[:, None]), axis=1)
+        np.concatenate((x2_array[:, None], z_array[:, None]), axis=1)
 
     # Determine the number of rows being plotted
-    num_rows = obs_x1.shape[0]
+    num_rows = x1_array.shape[0]
 
     # Create a regressor to be used to compute the conditional expectations
-    regressor = _make_regressor(combined_obs_predictors, obs_x1)
+    regressor = _make_regressor(combined_obs_predictors, x1_array)
 
     # Get the observed expectations
     obs_expectation = regressor.predict(combined_obs_predictors)
-    obs_r2 = r2_score(obs_x1, obs_expectation)
+    obs_r2 = r2_score(x1_array, obs_expectation)
 
     # Initialize arrays to store the permuted expectations and r2's
     permuted_expectations = np.empty((num_rows, num_permutations))
@@ -70,16 +82,16 @@ def computed_vs_obs_r2(df,
         # Shuffle the index array
         np.random.shuffle(shuffled_index_array)
         # Get the new set of permuted X_2 values
-        current_x2 = obs_x2[shuffled_index_array]
+        current_x2 = x2_array[shuffled_index_array]
         # Get the current combined predictors
         current_predictors =\
-            np.concatenate((current_x2[:, None], obs_z[:, None]), axis=1)
+            np.concatenate((current_x2[:, None], z_array[:, None]), axis=1)
         # Fit a new model and store the current expectation
         current_regressor =\
-            _make_regressor(current_predictors, obs_x1)
+            _make_regressor(current_predictors, x1_array)
         permuted_expectations[:, i] =\
             current_regressor.predict(current_predictors)
-        permuted_r2[i] = r2_score(obs_x1, permuted_expectations[:, i])
+        permuted_r2[i] = r2_score(x1_array, permuted_expectations[:, i])
     return obs_r2, permuted_r2
 
 
@@ -119,11 +131,9 @@ def visualize_permutation_results(obs_r2,
     return p_value
 
 
-def visual_permutation_test(df,
-                            x1_col,
-                            x2_col,
-                            z_col,
-                            mode_id_col,
+def visual_permutation_test(x1_array,
+                            x2_array,
+                            z_array,
                             num_permutations=100,
                             seed=1038,
                             progress=True,
@@ -134,9 +144,8 @@ def visual_permutation_test(df,
     # Compute the observed r2 and the permuted r2's
     obs_r2, permuted_r2 =\
         computed_vs_obs_r2(
-            df, x1_col, x2_col, z_col,
-            mode_id_col, seed,
-            num_permutations=num_permutations, progress=progress)
+            x1_array, x2_array, z_array,
+            seed, num_permutations=num_permutations, progress=progress)
 
     # Visualize the results of the permutation test
     p_value =\
