@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Functions for performing permutation-based conditional independence tests.
+Functions for performing permutation-based independence tests. Marginal and
+conditional independence tests are supported.
 """
 import numpy as np
 
@@ -13,8 +14,11 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 
 
-def _check_array_lengths(array_1, array_2, array_3):
-    if (array_1.size != array_2.size) or (array_1.size != array_3.size):
+def _check_array_lengths(array_1, array_2, array_3=None):
+    size_condition_1 = (array_1.size != array_2.size)
+    size_condition_2 =\
+        False if array_3 is None else (array_1.size != array_3.size)
+    if size_condition_1 or size_condition_2:
         msg = 'All arrays MUST be of the same size.'
         raise ValueError(msg)
     return
@@ -25,6 +29,15 @@ def _ensure_is_array(array_arg, name):
         msg = '{} MUST be an instance of np.ndarray.'.format(name)
         raise TypeError(msg)
     return
+
+
+def _create_predictors(array_iterable):
+    if len(array_iterable) > 1:
+        combined_predictors =\
+            np.concatenate(tuple(x[:, None] for x in array_iterable), axis=1)
+    else:
+        combined_predictors = array_iterable[0][:, None]
+    return combined_predictors
 
 
 def _make_regressor(x_2d, y):
@@ -39,23 +52,31 @@ def _make_regressor(x_2d, y):
 
 def computed_vs_obs_r2(x1_array,
                        x2_array,
-                       z_array,
-                       seed,
+                       z_array=None,
+                       seed=None,
                        num_permutations=100,
                        progress=True):
     # Validate argument type and lengths
     _ensure_is_array(x1_array, 'x1_array')
     _ensure_is_array(x2_array, 'x2_array')
-    _ensure_is_array(z_array, 'z_array')
-    _check_array_lengths(x1_array, x2_array, z_array)
+    if z_array is not None:
+        _ensure_is_array(z_array, 'z_array')
+    _check_array_lengths(x1_array, x2_array, array_3=z_array)
 
     # Set a random seed for reproducibility
     if seed is not None:
         np.random.seed(seed)
 
+    # Determine how to create the predictors for the permutation test, based
+    # on whether we want a marginal independence test (i.e. z_array = None)
+    # or a conditional independence test (isinstance(z_array, np.ndarray))
+    def create_predictors(array_2):
+        if z_array is None:
+            return _create_predictors((array_2,))
+        return _create_predictors((array_2, z_array))
+
     # Combine the various predictors
-    combined_obs_predictors =\
-        np.concatenate((x2_array[:, None], z_array[:, None]), axis=1)
+    combined_obs_predictors = create_predictors(x2_array)
 
     # Determine the number of rows being plotted
     num_rows = x1_array.shape[0]
@@ -84,8 +105,7 @@ def computed_vs_obs_r2(x1_array,
         # Get the new set of permuted X_2 values
         current_x2 = x2_array[shuffled_index_array]
         # Get the current combined predictors
-        current_predictors =\
-            np.concatenate((current_x2[:, None], z_array[:, None]), axis=1)
+        current_predictors = create_predictors(current_x2)
         # Fit a new model and store the current expectation
         current_regressor =\
             _make_regressor(current_predictors, x1_array)
@@ -121,7 +141,7 @@ def visualize_permutation_results(obs_r2,
 
     ax.set_xlabel(r'$r^2$', fontsize=13)
     ax.set_ylabel(
-        'Density', fontdict={'fontsize':13, 'rotation':0}, labelpad=40)
+        'Density', fontdict={'fontsize': 13, 'rotation': 0}, labelpad=40)
     ax.legend(loc='best')
     sbn.despine()
     if show:
@@ -133,7 +153,7 @@ def visualize_permutation_results(obs_r2,
 
 def visual_permutation_test(x1_array,
                             x2_array,
-                            z_array,
+                            z_array=None,
                             num_permutations=100,
                             seed=1038,
                             progress=True,
@@ -144,8 +164,8 @@ def visual_permutation_test(x1_array,
     # Compute the observed r2 and the permuted r2's
     obs_r2, permuted_r2 =\
         computed_vs_obs_r2(
-            x1_array, x2_array, z_array,
-            seed, num_permutations=num_permutations, progress=progress)
+            x1_array, x2_array, z_array=z_array,
+            seed=seed, num_permutations=num_permutations, progress=progress)
 
     # Visualize the results of the permutation test
     p_value =\
