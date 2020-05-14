@@ -18,7 +18,12 @@
 # The study of note is
 # > Chiara, Giacomo Dalla, Lynette Cheah, Carlos Lima Azevedo, and Moshe E. Ben-Akiva. "A Policy-Sensitive Model of Parking Choice for Commercial Vehicles in Urban Areas." Transportation Science (2020).
 #
-# This notebook draw the causal diagram that we believes corresponds to the parking choice model in that paper. Additionally, this notebook will point out some tests that could have been done and should be presented to justify this paper's causal model, even before estimating parameters of the proposed choice models.
+# This notebook draw the causal diagram that we believes corresponds to the parking choice model in that paper.
+# We then point out some tests that could have been done and should be presented to justify this paper's causal model and its implicit assumptions, even before estimating parameters of the proposed choice models.
+# Finally, we will:
+# - note the importance of these implicit assumptions, and
+# - show this study may present a real example of our presentations simplified demsonstration of how incorrect causal graphs can lead to highly inaccurate causal effect estimates, even in selection-on-observables settings.
+#
 
 from causalgraphicalmodels import CausalGraphicalModel
 
@@ -96,10 +101,23 @@ parking_causal_model.draw()
 # - parking tariffs
 # - parking fines
 #
-# One is led to immediately wonder how parking duration relates to parking tariffs, parking fines, and vehicle attributes such as the type of vehicle owner (e.g. large corporation vs independent truck owner) and the type of goods being transported (large heavy loads vs small loads).
+# One is led to immediately wonder how parking duration relates to parking tariffs and vehicle attributes such as the type of vehicle owner (e.g. large corporation vs independent truck owner) and the type of goods being transported (large heavy loads vs small loads).
+# Additionally, it might be reasonable to expect that there may be unobserved confounders that lead to loading or unloading delays for all drivers at a particular parking facility, thus affecting both parking congestion and parking duration.
+# Finally, it makes sense that at locations with higher parking tariffs, that driver's and workers may have greater incentive to minimize parking duration to avoid higher costs.
 #
 # Chiara et al., state that they tread parking duration as "exogenous and known by the driver before making a parking choice" (p. 7).
-# This assumption seems a-priori suspect.
-# The causal graph above suggests testing this assumption by attempting to falsify the implicit assumption of:
-# - conditional independence between vehicle attributes and parking duration
+# Given the concerns in the preceding paragraph, the assumption that parking duration is exogeneous is a-priori suspect.
+# The causal graph above suggests testing this assumption by attempting to falsify the implicit assumptions of:
+# - marginal independence between vehicle attributes and parking duration
 # - marginal independence between parking duration and parking tariffs
+# - marginal independence between parking duration and parking congestion.
+#
+# The exogeneity assumption is crucially important, as noted by Chiara et al.
+# From a statistical perspective, the authors note on page 14 that,
+# > One necessary condition to obtain unbiased estimates of the unknown parameters is the exogeneity of the explana-tory variables.
+# Whenever an observable covariate is correlated with unobserved factors contained in the error term (hence its endogeneity), its coefficient estimate will capture not only the effect of the variable itself but also the effect of the correlated unobservedfactors on the utility (Train, 2003).
+#
+# From a causal perspective, the causal effect of the author's considered policy interventions depends on the assumed causal relationships.
+# **If parking duration is partially caused by parking tariffs, then the estimated causal effects of changing parking tariffs may be highly inaccurate because these downstream effects were ignored.**
+# Likewise, if parking duration is partially caused by vehicle attributes such as the type of goods being transported, then the considered interventions that limit parking durations to a given time may be unrealistic (i.e., not useful).
+# There may be physical limits to how low one's parking duration can be, given the type and quantity of goods being delivered or picked-up. 
