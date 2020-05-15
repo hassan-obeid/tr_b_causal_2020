@@ -558,7 +558,7 @@ def ind_spec_dist(data_long, obs_id_col, ind_spec, var_types, cont_dists):
     Function that retrieves distributions for all individual
     specific variables.
     """
-    ind_spec_dict = {}
+    ind_spec_dict = defaultdict(dict)
     for ind_var in ind_spec:
         # generate array of values for individual specific variable
         var_val =\
@@ -691,7 +691,7 @@ def get_dist_node_no_parent(data_long,
     as dictionaries containing both the distribution name and
     its parameters.
     """
-    params_dict = {}
+    params_dict = defaultdict(dict)
     
     # Code for Individual Specific Variables
     ind_spec_dic_params = ind_spec_dist(data_long, obs_id_col, ind_spec, var_types, cont_dists)
