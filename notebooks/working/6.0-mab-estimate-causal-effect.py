@@ -809,7 +809,7 @@ def SimNodeNoParent(params_dict, size=1000):
 
 # Function to record number of available alternatives
 # in each observation
-def getNumofAvAlts(data_long, obs_id_col):
+def get_num_of_av_alts(data_long, obs_id_col):
     """
     Get the number of available alternatives
     from a long format dataset.
@@ -828,7 +828,7 @@ def getNumofAvAlts(data_long, obs_id_col):
     return series
 
 # Function to simulate availability matrix
-def getAvailabilityMatrix(num_alts, sim_size, alt_name_dict):
+def sim_availability_matrix(num_alts, sim_size, alt_name_dict):
     """
     Get the availability matrix based on the number of
     available alternatives, the simulation size,
@@ -861,7 +861,22 @@ def getAvailabilityMatrix(num_alts, sim_size, alt_name_dict):
     AV_Df = pd.DataFrame(data=av_sim, columns=AV_columns)
     return AV_Df
 
-def SimulateAvailability(data_long, sim_size, obs_id_col, alt_name_dict):
+# Function to generate fake choice column
+# this functionality will be relocated to
+# a different function, most likely a function
+# that merges availability matrix and simulated
+# data or a function that converts to long_data
+def sim_fake_choice_col(AV_matrix, sim_col='sim_choice'):
+    # Create an random choice column based on available
+    # alternatives for each observation - This column will
+    # be needed when converting to long data -- this will
+    # be moved to a different column
+    available_alt_indices = lambda av_row: np.nonzero(av_row == 1)[0]
+    fake_choice = [random.choice(available_alt_indices(a)) + 1 for a in np.array(AV_matrix)]
+    fake_choice_df = pd.DataFrame(fake_choice, columns=[sim_col])
+    return fake_choice_df
+
+def simulate_availability(data_long, sim_size=1000, obs_id_col, alt_name_dict):
     """
     Function to simulate alternative availability based on a long format
     dataset and join the availability data to the simulated dataset
@@ -893,27 +908,15 @@ def SimulateAvailability(data_long, sim_size, obs_id_col, alt_name_dict):
     
     """
     # Get an array of the number of available alternatives
-    num_alts = getNumofAvAlts(data_long, obs_id_col):
+    num_alts = get_num_of_av_alts(data_long,
+                                  obs_id_col):
     
     #Create an availability dataframe
-    AV_Df = getAvailabilityMatrix(num_alts, sim_size, alt_name_dict)
+    AV_Df = sim_availability_matrix(num_alts,
+                                    sim_size,
+                                    alt_name_dict)
     
     return AV_Df
-
-
-# Function to generate fake choice column
-# this functionality will be relocated to
-# a different function, most likely a function
-# that merges availability matrix and simulated
-# data or a function that converts to long_data
-def createFakeChoiceCol(AV_matrix):
-    # Create an random choice column based on available
-    # alternatives for each observation - This column will
-    # be needed when converting to long data -- this will
-    # be moved to a different column
-    fake_choice = [random.choice(np.nonzero(a == 1)[0]) + 1 for a in np.array(AV_matrix)]
-    fake_choice_df = pd.DataFrame(fake_choice, columns=['sim_choice'])
-    return fake_choice_df
 
 
 # %%
