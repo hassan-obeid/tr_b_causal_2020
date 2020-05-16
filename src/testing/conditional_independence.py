@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Functions for performing permutation-based independence tests. Marginal and
-conditional independence tests are supported.
+Functions for performing permutation-based, falsification tests of marginal and
+conditional independence.
 """
 import numpy as np
 
@@ -19,6 +19,9 @@ from typing import Tuple, Sequence, Optional
 def _check_array_lengths(array_1: np.ndarray,
                          array_2: np.ndarray,
                          array_3: np.ndarray=None) -> None:
+    """
+    Ensures that all arrays have equal size.
+    """
     size_condition_1 = (array_1.size != array_2.size)
     size_condition_2 =\
         False if array_3 is None else (array_1.size != array_3.size)
@@ -29,6 +32,9 @@ def _check_array_lengths(array_1: np.ndarray,
 
 
 def _ensure_is_array(array_arg: np.ndarray, name: str) -> None:
+    """
+    Ensures that `array_arg` is a numpy array array.
+    """
     if not isinstance(array_arg, np.ndarray):
         msg = '{} MUST be an instance of np.ndarray.'.format(name)
         raise TypeError(msg)
@@ -36,6 +42,10 @@ def _ensure_is_array(array_arg: np.ndarray, name: str) -> None:
 
 
 def _create_predictors(array_iterable: Sequence[np.ndarray]) -> np.ndarray:
+    """
+    Creates the input, 2D numpy array for an sklearn regressor. Each array in
+    `array_iterable` is assumed to be 1D.
+    """
     if len(array_iterable) > 1:
         combined_predictors =\
             np.concatenate(tuple(x[:, None] for x in array_iterable), axis=1)
@@ -45,6 +55,10 @@ def _create_predictors(array_iterable: Sequence[np.ndarray]) -> np.ndarray:
 
 
 def _make_regressor(x_2d: np.ndarray, y: np.ndarray) -> LinearRegression:
+    """
+    Creates a LinearRegression regressor based on the input design matrix
+    `x_2d` and target variable `y`.
+    """
     # Note, linear regression used instead of Random Forest Regression since
     # the conditional independence test based on RandomForest regression did
     # not pass the unit tests meant to assess whether the test statistic was
@@ -60,6 +74,41 @@ def computed_vs_obs_r2(x1_array: np.ndarray,
                        seed: Optional[int]=None,
                        num_permutations: int=100,
                        progress: bool=True) -> Tuple[float, np.ndarray]:
+    """
+    Using sklearn's default LinearRegression regressor to predict `x1_array`
+    given `x2_array` (and optionally, `z_array`), this function computes
+    r2 using the observed `x2_array` and permuted versions of `x2_array`.
+
+    Parameters
+    ----------
+    x1_array : 1D np.ndarray.
+        Denotes the target variable to be predicted.
+    x2_array : 1D np.ndarray.
+        Denotes the explanatory variable to be used and permuted when trying to
+        predict `x1_array`.
+    z_array : optional, 1D ndarray or None.
+        Detnoes an explanatory variable to be conditioned on, but not to be
+        permuted when predicting `x1_array`. Default == None.
+    seed : optional, positive int or None.
+        Denotes the random seed to be used when permuting `x2_array`.
+        Default == None.
+    num_permutations : optional, positive int.
+        Denotes the number of permutations to use when predicting `x1_array`.
+        Default == 100.
+    progress : optional, bool.
+        Denotes whether or not a tqdm progress bar should be displayed as this
+        function is run. Default == True.
+
+    Returns
+    -------
+    obs_r2 : float
+        Denotes the r2 value obtained using `x2_array` to predict `x1_array`,
+        given `z_array` if it was not None.
+    permuted_r2 : 1D np.ndarray
+        Should have length `num_permutations`. Each element denotes the r2
+        attained using a permuted version of `x2_array` to predict `x1_array`,
+        given `z_array` if it was not None.
+    """
     # Validate argument type and lengths
     _ensure_is_array(x1_array, 'x1_array')
     _ensure_is_array(x2_array, 'x2_array')
@@ -125,6 +174,37 @@ def visualize_permutation_results(obs_r2: float,
                                   permutation_color: str='#a6bddb',
                                   show: bool=True,
                                   close: bool=False) -> float:
+    """
+    Parameters
+    ----------
+    obs_r2 : float
+        Denotes the r2 value obtained using `x2_array` to predict `x1_array`,
+        given `z_array` if it was not None.
+    permuted_r2 : 1D np.ndarray
+        Should have length `num_permutations`. Each element denotes the r2
+        attained using a permuted version of `x2_array` to predict `x1_array`,
+        given `z_array` if it was not None.
+    verbose : optional, bool.
+        Denotes whether or not the p-value of the permutation test will be
+        printed to the stdout. Default == True.
+    permutation_color : optional, str.
+        Denotes the color of the kernel density estimate used to visuale the
+        distribution of r2 from the permuted values of `x2_array`.
+        Default == '#a6bddb'.
+    show : optional, bool.
+        Denotes whether the matplotlib figure that visualizes the results of
+        the permutation test should be shown. Default == True.
+    close : optional, bool.
+        Denotes whether the matplotlib figure that visualizes the results of
+        the permutation test should be closed. Default == False.
+
+    Returns
+    -------
+    p_value : float.
+        The p-value of the visual permutation test, denoting the percentage of
+        times that the r2 with permuted `x2_array` was greater than the r2 with
+        the observed `x2_array`.
+    """
     fig, ax = plt.subplots(figsize=(10, 6))
     p_value = (obs_r2 < permuted_r2).mean()
 
@@ -165,6 +245,52 @@ def visual_permutation_test(x1_array: np.ndarray,
                             permutation_color: str='#a6bddb',
                             show: bool=True,
                             close: bool=False) -> float:
+    """
+    Performs a visual permutation test of the hypothesis that the expected
+    value of `x1_array`, given `x2_array` and (optionally) `z_array`, is equal
+    to the expected value of `x1_array` given permuted values of `x2_array` and
+    (optionally) `z_array`.
+
+    Parameters
+    ----------
+    x1_array : 1D np.ndarray.
+        Denotes the target variable to be predicted.
+    x2_array : 1D np.ndarray.
+        Denotes the explanatory variable to be used and permuted when trying to
+        predict `x1_array`.
+    z_array : optional, 1D ndarray or None.
+        Detnoes an explanatory variable to be conditioned on, but not to be
+        permuted when predicting `x1_array`. Default == None.
+    num_permutations : optional, positive int.
+        Denotes the number of permutations to use when predicting `x1_array`.
+        Default == 100.
+    seed : optional, positive int or None.
+        Denotes the random seed to be used when permuting `x2_array`.
+        Default == None.
+    progress : optional, bool.
+        Denotes whether or not a tqdm progress bar should be displayed as this
+        function is run. Default == True.
+    verbose : optional, bool.
+        Denotes whether or not the p-value of the permutation test will be
+        printed to the stdout. Default == True.
+    permutation_color : optional, str.
+        Denotes the color of the kernel density estimate used to visuale the
+        distribution of r2 from the permuted values of `x2_array`.
+        Default == '#a6bddb'.
+    show : optional, bool.
+        Denotes whether the matplotlib figure that visualizes the results of
+        the permutation test should be shown. Default == True.
+    close : optional, bool.
+        Denotes whether the matplotlib figure that visualizes the results of
+        the permutation test should be closed. Default == False.
+
+    Returns
+    -------
+    p_value : float.
+        The p-value of the visual permutation test, denoting the percentage of
+        times that the r2 with permuted `x2_array` was greater than the r2 with
+        the observed `x2_array`.
+    """
     # Compute the observed r2 and the permuted r2's
     obs_r2, permuted_r2 =\
         computed_vs_obs_r2(
