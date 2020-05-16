@@ -432,6 +432,13 @@ def is_empirical(var_type):
     """
     return var_type in ['constant','numerical']
 
+def is_constant(var_type): ##to be rethought
+    """
+    Checks whether a variable has a constant
+    value.
+    """
+    return var_type == 'constant'
+
 def is_empirical(var_type):
     """
     Checks whether the variable type for the
@@ -442,7 +449,8 @@ def is_empirical(var_type):
 
 ## Function for checking if variable is categorical
 def is_categorical(var_type):
-    """Checks whether the variable type for the
+    """
+    Checks whether the variable type for the
     variable of interest is categorical.
     """
     return var_type == 'categorical'
@@ -521,6 +529,10 @@ def get_continuous_dist(var, var_val, alt_name=None, cont_dists): #alt_name_dic[
     return cont_dict
 
 def get_distribution_dicts(var, var_type, var_val, alt_name=None, cont_dists):
+    """
+    Helper function to generate a distribution dictionary
+    for the variable specified.
+    """
     # If data is categorical
     if is_empirical(var_type):
         # If only one category
@@ -805,7 +817,9 @@ def sim_node_no_parent(params_dict, size=1000):
             variable = params_dict[column]
             var_dist = variable['distribution']
             var_dist_params = variable['parameters']
-            sim_df[column] = sim_from_distribution(var_dist, var_dist_params, size)
+            sim_df[column] = sim_from_distribution(var_dist,
+                                                   var_dist_params,
+                                                   size)
 
     return sim_df
 
