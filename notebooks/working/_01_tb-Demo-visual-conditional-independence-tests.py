@@ -63,7 +63,7 @@ import matplotlib.pyplot as plt
 from tqdm.notebook import tqdm
 
 sys.path.insert(0, '../../src/')
-import testing.conditional_independence as ci
+import testing.observable_independence as oi
 # -
 
 # Load the raw data
@@ -78,7 +78,7 @@ time_array = df.loc[drive_alone_filter, x1_col].values
 cost_array = df.loc[drive_alone_filter, x2_col].values
 distance_array = df.loc[drive_alone_filter, z_col].values
 
-ci.visual_permutation_test(
+oi.visual_permutation_test(
     time_array, cost_array, distance_array,
     num_permutations=NUM_PERMUTATIONS,
     permutation_color=permuted_color)
@@ -96,7 +96,7 @@ distance_array = df.loc[drive_alone_filter, z_col].values
 title_str = '{} vs {}, \nconditional on {}\n'
 print(title_str.format(new_x1_col, new_x2_col, z_col))
 
-ci.visual_permutation_test(
+oi.visual_permutation_test(
     cost_array, cross_bay_array, distance_array,
     num_permutations=NUM_PERMUTATIONS,
     permutation_color=permuted_color)
@@ -132,7 +132,7 @@ for i in tqdm(range(NUM_TEST_SIM)):
 
     # Carry out the permutation test
     current_p =\
-        ci.visual_permutation_test(
+        oi.visual_permutation_test(
              sim_x1,
              sim_x2,
              sim_z,

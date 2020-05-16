@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Functions for performing permutation-based, falsification tests of marginal and
-conditional independence.
+Functions for performing permutation-based, falsification tests of observable,
+marginal and conditional independence assumptions.
 """
 import numpy as np
 

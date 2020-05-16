@@ -58,7 +58,7 @@ import matplotlib.pyplot as plt
 from tqdm.notebook import tqdm
 
 sys.path.insert(0, '../../src/')
-import testing.conditional_independence as ci
+import testing.observable_independence as oi
 ```
 
 ```python
@@ -74,7 +74,7 @@ drive_alone_filter = df[mode_id_col] == 1
 license_array = df.loc[drive_alone_filter, x1_col].values
 num_cars_array = df.loc[drive_alone_filter, x2_col].values
 
-ci.visual_permutation_test(
+oi.visual_permutation_test(
     license_array, num_cars_array, z_array=None,
     seed=1038,
     num_permutations=NUM_PERMUTATIONS,
@@ -108,7 +108,7 @@ for i in tqdm(range(NUM_TEST_SIM)):
 
     # Carry out the permutation test
     current_p =\
-        ci.visual_permutation_test(
+        oi.visual_permutation_test(
             sim_x1,
             sim_x2,
             z_array=None,
