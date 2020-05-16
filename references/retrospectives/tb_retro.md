@@ -95,3 +95,9 @@ This document should store one's weekly reflections on the project. In particula
     Job hunting, interview prepping, and doing research on the side is harder than  I imagined.
     4. This week, I think I should only attempt to do one thing: refactor my code.
     It is unlikely that I can review the code of others and edit my own code, given the other job-search-related demands on my time.
+
+14. Week of May 17th, 2020
+   1. I learned that a potentially good way to identify discrete choice papers that estimate causal effects is to search for papers containing both "discrete choice" and either "control function" or "instrumental variable".
+   2. What went well is that I refactored the notebooks demonstration conditional and marginal independence tests, and I found an example of a recently published paper that I think demonstrates the pitfalls of ignoring the key messages from our presentation.
+   3. What went poorly is that I recognized the need for a separate file in the `src` directory that would generate the conditional independence plot needed for the presentation but I did not create the needed file.
+   4. For next week, I need to both create the needed file just described, and also refactor the notebook demonstration predictive conditional independence tests.
