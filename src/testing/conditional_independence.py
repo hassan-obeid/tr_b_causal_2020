@@ -13,8 +13,12 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 
+from typing import Tuple, Sequence, Optional
 
-def _check_array_lengths(array_1, array_2, array_3=None):
+
+def _check_array_lengths(array_1: np.ndarray,
+                         array_2: np.ndarray,
+                         array_3: np.ndarray=None) -> None:
     size_condition_1 = (array_1.size != array_2.size)
     size_condition_2 =\
         False if array_3 is None else (array_1.size != array_3.size)
@@ -24,14 +28,14 @@ def _check_array_lengths(array_1, array_2, array_3=None):
     return
 
 
-def _ensure_is_array(array_arg, name):
+def _ensure_is_array(array_arg: np.ndarray, name: str) -> None:
     if not isinstance(array_arg, np.ndarray):
         msg = '{} MUST be an instance of np.ndarray.'.format(name)
         raise TypeError(msg)
     return
 
 
-def _create_predictors(array_iterable):
+def _create_predictors(array_iterable: Sequence[np.ndarray]) -> np.ndarray:
     if len(array_iterable) > 1:
         combined_predictors =\
             np.concatenate(tuple(x[:, None] for x in array_iterable), axis=1)
@@ -40,7 +44,7 @@ def _create_predictors(array_iterable):
     return combined_predictors
 
 
-def _make_regressor(x_2d, y):
+def _make_regressor(x_2d: np.ndarray, y: np.ndarray) -> LinearRegression:
     # Note, linear regression used instead of Random Forest Regression since
     # the conditional independence test based on RandomForest regression did
     # not pass the unit tests meant to assess whether the test statistic was
@@ -50,12 +54,12 @@ def _make_regressor(x_2d, y):
     return regressor
 
 
-def computed_vs_obs_r2(x1_array,
-                       x2_array,
-                       z_array=None,
-                       seed=None,
-                       num_permutations=100,
-                       progress=True):
+def computed_vs_obs_r2(x1_array: np.ndarray,
+                       x2_array: np.ndarray,
+                       z_array: Optional[np.ndarray]=None,
+                       seed: Optional[int]=None,
+                       num_permutations: int=100,
+                       progress: bool=True) -> Tuple[float, np.ndarray]:
     # Validate argument type and lengths
     _ensure_is_array(x1_array, 'x1_array')
     _ensure_is_array(x2_array, 'x2_array')
@@ -115,12 +119,12 @@ def computed_vs_obs_r2(x1_array,
     return obs_r2, permuted_r2
 
 
-def visualize_permutation_results(obs_r2,
-                                  permuted_r2,
-                                  verbose=True,
-                                  permutation_color='#a6bddb',
-                                  show=True,
-                                  close=False):
+def visualize_permutation_results(obs_r2: float,
+                                  permuted_r2: np.ndarray,
+                                  verbose: bool=True,
+                                  permutation_color: str='#a6bddb',
+                                  show: bool=True,
+                                  close: bool=False) -> float:
     fig, ax = plt.subplots(figsize=(10, 6))
     p_value = (obs_r2 < permuted_r2).mean()
 
@@ -151,16 +155,16 @@ def visualize_permutation_results(obs_r2,
     return p_value
 
 
-def visual_permutation_test(x1_array,
-                            x2_array,
-                            z_array=None,
-                            num_permutations=100,
-                            seed=1038,
-                            progress=True,
-                            verbose=True,
-                            permutation_color='#a6bddb',
-                            show=True,
-                            close=False):
+def visual_permutation_test(x1_array: np.ndarray,
+                            x2_array: np.ndarray,
+                            z_array: Optional[np.ndarray]=None,
+                            num_permutations: int=100,
+                            seed: int=1038,
+                            progress: bool=True,
+                            verbose: bool=True,
+                            permutation_color: str='#a6bddb',
+                            show: bool=True,
+                            close: bool=False) -> float:
     # Compute the observed r2 and the permuted r2's
     obs_r2, permuted_r2 =\
         computed_vs_obs_r2(
