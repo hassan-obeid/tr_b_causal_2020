@@ -940,56 +940,81 @@ def sim_fake_choice_col(AV_matrix, sim_col='sim_choice'):
 
 
 # %%
-def FitAlternativeRegression(regressions, reg_types, data):
 
-def isLinear(variable):
+def is_linear(variable):
     return variable == 'linear'
-def isLogistic(variable):
-    return variable == 'logistic'
 
-def fitLinearRegression(data[regressions[reg]]):
-    data_x = sm.add_constant(data[regressions[reg][0]])
-    data_y = data[regressions[reg][1]]
-    model = sm.OLS(data_y, data_x)
-    # Fit model
-    results = model.fit()
-    return results
-    # Initiate the regressions results dictionary
-    regression_results = {}
+def is_bin_log(variable):
+    return variable == 'binary_logistic'
 
-def fitBinomialRegression(data[regressions[reg]]):
+def fit_linear_reg(X, Y):
     # Prepare data and initialize model
-    data_x = sm.add_constant(data[regressions[reg][0]])
-    data_y = data[regressions[reg][1]]
-    model = sm.Logit(data_y, data_x)
+    X = sm.add_constant(X)
+    lin_reg = sm.OLS(X, Y)
     # Fit model
-    results = model.fit()
-    return results
-    
+    model = lin_reg.fit()
+    return model
+
+def fit_binomial_reg(X, Y):
+    # Prepare data and initialize model
+    X = sm.add_constant(X)
+    bin_reg = sm.Logit(X, Y)
+    # Fit model
+    model = bin_reg.fit()
+    return model
+
+def fit_multinomial_reg(X, Y):
+    # Prepare data and initialize model
+    # regressions[reg][0] COULD be a list
+    # Check the length, and reshape if
+    # array is 1d.
+    if len(X.shape) == 1:
+        X = X.values.reshape((-1,1))
+
+    multinomial_reg = LogisticRegression(multi_class='multinomial',
+                                         solver='newton-cg')
+    # Fit model
+    model = multinomial_reg.fit(X, Y)
+    return model
+
+def get_regression_name(x_var, y_var):
+    if len(y_var) == 1:
+        reg_name = y_var + '_on_' + x_var
+    else: ## need to compe up with a better way to dump dep variable
+        reg_name = json.dumps(y_var) + '_on_' + x_var
+    return reg_name
+
+def fit_regression(regression, reg_type, data):
+    reg_result = defaultdict(dict)
+    x_var = regression[0]
+    y_var = regression[1]
+    x_data = data[x_var]
+    y_data = data[y_var]
+    # If linear regression
+    if is_linear(reg_type):
+        model = fit_linear_reg(x_data, y_data)
+        regression_name = get_regression_name(x_var, y_var)
+        # Store model results
+        reg_result[regression_name] = model
+
+    # If logistic regression **TODO: Expand on
+    # logistic regression
+    elif is_bin_log(reg_type):
+        model = fit_binomial_reg(x_data, y_data)
+        regression_name = get_regression_name(x_var, y_var)
+        # Store model results
+        reg_result[regression_name] = model
+    else:
+        # Store model - TODO: come up with a better representation
+        # of the regression name in the dictionary.
+        model = fit_multinomial_reg(x_data, y_data)
+        regression_name = get_regression_name(x_var, y_var)
+        # Store model results
+        reg_result[regression_name] = model
+    return reg_result
+
+def fit_alternative_regression(regressions, reg_types, data):
     # Loop around the regressions
-    for reg in regressions.keys():
-        # If linear regression
-        if isLinear(reg_types[reg]):
-            # Store model
-            regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = fitLinearRegression(data[regressions[reg]])
-        
-        # If logistic regression **TODO: Expand on
-        # logistic regression
-        if isLogistic(reg_types[reg]):
-            
-            # Store model
-            regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = fitBinomialRegression(data[regressions[reg]])
-    
-    #if plotting:
-    #    fig = plt.figure(figsize=(12,8))
-    #    fig = sm.graphics.plot_regress_exog(results, X[0], fig=fig)
-    
-    return regression_results
-
-
-# %%
-def FitAlternativeRegression(regressions, reg_types, data):
-    
     """
     Function to store regression models based on causal graph
     in a dictionary.
@@ -1009,7 +1034,7 @@ def FitAlternativeRegression(regressions, reg_types, data):
         order of regressions. Keys should be similar to the
         keys from the `regressions` dictionary. Values are
         strings representing the type of regressions to be
-        ran. **TODO: add more regressions**
+        ran.
         
     Returns
     -------
@@ -1018,44 +1043,87 @@ def FitAlternativeRegression(regressions, reg_types, data):
     models can be accessed through the values of the dictionary.
     """
     
-    # Initiate the regressions results dictionary
-    regression_results = {}
-    
-    # Loop around the regressions
-    for reg in regressions.keys():
+    reg_results = defaultdict(dict)
+    for reg_id in regressions.keys():
+        regression = regressions[reg_id]
+        reg_type = reg_types[reg_id]
         # If linear regression
-        if reg_types[reg] == 'linear':
-            # Prepare data and initialize model
-            data_x = sm.add_constant(data[regressions[reg][0]])
-            data_y = data[regressions[reg][1]]
-            model = sm.OLS(data_y, data_x)
+        reg_result = fit_regression(regression,
+                                    reg_type,
+                                    data)
+        reg_results.update(reg_result)
+    
+    return reg_results
 
-            # Fit model
-            results = model.fit()
-            
-            # Store model
-            regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = results
+
+# %%
+# def FitAlternativeRegression(regressions, reg_types, data):
+    
+#     """
+#     Function to store regression models based on causal graph
+#     in a dictionary.
+    
+#     Parameters
+#     ----------
+#     regressions: dictionary
+#         Dictionary with keys as integers representing the
+#         order of regressions. Values of the dictionary
+#         are tuples/lists with the first item is a string
+#         of the name of the independent variable and the
+#         second item is a string of the name of the 
+#         dependent variable.
+    
+#     reg_types: dictionary
+#         Dictionary with keys as integers representing the
+#         order of regressions. Keys should be similar to the
+#         keys from the `regressions` dictionary. Values are
+#         strings representing the type of regressions to be
+#         ran. **TODO: add more regressions**
         
-        # If logistic regression **TODO: Expand on
-        # logistic regression
-        if reg_types[reg] == 'logistic':
-            # Prepare data and initialize model
-            data_x = sm.add_constant(data[regressions[reg][0]])
-            data_y = data[regressions[reg][1]]
-            model = sm.Logit(data_y, data_x)
+#     Returns
+#     -------
+#     Dictionary with keys as the regression name and values
+#     as regression models stores. Methods from these fitted
+#     models can be accessed through the values of the dictionary.
+#     """
+    
+#     # Initiate the regressions results dictionary
+#     regression_results = {}
+    
+#     # Loop around the regressions
+#     for reg in regressions.keys():
+#         # If linear regression
+#         if reg_types[reg] == 'linear':
+#             # Prepare data and initialize model
+#             data_x = sm.add_constant(data[regressions[reg][0]])
+#             data_y = data[regressions[reg][1]]
+#             model = sm.OLS(data_y, data_x)
 
-            # Fit model
-            results = model.fit()
+#             # Fit model
+#             results = model.fit()
             
-            # Store model
-            regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = results
-    
-    #if plotting:
-    #    fig = plt.figure(figsize=(12,8))
-    #    fig = sm.graphics.plot_regress_exog(results, X[0], fig=fig)
-    
-    return regression_results
+#             # Store model
+#             regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = results
+        
+#         # If logistic regression **TODO: Expand on
+#         # logistic regression
+#         if reg_types[reg] == 'logistic':
+#             # Prepare data and initialize model
+#             data_x = sm.add_constant(data[regressions[reg][0]])
+#             data_y = data[regressions[reg][1]]
+#             model = sm.Logit(data_y, data_x)
 
+#             # Fit model
+#             results = model.fit()
+            
+#             # Store model
+#             regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = results
+    
+#     #if plotting:
+#     #    fig = plt.figure(figsize=(12,8))
+#     #    fig = sm.graphics.plot_regress_exog(results, X[0], fig=fig)
+    
+#     return regression_results
 
 # %%
 def PlotParams(sim_par, model, fig_size):
@@ -1170,6 +1238,9 @@ if "Unnamed: 0" in bike_data_long.columns:
 
 print("The columns of bike_data are:")
 bike_data_long.columns
+
+# %%
+bike_data_long[('total_travel_distance','total_travel_cost')]
 
 # %%
 # Look at the mode shares in the data set
@@ -1535,7 +1606,8 @@ Drive_Alone_Df = bike_data_long[bike_data_long['mode_id']==1]
 Drive_Alone_Df.reset_index(drop=True,inplace=True)
 Drive_Alone_Reg = FitAlternativeRegression(regressions={1:('total_travel_distance','total_travel_cost'),
                                                         2:('total_travel_distance','total_travel_time')},
-                                           reg_types={1:'linear',2:'linear'},
+                                           reg_types={1:'linear',
+                                                      2:'linear'},
                                            data = Drive_Alone_Df)
 
 # %% [markdown]
@@ -1548,7 +1620,7 @@ V_Shared_2.draw()
 Shared_2_Df = bike_data_long[bike_data_long['mode_id']==2]
 Shared_2_Df.reset_index(drop=True,inplace=True)
 Shared_2_Reg = FitAlternativeRegression(regressions={1:('total_travel_distance','total_travel_cost'),
-                                                        2:('total_travel_distance','total_travel_time')},
+                                                     2:('total_travel_distance','total_travel_time')},
                                            reg_types={1:'linear',2:'linear'},
                                            data = Shared_2_Df)
 
@@ -1562,7 +1634,7 @@ V_Shared_3p.draw()
 Shared_3p_Df = bike_data_long[bike_data_long['mode_id']==3]
 Shared_3p_Df.reset_index(drop=True,inplace=True)
 Shared_3p_Reg = FitAlternativeRegression(regressions={1:('total_travel_distance','total_travel_cost'),
-                                                        2:('total_travel_distance','total_travel_time')},
+                                                      2:('total_travel_distance','total_travel_time')},
                                            reg_types={1:'linear',2:'linear'},
                                            data = Shared_3p_Df)
 
