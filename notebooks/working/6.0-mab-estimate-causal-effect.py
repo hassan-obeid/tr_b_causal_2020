@@ -411,6 +411,75 @@ from array import array
 #     return Sim_DF_AV
 
 
+# %%
+# def FitAlternativeRegression(regressions, reg_types, data):
+    
+#     """
+#     Function to store regression models based on causal graph
+#     in a dictionary.
+    
+#     Parameters
+#     ----------
+#     regressions: dictionary
+#         Dictionary with keys as integers representing the
+#         order of regressions. Values of the dictionary
+#         are tuples/lists with the first item is a string
+#         of the name of the independent variable and the
+#         second item is a string of the name of the 
+#         dependent variable.
+    
+#     reg_types: dictionary
+#         Dictionary with keys as integers representing the
+#         order of regressions. Keys should be similar to the
+#         keys from the `regressions` dictionary. Values are
+#         strings representing the type of regressions to be
+#         ran. **TODO: add more regressions**
+        
+#     Returns
+#     -------
+#     Dictionary with keys as the regression name and values
+#     as regression models stores. Methods from these fitted
+#     models can be accessed through the values of the dictionary.
+#     """
+    
+#     # Initiate the regressions results dictionary
+#     regression_results = {}
+    
+#     # Loop around the regressions
+#     for reg in regressions.keys():
+#         # If linear regression
+#         if reg_types[reg] == 'linear':
+#             # Prepare data and initialize model
+#             data_x = sm.add_constant(data[regressions[reg][0]])
+#             data_y = data[regressions[reg][1]]
+#             model = sm.OLS(data_y, data_x)
+
+#             # Fit model
+#             results = model.fit()
+            
+#             # Store model
+#             regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = results
+        
+#         # If logistic regression **TODO: Expand on
+#         # logistic regression
+#         if reg_types[reg] == 'logistic':
+#             # Prepare data and initialize model
+#             data_x = sm.add_constant(data[regressions[reg][0]])
+#             data_y = data[regressions[reg][1]]
+#             model = sm.Logit(data_y, data_x)
+
+#             # Fit model
+#             results = model.fit()
+            
+#             # Store model
+#             regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = results
+    
+#     #if plotting:
+#     #    fig = plt.figure(figsize=(12,8))
+#     #    fig = sm.graphics.plot_regress_exog(results, X[0], fig=fig)
+    
+#     return regression_results
+
 # %% [markdown]
 # # 1. Define functions to be used in notebook
 
@@ -941,13 +1010,22 @@ def sim_fake_choice_col(AV_matrix, sim_col='sim_choice'):
 
 # %%
 
-def is_linear(variable):
+def is_linear(reg_type):
+    """
+    Checks whether a regression type is linear.
+    """
     return variable == 'linear'
 
-def is_bin_log(variable):
-    return variable == 'binary_logistic'
+def is_bin_log(reg_type):
+    """
+    Checks whether a regression type is binomial.
+    """
+    return variable == 'binomial'
 
 def fit_linear_reg(X, Y):
+    """
+    Fits OLS linear regression to input data.
+    """
     # Prepare data and initialize model
     X = sm.add_constant(X)
     lin_reg = sm.OLS(X, Y)
@@ -956,6 +1034,9 @@ def fit_linear_reg(X, Y):
     return model
 
 def fit_binomial_reg(X, Y):
+    """
+    Fits binomial regression to input data.
+    """
     # Prepare data and initialize model
     X = sm.add_constant(X)
     bin_reg = sm.Logit(X, Y)
@@ -964,6 +1045,9 @@ def fit_binomial_reg(X, Y):
     return model
 
 def fit_multinomial_reg(X, Y):
+    """
+    Fits multinomial regression to input data.
+    """
     # Prepare data and initialize model
     # regressions[reg][0] COULD be a list
     # Check the length, and reshape if
@@ -978,6 +1062,10 @@ def fit_multinomial_reg(X, Y):
     return model
 
 def get_regression_name(x_var, y_var):
+    """
+    Gets regression name based on the name of
+    input variables.
+    """
     if len(y_var) == 1:
         reg_name = y_var + '_on_' + x_var
     else: ## need to compe up with a better way to dump dep variable
@@ -985,6 +1073,26 @@ def get_regression_name(x_var, y_var):
     return reg_name
 
 def fit_regression(regression, reg_type, data):
+    """
+    Fits regression and stores model output based
+    on the regression type and the data.
+    
+    Parameters
+    ----------
+    
+    regression: tuple
+        regression to be fit
+    reg_type: str
+        regression type to be used. Currently, this
+        parameter can take either 'linear', 'binomial', or 'multinomial'.
+    data: DataFrame
+        The dataframe including all the necessary data.
+        
+    Returns
+    -------
+    Dictionary with the key as the name of the regression
+    and its value as the stored model.
+    """
     reg_result = defaultdict(dict)
     x_var = regression[0]
     y_var = regression[1]
@@ -1055,75 +1163,6 @@ def fit_alternative_regression(regressions, reg_types, data):
     
     return reg_results
 
-
-# %%
-# def FitAlternativeRegression(regressions, reg_types, data):
-    
-#     """
-#     Function to store regression models based on causal graph
-#     in a dictionary.
-    
-#     Parameters
-#     ----------
-#     regressions: dictionary
-#         Dictionary with keys as integers representing the
-#         order of regressions. Values of the dictionary
-#         are tuples/lists with the first item is a string
-#         of the name of the independent variable and the
-#         second item is a string of the name of the 
-#         dependent variable.
-    
-#     reg_types: dictionary
-#         Dictionary with keys as integers representing the
-#         order of regressions. Keys should be similar to the
-#         keys from the `regressions` dictionary. Values are
-#         strings representing the type of regressions to be
-#         ran. **TODO: add more regressions**
-        
-#     Returns
-#     -------
-#     Dictionary with keys as the regression name and values
-#     as regression models stores. Methods from these fitted
-#     models can be accessed through the values of the dictionary.
-#     """
-    
-#     # Initiate the regressions results dictionary
-#     regression_results = {}
-    
-#     # Loop around the regressions
-#     for reg in regressions.keys():
-#         # If linear regression
-#         if reg_types[reg] == 'linear':
-#             # Prepare data and initialize model
-#             data_x = sm.add_constant(data[regressions[reg][0]])
-#             data_y = data[regressions[reg][1]]
-#             model = sm.OLS(data_y, data_x)
-
-#             # Fit model
-#             results = model.fit()
-            
-#             # Store model
-#             regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = results
-        
-#         # If logistic regression **TODO: Expand on
-#         # logistic regression
-#         if reg_types[reg] == 'logistic':
-#             # Prepare data and initialize model
-#             data_x = sm.add_constant(data[regressions[reg][0]])
-#             data_y = data[regressions[reg][1]]
-#             model = sm.Logit(data_y, data_x)
-
-#             # Fit model
-#             results = model.fit()
-            
-#             # Store model
-#             regression_results[regressions[reg][1]+'_on_'+regressions[reg][0]] = results
-    
-#     #if plotting:
-#     #    fig = plt.figure(figsize=(12,8))
-#     #    fig = sm.graphics.plot_regress_exog(results, X[0], fig=fig)
-    
-#     return regression_results
 
 # %%
 def PlotParams(sim_par, model, fig_size):
