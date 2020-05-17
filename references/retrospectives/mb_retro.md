@@ -67,3 +67,9 @@ This document should store one's weekly reflections on the project. In particula
     2. Worked on refactoring
     3. Did not finish refactoring
     4. Align on objectives past 6/1 regarding extensibility of project and deep cleaning of repo.
+
+11. Week of May 10th, 2020
+    1. Nothing specific
+    2. Worked on refactoring/very close to step 4
+    3. Did not finish refactoring all the helper functions.
+    4. We should bug Joan/Vij about the example Tim sent and see whether there is any computational work needed.
