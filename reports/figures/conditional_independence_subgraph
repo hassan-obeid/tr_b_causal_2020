@@ -1,0 +1,8 @@
+digraph {
+	graph [size="5,3"]
+	"Travel Distance" [label="Travel Distance" shape=ellipse]
+	"Travel Cost" [label="Travel Cost" shape=ellipse]
+	"Travel Time" [label="Travel Time" shape=ellipse]
+	"Travel Distance" -> "Travel Time"
+	"Travel Distance" -> "Travel Cost"
+}
