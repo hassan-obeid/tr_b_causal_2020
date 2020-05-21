@@ -172,6 +172,7 @@ def visualize_permutation_results(obs_r2: float,
                                   permuted_r2: np.ndarray,
                                   verbose: bool=True,
                                   permutation_color: str='#a6bddb',
+                                  output_path: Optional[str]=None,
                                   show: bool=True,
                                   close: bool=False) -> float:
     """
@@ -191,6 +192,10 @@ def visualize_permutation_results(obs_r2: float,
         Denotes the color of the kernel density estimate used to visuale the
         distribution of r2 from the permuted values of `x2_array`.
         Default == '#a6bddb'.
+    output_path : optional, str or None.
+        Denotes the path to the location where the plot visualizing the
+        permutation test results will be stored. If `output_path` is None, the
+        plot will not be stored. Default is None.
     show : optional, bool.
         Denotes whether the matplotlib figure that visualizes the results of
         the permutation test should be shown. Default == True.
@@ -228,6 +233,9 @@ def visualize_permutation_results(obs_r2: float,
         'Density', fontdict={'fontsize': 13, 'rotation': 0}, labelpad=40)
     ax.legend(loc='best')
     sbn.despine()
+
+    if output_path is not None:
+        fig.savefig(output_path, dpi=500, bbox_inches='tight')
     if show:
         plt.show()
     if close:
@@ -243,6 +251,7 @@ def visual_permutation_test(x1_array: np.ndarray,
                             progress: bool=True,
                             verbose: bool=True,
                             permutation_color: str='#a6bddb',
+                            output_path: Optional[str]=None,
                             show: bool=True,
                             close: bool=False) -> float:
     """
@@ -277,6 +286,10 @@ def visual_permutation_test(x1_array: np.ndarray,
         Denotes the color of the kernel density estimate used to visuale the
         distribution of r2 from the permuted values of `x2_array`.
         Default == '#a6bddb'.
+    output_path : optional, str or None.
+        Denotes the path to the location where the plot visualizing the
+        permutation test results will be stored. If `output_path` is None, the
+        plot will not be stored. Default is None.
     show : optional, bool.
         Denotes whether the matplotlib figure that visualizes the results of
         the permutation test should be shown. Default == True.
@@ -304,6 +317,7 @@ def visual_permutation_test(x1_array: np.ndarray,
             permuted_r2,
             verbose=verbose,
             permutation_color=permutation_color,
+            output_path=output_path,
             show=show,
             close=close)
     return p_value
