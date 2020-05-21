@@ -6,12 +6,9 @@ from pathlib import Path
 
 from causalgraphicalmodels import CausalGraphicalModel
 
+PROJECT_ROOT = Path(__file__).parent.parent
 
-def get_project_root() -> Path:
-    """Returns project root folder."""
-    return Path(__file__).parent.parent
-
-FIGURES_DIRECTORY_PATH = get_project_root() / 'reports' / 'figures'
+FIGURES_DIRECTORY_PATH = PROJECT_ROOT / 'reports' / 'figures'
 
 
 def create_graph_image(

@@ -20,7 +20,7 @@ import src.testing.observable_independence as oi
 
 # Declare paths to data
 DATA_PATH =\
-    (utils.get_project_root() / 'data' / 'raw' /
+    (utils.PROJECT_ROOT / 'data' / 'raw' /
      'spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv')
 
 # Note the columns of interest in the dataset
