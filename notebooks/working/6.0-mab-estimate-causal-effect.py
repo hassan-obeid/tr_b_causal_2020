@@ -1633,10 +1633,10 @@ V_bike.draw()
 # ### 3.2.1. Set up all needed variables
 
 # %%
-# Observation id column
+# Observation id column from long format data
 observation_id_col = 'observation_id'
 
-# Alternative id column
+# Alternative id column from long format data
 alternative_id_col = 'mode_id'
 
 # Individual specific variables list
@@ -1644,6 +1644,8 @@ individual_specific_variables = ['household_size','num_kids',
                                 'num_cars','num_licensed_drivers']
 
 # Alternative specific variables dictionary
+# Key is alternative number, value is a list
+# of alternative specific nodes without parents
 alternative_specific_dict = {1: ['total_travel_distance'],
                              2: ['total_travel_distance'],
                              3: ['total_travel_distance'],
@@ -1657,6 +1659,8 @@ alternative_specific_dict = {1: ['total_travel_distance'],
 trip_specific_variables = ['cross_bay']
 
 # Alternative name dictionary
+# Key is alternative number
+# value is alternative number snake cased
 alternative_name_dict = {1: 'drive_alone',
                          2: 'shared_2',
                          3: 'shared_3p',
@@ -1667,6 +1671,9 @@ alternative_name_dict = {1: 'drive_alone',
                          8: 'bike'}
 
 # Variable type Dictionary
+# Key is string with variable name from previous
+# dictionaries and lists, value is a string
+# with type of the variable
 variable_type = {'num_kids': 'categorical',
                  'household_size': 'categorical',
                  'num_cars': 'categorical',
@@ -1710,12 +1717,18 @@ V_drive_alone.draw()
 
 # %%
 drive_alone_df = bike_data_long[bike_data_long['mode_id'] == 1]
+
 drive_alone_df.reset_index(drop=True, inplace=True)
-drive_alone_reg = fit_alternative_regression(regressions={1:('total_travel_distance','total_travel_cost'),
-                                                          2:('total_travel_distance','total_travel_time')},
-                                             reg_types={1:'linear',
-                                                        2:'linear'},
-                                             data = drive_alone_df)
+
+regressions_da = {1:('total_travel_distance','total_travel_cost'),
+                  2:('total_travel_distance','total_travel_time')}
+
+regs_type_da = {1:'linear',
+                2:'linear'}
+
+fitted_reg_da = fit_alternative_regression(regressions_da,
+                                           regs_type_da,
+                                           drive_alone_df)
 
 # %% [markdown]
 # ### 3.3.2. Shared-2
@@ -1724,13 +1737,19 @@ drive_alone_reg = fit_alternative_regression(regressions={1:('total_travel_dista
 V_shared_2.draw()
 
 # %%
-shared_2_df = bike_data_long[bike_data_long['mode_id']==2]
+shared_2_df = bike_data_long[bike_data_long['mode_id'] == 2]
+
 shared_2_df.reset_index(drop=True,inplace=True)
-shared_2_reg = fit_alternative_regression(regressions={1:('total_travel_distance','total_travel_cost'),
-                                                       2:('total_travel_distance','total_travel_time')},
-                                          reg_types={1:'linear',
-                                                     2:'linear'},
-                                          data = shared_2_df)
+
+regs_shared_2 = {1:('total_travel_distance','total_travel_cost'),
+                 2:('total_travel_distance','total_travel_time')}
+
+regs_type_shared_2 = {1:'linear',
+                      2:'linear'}
+
+fitted_reg_shared_2 = fit_alternative_regression(regs_shared_2,
+                                                 regs_type_shared_2,
+                                                 shared_2_df)
 
 # %% [markdown]
 # ### 3.3.3. Shared-3+
@@ -1739,12 +1758,19 @@ shared_2_reg = fit_alternative_regression(regressions={1:('total_travel_distance
 V_shared_3p.draw()
 
 # %%
-shared_3p_df = bike_data_long[bike_data_long['mode_id']==3]
-shared_3p_df.reset_index(drop=True,inplace=True)
-shared_3p_reg = fit_alternative_regression(regressions={1:('total_travel_distance','total_travel_cost'),
-                                                      2:('total_travel_distance','total_travel_time')},
-                                           reg_types={1:'linear',2:'linear'},
-                                           data = shared_3p_df)
+shared_3p_df = bike_data_long[bike_data_long['mode_id'] == 3]
+
+shared_3p_df.reset_index(drop=True, inplace=True)
+
+regs_shared_3p = {1:('total_travel_distance','total_travel_cost'),
+                  2:('total_travel_distance','total_travel_time')}
+
+regs_type_shared_3p = {1:'linear',
+                       2:'linear'}
+
+fitted_reg_shared_3p = fit_alternative_regression(regs_shared_3p,
+                                                  regs_type_shared_3p,
+                                                  shared_3p_df)
 
 # %% [markdown]
 # ### 3.3.4. Walk-Transit-Walk 
@@ -1753,11 +1779,17 @@ shared_3p_reg = fit_alternative_regression(regressions={1:('total_travel_distanc
 V_wtw.draw()
 
 # %%
-wtw_df = bike_data_long[bike_data_long['mode_id']==4]
-wtw_df.reset_index(drop=True,inplace=True)
-wtw_reg = fit_alternative_regression(regressions={1:('total_travel_time','total_travel_cost')},
-                                           reg_types={1:'linear'},
-                                           data = wtw_df)
+wtw_df = bike_data_long[bike_data_long['mode_id'] == 4]
+
+wtw_df.reset_index(drop=True, inplace=True)
+
+regs_wtw = {1:('total_travel_time','total_travel_cost')}
+
+regs_type_wtw = {1: 'linear'}
+
+fitted_reg_wtw = fit_alternative_regression(regs_wtw,
+                                            regs_type_wtw
+                                            wtw_df)
 
 # %% [markdown]
 # ### 3.3.5. Drive-Transit-Walk 
@@ -1766,11 +1798,17 @@ wtw_reg = fit_alternative_regression(regressions={1:('total_travel_time','total_
 V_dtw.draw()
 
 # %%
-dtw_df = bike_data_long[bike_data_long['mode_id']==5]
-dtw_df.reset_index(drop=True,inplace=True)
-dtw_reg = fit_alternative_regression(regressions={1:('total_travel_time','total_travel_cost')},
-                                           reg_types={1:'linear'},
-                                           data = dtw_df)
+dtw_df = bike_data_long[bike_data_long['mode_id'] == 5]
+
+dtw_df.reset_index(drop=True, inplace=True)
+
+regs_dtw = {1:('total_travel_time','total_travel_cost')}
+
+regs_type_dtw = {1:'linear'}
+
+fitted_reg_dtw = fit_alternative_regression(regs_dtw,
+                                            regs_type_dtw,
+                                            dtw_df)
 
 # %% [markdown]
 # ### 3.3.6. Walk-Transit-Drive 
@@ -1779,11 +1817,17 @@ dtw_reg = fit_alternative_regression(regressions={1:('total_travel_time','total_
 V_wtd.draw()
 
 # %%
-wtd_df = bike_data_long[bike_data_long['mode_id']==6]
-wtd_df.reset_index(drop=True,inplace=True)
-wtd_reg = fit_alternative_regression(regressions={1:('total_travel_time','total_travel_cost')},
-                                     reg_types={1:'linear'},
-                                     data = wtd_df)
+wtd_df = bike_data_long[bike_data_long['mode_id'] == 6]
+
+wtd_df.reset_index(drop=True, inplace=True)
+
+regs_wtd = {1:('total_travel_time','total_travel_cost')}
+
+regs_type_wtd = {1:'linear'}
+
+wtd_reg = fit_alternative_regression(regs_wtd,
+                                     regs_type_wtd,
+                                     wtd_df)
 
 # %% [markdown]
 # ### 3.3.7. Walk
