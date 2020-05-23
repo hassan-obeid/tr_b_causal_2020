@@ -1470,6 +1470,149 @@ nodes_bike = ["Total Travel Distance",
               "Utility (Bike)"]
 edges_bike = [("Total Travel Distance", "Utility (Bike)")]
 
+# %%
+# Observation id column from long format data
+OBS_ID_COL = 'observation_id'
+
+# Alternative id column from long format data
+ALT_ID_COL = 'mode_id'
+
+# Individual specific variables list
+IND_SPEC_VARS = ['household_size','num_kids',
+                 'num_cars','num_licensed_drivers']
+
+# Alternative specific variables dictionary
+# Key is alternative number, value is a list
+# of alternative specific nodes without parents
+ALT_SPEC_DICT = {1: ['total_travel_distance'],
+                 2: ['total_travel_distance'],
+                 3: ['total_travel_distance'],
+                 4: ['total_travel_time'],
+                 5: ['total_travel_time'],
+                 6: ['total_travel_time'],
+                 7: ['total_travel_distance'],
+                 8: ['total_travel_distance']}
+
+# Trip specific variables list
+TRIP_SPEC_VARS = ['cross_bay']
+
+# Alternative name dictionary
+# Key is alternative number
+# value is alternative number snake cased
+ALT_NAME_DICT = {1: 'drive_alone',
+                 2: 'shared_2',
+                 3: 'shared_3p',
+                 4: 'wtw',
+                 5: 'dtw',
+                 6: 'wtd',
+                 7: 'walk',
+                 8: 'bike'}
+
+# Variable type Dictionary
+# Key is string with variable name from previous
+# dictionaries and lists, value is a string
+# with type of the variable
+VARS_TYPE = {'num_kids': 'categorical',
+             'household_size': 'categorical',
+             'num_cars': 'categorical',
+             'num_licensed_drivers': 'categorical',
+             'cross_bay': 'categorical',
+             'total_travel_time': 'continuous',
+             'total_travel_distance': 'continuous',
+             'total_travel_cost': 'continuous'}
+
+# Distribution to be explored for continuous variables
+CONT_DISTS = ['norm', 'alpha', 'beta', 'gamma', 'expon', 'gumbel']
+
+# Simulation Size
+SIM_SIZE = 8000
+
+# %%
+regressions_da = {1:('total_travel_distance','total_travel_cost'),
+                  2:('total_travel_distance','total_travel_time')}
+
+regs_type_da = {1:'linear',
+                2:'linear'}
+
+
+regs_shared_2 = {1:('total_travel_distance','total_travel_cost'),
+                 2:('total_travel_distance','total_travel_time')}
+
+regs_type_shared_2 = {1:'linear',
+                      2:'linear'}
+
+
+regs_shared_3p = {1:('total_travel_distance','total_travel_cost'),
+                  2:('total_travel_distance','total_travel_time')}
+
+regs_type_shared_3p = {1:'linear',
+                       2:'linear'}
+
+
+regs_wtw = {1:('total_travel_time','total_travel_cost')}
+
+regs_type_wtw = {1: 'linear'}
+
+
+regs_dtw = {1:('total_travel_time','total_travel_cost')}
+
+regs_type_dtw = {1:'linear'}
+
+
+regs_wtd = {1:('total_travel_time','total_travel_cost')}
+
+regs_type_wtd = {1:'linear'}
+
+# %%
+ind_variables = ['num_kids', 'household_size',
+                 'num_cars', 'num_licensed_drivers', 'cross_bay']
+
+
+# Dictionary of Alternative Specific Variables
+# TODO: verify whether all variables are needed
+# for each alternative
+alt_varying_variables = {u'total_travel_time': dict([(1, 'total_travel_time_drive_alone'),
+                                                     (2, 'total_travel_time_shared_2'),
+                                                     (3, 'total_travel_time_shared_3p'),
+                                                     (4, 'total_travel_time_wtw'),
+                                                     (5, 'total_travel_time_dtw'),
+                                                     (6, 'total_travel_time_wtd')]),
+                         u'total_travel_cost': dict([(1, 'total_travel_cost_drive_alone'),
+                                                     (2, 'total_travel_cost_shared_2'),
+                                                     (3, 'total_travel_cost_shared_3p'),
+                                                     (4, 'total_travel_cost_wtw'),
+                                                     (5, 'total_travel_cost_dtw'),
+                                                     (6, 'total_travel_cost_wtd')]),
+                         u'total_travel_distance': dict([(1, 'total_travel_distance_drive_alone'),
+                                                         (2, 'total_travel_distance_shared_2'),
+                                                         (3, 'total_travel_distance_shared_3p'),
+                                                         (7, 'total_travel_distance_walk'),
+                                                         (8, 'total_travel_distance_bike')]),
+                            }
+
+
+# Dictionary of alternative availability variables
+availability_variables = {1: 'drive_alone_AV',
+                          2: 'shared_2_AV',
+                          3: 'shared_3p_AV',
+                          4: 'wtw_AV',
+                          5: 'dtw_AV',
+                          6: 'wtd_AV',
+                          7: 'walk_AV',
+                          8: 'bike_AV'}
+
+##########
+# Determine the columns for: alternative ids, the observation ids and the choice
+##########
+# The 'custom_alt_id' is the name of a column to be created in the long-format data
+# It will identify the alternative associated with each row.
+custom_alt_id = "mode_id"
+
+obs_id_column = "observation_id"
+
+# Declare choice column
+choice_column = "sim_choice"
+
 # %% [markdown]
 # # 2. MNL Model Estimation using Bike Data
 
@@ -1662,72 +1805,20 @@ V_bike.draw()
 # ### 3.2.1. Set up all needed variables
 
 # %%
-# Observation id column from long format data
-observation_id_col = 'observation_id'
-
-# Alternative id column from long format data
-alternative_id_col = 'mode_id'
-
-# Individual specific variables list
-individual_specific_variables = ['household_size','num_kids',
-                                'num_cars','num_licensed_drivers']
-
-# Alternative specific variables dictionary
-# Key is alternative number, value is a list
-# of alternative specific nodes without parents
-alternative_specific_dict = {1: ['total_travel_distance'],
-                             2: ['total_travel_distance'],
-                             3: ['total_travel_distance'],
-                             4: ['total_travel_time'],
-                             5: ['total_travel_time'],
-                             6: ['total_travel_time'],
-                             7: ['total_travel_distance'],
-                             8: ['total_travel_distance']}
-
-# Trip specific variables list
-trip_specific_variables = ['cross_bay']
-
-# Alternative name dictionary
-# Key is alternative number
-# value is alternative number snake cased
-alternative_name_dict = {1: 'drive_alone',
-                         2: 'shared_2',
-                         3: 'shared_3p',
-                         4: 'wtw',
-                         5: 'dtw',
-                         6: 'wtd',
-                         7: 'walk',
-                         8: 'bike'}
-
-# Variable type Dictionary
-# Key is string with variable name from previous
-# dictionaries and lists, value is a string
-# with type of the variable
-variable_type = {'num_kids': 'categorical',
-                 'household_size': 'categorical',
-                 'num_cars': 'categorical',
-                 'num_licensed_drivers': 'categorical',
-                 'cross_bay': 'categorical',
-                 'total_travel_time': 'continuous',
-                 'total_travel_distance': 'continuous',
-                 'total_travel_cost': 'continuous'}
-
-# Distribution to be explored for continuous variables
-distributions = ['norm', 'alpha', 'beta', 'gamma', 'expon', 'gumbel']
 
 # %% [markdown]
 # ### 3.2.2. Find Distributions of nodes without parents 
 
 # %%
 bike_data_params = get_dist_node_no_parent(bike_data_long,
-                                           alternative_id_col,
-                                           observation_id_col,
-                                           alternative_specific_dict,
-                                           alternative_name_dict,
-                                           individual_specific_variables,
-                                           trip_specific_variables,
-                                           variable_type,
-                                           distributions)
+                                           ALT_ID_COL,
+                                           OBS_ID_COL,
+                                           ALT_SPEC_DICT,
+                                           ALT_NAME_DICT,
+                                           IND_SPEC_VARS,
+                                           TRIP_SPEC_VARS,
+                                           VARS_TYPE,
+                                           CONT_DISTS)
 
 # %%
 bike_data_params
@@ -1749,12 +1840,6 @@ drive_alone_df = bike_data_long[bike_data_long['mode_id'] == 1]
 
 drive_alone_df.reset_index(drop=True, inplace=True)
 
-regressions_da = {1:('total_travel_distance','total_travel_cost'),
-                  2:('total_travel_distance','total_travel_time')}
-
-regs_type_da = {1:'linear',
-                2:'linear'}
-
 fitted_reg_da = fit_alternative_regression(regressions_da,
                                            regs_type_da,
                                            drive_alone_df)
@@ -1769,12 +1854,6 @@ V_shared_2.draw()
 shared_2_df = bike_data_long[bike_data_long['mode_id'] == 2]
 
 shared_2_df.reset_index(drop=True,inplace=True)
-
-regs_shared_2 = {1:('total_travel_distance','total_travel_cost'),
-                 2:('total_travel_distance','total_travel_time')}
-
-regs_type_shared_2 = {1:'linear',
-                      2:'linear'}
 
 fitted_reg_shared_2 = fit_alternative_regression(regs_shared_2,
                                                  regs_type_shared_2,
@@ -1791,12 +1870,6 @@ shared_3p_df = bike_data_long[bike_data_long['mode_id'] == 3]
 
 shared_3p_df.reset_index(drop=True, inplace=True)
 
-regs_shared_3p = {1:('total_travel_distance','total_travel_cost'),
-                  2:('total_travel_distance','total_travel_time')}
-
-regs_type_shared_3p = {1:'linear',
-                       2:'linear'}
-
 fitted_reg_shared_3p = fit_alternative_regression(regs_shared_3p,
                                                   regs_type_shared_3p,
                                                   shared_3p_df)
@@ -1811,10 +1884,6 @@ V_wtw.draw()
 wtw_df = bike_data_long[bike_data_long['mode_id'] == 4]
 
 wtw_df.reset_index(drop=True, inplace=True)
-
-regs_wtw = {1:('total_travel_time','total_travel_cost')}
-
-regs_type_wtw = {1: 'linear'}
 
 fitted_reg_wtw = fit_alternative_regression(regs_wtw,
                                             regs_type_wtw
@@ -1831,10 +1900,6 @@ dtw_df = bike_data_long[bike_data_long['mode_id'] == 5]
 
 dtw_df.reset_index(drop=True, inplace=True)
 
-regs_dtw = {1:('total_travel_time','total_travel_cost')}
-
-regs_type_dtw = {1:'linear'}
-
 fitted_reg_dtw = fit_alternative_regression(regs_dtw,
                                             regs_type_dtw,
                                             dtw_df)
@@ -1849,10 +1914,6 @@ V_wtd.draw()
 wtd_df = bike_data_long[bike_data_long['mode_id'] == 6]
 
 wtd_df.reset_index(drop=True, inplace=True)
-
-regs_wtd = {1:('total_travel_time','total_travel_cost')}
-
-regs_type_wtd = {1:'linear'}
 
 wtd_reg = fit_alternative_regression(regs_wtd,
                                      regs_type_wtd,
@@ -1880,8 +1941,7 @@ V_bike.draw()
 # ## 3.4. Simulate Nodes without Parents 
 
 # %%
-sim_size = 8000
-sim_bike_data_no_parent = sim_node_no_parent(bike_data_params, size=sim_size)
+sim_bike_data_no_parent = sim_node_no_parent(bike_data_params, size=SIM_SIZE)
 
 # %% [markdown]
 # ## 3.5. Simulate data for each causal graph
@@ -2008,10 +2068,10 @@ V_Bike.draw()
 # Simulate availability, add fake choice column
 # and return final simulated data with availability
 # and choices
-alt_av_matrix = simulate_availability(data_long=bike_data_long,
-                                      obs_id_col=observation_id_col,
-                                      alt_name_dict=alternative_name_dict,
-                                      sim_size=sim_size)
+alt_av_matrix = simulate_availability(bike_data_long,
+                                      OBS_ID_COL,
+                                      ALT_NAME_DICT,
+                                      SIM_SIZE)
 
 # %%
 sim_bike_data_wide = sim_bike_data_wide.join(alt_av_matrix)
@@ -2019,64 +2079,13 @@ sim_bike_data_wide = sim_bike_data_wide.join(alt_av_matrix)
 # %%
 sim_bike_data_wide['sim_choice'] = sim_fake_choice_col(alt_av_matrix)
 
-# %% [markdown]
-# ## 3.7. Convert Simulated Data from Wide to Long
-
-# %%
-ind_variables = ['num_kids', 'household_size',
-                 'num_cars', 'num_licensed_drivers', 'cross_bay']
-
-
-
-# Dictionary of Alternative Specific Variables
-# TODO: verify whether all variables are needed
-# for each alternative
-alt_varying_variables = {u'total_travel_time': dict([(1, 'total_travel_time_drive_alone'),
-                                                     (2, 'total_travel_time_shared_2'),
-                                                     (3, 'total_travel_time_shared_3p'),
-                                                     (4, 'total_travel_time_wtw'),
-                                                     (5, 'total_travel_time_dtw'),
-                                                     (6, 'total_travel_time_wtd')]),
-                         u'total_travel_cost': dict([(1, 'total_travel_cost_drive_alone'),
-                                                     (2, 'total_travel_cost_shared_2'),
-                                                     (3, 'total_travel_cost_shared_3p'),
-                                                     (4, 'total_travel_cost_wtw'),
-                                                     (5, 'total_travel_cost_dtw'),
-                                                     (6, 'total_travel_cost_wtd')]),
-                         u'total_travel_distance': dict([(1, 'total_travel_distance_drive_alone'),
-                                                         (2, 'total_travel_distance_shared_2'),
-                                                         (3, 'total_travel_distance_shared_3p'),
-                                                         (7, 'total_travel_distance_walk'),
-                                                         (8, 'total_travel_distance_bike')]),
-                            }
-
-
-# Dictionary of alternative availability variables
-availability_variables = {1: 'drive_alone_AV',
-                          2: 'shared_2_AV',
-                          3: 'shared_3p_AV',
-                          4: 'wtw_AV',
-                          5: 'dtw_AV',
-                          6: 'wtd_AV',
-                          7: 'walk_AV',
-                          8: 'bike_AV'}
-
-##########
-# Determine the columns for: alternative ids, the observation ids and the choice
-##########
-# The 'custom_alt_id' is the name of a column to be created in the long-format data
-# It will identify the alternative associated with each row.
-custom_alt_id = "mode_id"
-
 # Create a custom id column that ignores the fact that this is a
 # panel/repeated-observations dataset. Note the +1 ensures the id's start at one.
-obs_id_column = "observation_id"
 sim_bike_data_wide[obs_id_column] = np.arange(sim_bike_data_wide.shape[0],
                                               dtype=int) + 1
 
-
-# Declare choice column
-choice_column = "sim_choice"
+# %% [markdown]
+# ## 3.7. Convert Simulated Data from Wide to Long
 
 # %%
 # Convert data from wide to long
@@ -2086,7 +2095,7 @@ long_sim_data = pl.convert_wide_to_long(sim_bike_data_wide,
                                         availability_variables,
                                         obs_id_column,
                                         choice_column,
-                                        new_alt_id_name=custom_alt_id)
+                                        custom_alt_id)
 
 # %%
 # Create a cars per licensed drivers column
@@ -2122,12 +2131,12 @@ long_sim_data['sim_choice'] = viz.simulate_choice_vector(posterior_probs,
 # %%
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
 mnl_model_sim = pl.create_choice_model(data=long_sim_data,
-                                           alt_id_col=alternative_id_col,
-                                           obs_id_col=observation_id_col,
-                                           choice_col=choice_column,
-                                           specification=mnl_specification,
-                                           model_type="MNL",
-                                           names=mnl_names)
+                                       alt_id_col=alternative_id_col,
+                                       obs_id_col=observation_id_col,
+                                       choice_col=choice_column,
+                                       specification=mnl_specification,
+                                       model_type="MNL",
+                                       names=mnl_names)
 
 num_vars = len(reduce(lambda x, y: x + y, mnl_names.values()))
 
