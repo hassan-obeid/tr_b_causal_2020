@@ -1368,6 +1368,109 @@ def FindOutliers(data, threshold=3.5):
 
 
 # %% [markdown]
+# # Parameters
+
+# %% [markdown]
+# ## Data Path
+
+# %%
+PATH = '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
+
+# %% [markdown]
+# ## Nodes and Edges
+
+# %%
+nodes_da = ["Total Travel Distance",
+            "Total Travel Time",
+            "Total Travel Cost",
+            "Number of Autos",
+            "Number of Licensed Drivers",
+            "Utility (Drive Alone)"]
+
+edges_da = [("Total Travel Distance","Total Travel Time"),
+            ("Total Travel Distance","Total Travel Cost"),
+            ("Total Travel Distance", "Utility (Drive Alone)"),
+            ("Total Travel Time", "Utility (Drive Alone)"),
+            ("Total Travel Cost", "Utility (Drive Alone)"),
+            ("Number of Autos", "Utility (Drive Alone)"),
+            ("Number of Licensed Drivers","Utility (Drive Alone)")]
+
+nodes_shared_2 = ["Total Travel Time",
+                  "Total Travel Distance",
+                  "Total Travel Cost",
+                  "Cross Bay Trip",
+                  "Number of Autos",
+                  "Number of Licensed Drivers",
+                  "Household Size",
+                  "Number of Kids",
+                  "Utility (Shared Ride 2)"]
+
+edges_shared_2 = [("Total Travel Distance","Total Travel Time"),
+                  ("Total Travel Distance","Total Travel Cost"),
+                  ("Total Travel Distance","Utility (Shared Ride 2)"),
+                  ("Total Travel Time", "Utility (Shared Ride 2)"),
+                  ("Number of Autos", "Utility (Shared Ride 2)"),
+                  ("Number of Licensed Drivers", "Utility (Shared Ride 2)"),
+                  ("Total Travel Cost", "Utility (Shared Ride 2)"),
+                  ("Household Size", "Utility (Shared Ride 2)"),
+                  ("Cross Bay Trip", "Utility (Shared Ride 2)"),
+                  ("Number of Kids", "Utility (Shared Ride 2)")]
+
+nodes_shared_3p = ["Total Travel Time",
+                   "Total Travel Distance",
+                   "Total Travel Cost",
+                   "Cross Bay Trip",
+                   "Number of Autos",
+                   "Number of Licensed Drivers",
+                   "Household Size",
+                   "Number of Kids",
+                   "Utility (Shared Ride 3+)"]
+
+edges_shared_3p = [("Total Travel Distance","Total Travel Time"),
+                   ("Total Travel Distance","Total Travel Cost"),
+                   ("Total Travel Distance", "Utility (Shared Ride 3+)"),
+                   ("Total Travel Time", "Utility (Shared Ride 3+)"),
+                   ("Number of Autos", "Utility (Shared Ride 3+)"),
+                   ("Number of Licensed Drivers", "Utility (Shared Ride 3+)"),
+                   ("Total Travel Cost", "Utility (Shared Ride 3+)"),
+                   ("Household Size", "Utility (Shared Ride 3+)"),
+                   ("Cross Bay Trip", "Utility (Shared Ride 3+)"),
+                   ("Number of Kids", "Utility (Shared Ride 3+)")]
+
+nodes_wtw = ["Total Travel Time",
+             "Total Travel Cost",
+             "Utility (WTW)"]
+
+edges_wtw = [("Total Travel Time", "Total Travel Cost"),
+             ("Total Travel Time", "Utility (WTW)"),
+             ("Total Travel Cost", "Utility (WTW)")]
+
+nodes_dtw = ["Total Travel Time",
+             "Total Travel Cost",
+             "Utility (DTW)"]
+
+edges_dtw = [("Total Travel Time", "Total Travel Cost"),
+             ("Total Travel Time", "Utility (DTW)"),
+             ("Total Travel Cost", "Utility (DTW)")]
+
+nodes_wtd = ["Total Travel Time",
+             "Total Travel Cost",
+             "Utility (WTD)"]
+
+edges_wtd = [("Total Travel Time", "Total Travel Cost"),
+             ("Total Travel Time", "Utility (WTD)"),
+             ("Total Travel Cost", "Utility (WTD)")]
+
+nodes_walk = ["Total Travel Distance",
+              "Utility (Walk)"]
+
+edges_walk = [("Total Travel Distance", "Utility (Walk)")]
+
+nodes_bike = ["Total Travel Distance",
+              "Utility (Bike)"]
+edges_bike = [("Total Travel Distance", "Utility (Bike)")]
+
+# %% [markdown]
 # # 2. MNL Model Estimation using Bike Data
 
 # %% [markdown]
@@ -1376,7 +1479,7 @@ def FindOutliers(data, threshold=3.5):
 # %%
 # Create a variable for the path to the long format data for
 # the multinomial choice model
-PATH = '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
+
 
 # %%
 # Reading data from the specified PATH
@@ -1498,139 +1601,56 @@ mnl_model.get_statsmodels_summary()
 
 # %%
 # Define the causal model
-V_drive_alone = CausalGraphicalModel(nodes=["Total Travel Distance",
-                                            "Total Travel Time",
-                                            "Total Travel Cost",
-                                            "Number of Autos",
-                                            "Number of Licensed Drivers",
-                                            "Utility (Drive Alone)"],
-                                     edges=[("Total Travel Distance","Total Travel Time"),
-                                            ("Total Travel Distance","Total Travel Cost"),
-                                            ("Total Travel Distance", "Utility (Drive Alone)"),
-                                            ("Total Travel Time", "Utility (Drive Alone)"), 
-                                            ("Total Travel Cost", "Utility (Drive Alone)"), 
-                                            ("Number of Autos", "Utility (Drive Alone)"),
-                                            ("Number of Licensed Drivers","Utility (Drive Alone)")
-    ]
-)
+V_drive_alone = CausalGraphicalModel(nodes_da, edges_da)
 
 # draw the causal model
 V_drive_alone.draw()
 
 # %%
 # Define the causal model
-V_shared_2 = CausalGraphicalModel(nodes=["Total Travel Time",
-                                         "Total Travel Distance",
-                                         "Total Travel Cost",
-                                         "Cross Bay Trip",
-                                         "Number of Autos",
-                                         "Number of Licensed Drivers",
-                                         "Household Size",
-                                         "Number of Kids",
-                                         "Utility (Shared Ride 2)"],
-                                  edges=[("Total Travel Distance","Total Travel Time"),
-                                         ("Total Travel Distance","Total Travel Cost"),
-                                         ("Total Travel Distance","Utility (Shared Ride 2)"),
-                                         ("Total Travel Time", "Utility (Shared Ride 2)"),
-                                         ("Number of Autos", "Utility (Shared Ride 2)"),
-                                         ("Number of Licensed Drivers", "Utility (Shared Ride 2)"),
-                                         ("Total Travel Cost", "Utility (Shared Ride 2)"),
-                                         ("Household Size", "Utility (Shared Ride 2)"),
-                                         ("Cross Bay Trip", "Utility (Shared Ride 2)"),
-                                         ("Number of Kids", "Utility (Shared Ride 2)")
-    ]
-)
+V_shared_2 = CausalGraphicalModel(nodes_shared_2, edges_shared_2)
 
 # draw the causal model
 V_shared_2.draw()
 
 # %%
 # Define the causal model
-V_shared_3p = CausalGraphicalModel(nodes=["Total Travel Time",
-                                         "Total Travel Distance",
-                                         "Total Travel Cost",
-                                         "Cross Bay Trip",
-                                         "Number of Autos",
-                                         "Number of Licensed Drivers",
-                                         "Household Size",
-                                         "Number of Kids",
-                                         "Utility (Shared Ride 3+)"],
-                                  edges=[("Total Travel Distance","Total Travel Time"),
-                                         ("Total Travel Distance","Total Travel Cost"),
-                                         ("Total Travel Distance", "Utility (Shared Ride 3+)"),
-                                         ("Total Travel Time", "Utility (Shared Ride 3+)"),
-                                         ("Number of Autos", "Utility (Shared Ride 3+)"),
-                                         ("Number of Licensed Drivers", "Utility (Shared Ride 3+)"),
-                                         ("Total Travel Cost", "Utility (Shared Ride 3+)"),
-                                         ("Household Size", "Utility (Shared Ride 3+)"),
-                                         ("Cross Bay Trip", "Utility (Shared Ride 3+)"),
-                                         ("Number of Kids", "Utility (Shared Ride 3+)")
-    ]
-)
+V_shared_3p = CausalGraphicalModel(nodes_shared_3p, edges_shared_3p)
 
 # draw the causal model
 V_shared_3p.draw()
 
 # %%
 # Define the causal model
-V_wtw = CausalGraphicalModel(nodes=["Total Travel Time",
-                                    "Total Travel Cost",
-                                    "Utility (WTW)"],
-                                  edges=[("Total Travel Time", "Total Travel Cost"),
-                                         ("Total Travel Time", "Utility (WTW)"),
-                                         ("Total Travel Cost", "Utility (WTW)")
-    ]
-)
+V_wtw = CausalGraphicalModel(nodes_wtw, edges_wtw)
 
 # draw the causal model
 V_wtw.draw()
 
 # %%
 # Define the causal model
-V_dtw = CausalGraphicalModel(nodes=["Total Travel Time",
-                                    "Total Travel Cost",
-                                    "Utility (DTW)"],
-                             edges=[("Total Travel Time", "Total Travel Cost"),
-                                    ("Total Travel Time", "Utility (DTW)"),
-                                    ("Total Travel Cost", "Utility (DTW)")
-    ]
-)
+V_dtw = CausalGraphicalModel(nodes_dtw, edges_dtw)
 
 # draw the causal model
 V_dtw.draw()
 
 # %%
 # Define the causal model
-V_wtd = CausalGraphicalModel(nodes=["Total Travel Time",
-                                    "Total Travel Cost",
-                                    "Utility (WTD)"],
-                             edges=[("Total Travel Time", "Total Travel Cost"),
-                                    ("Total Travel Time", "Utility (WTD)"),
-                                    ("Total Travel Cost", "Utility (WTD)")
-    ]
-)
+V_wtd = CausalGraphicalModel(nodes_wtd, edges_wtd)
 
 # draw the causal model
 V_wtd.draw()
 
 # %%
 # Define the causal model
-V_walk = CausalGraphicalModel(nodes=["Total Travel Distance",
-                                     "Utility (Walk)"],
-                              edges=[("Total Travel Distance", "Utility (Walk)")
-    ]
-)
+V_walk = CausalGraphicalModel(nodes_walk, edges_walk)
 
 # draw the causal model
 V_walk.draw()
 
 # %%
 # Define the causal model
-V_bike = CausalGraphicalModel(nodes=["Total Travel Distance",
-                                     "Utility (Bike)"],
-                              edges=[("Total Travel Distance", "Utility (Bike)")
-    ]
-)
+V_bike = CausalGraphicalModel(nodes_bike, edges_bike)
 
 # draw the causal model
 V_bike.draw()
