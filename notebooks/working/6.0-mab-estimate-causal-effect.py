@@ -1222,7 +1222,7 @@ def fit_alternative_regression(regressions, reg_types, data):
 
 
 # %%
-def lin_reg_pred(X, fitted_reg, size):
+def lin_reg_pred(X, fitted_reg, size, causal_scale=None):
     """
     Uses the fitted regression to produce predictions.
     Currently does not support any transformation
@@ -1237,6 +1237,9 @@ def lin_reg_pred(X, fitted_reg, size):
         regression models.
     size: int
         Size of dataset
+    scale: int or list
+        int or list to scale the fitted coefficients
+        for each of the estimated parameters.
         
     Returns
     -------
@@ -1256,6 +1259,12 @@ def lin_reg_pred(X, fitted_reg, size):
     coefs = multivariate_normal.rvs(mean=fitted_reg_params,
                                     cov=fitted_reg_cov,
                                     size=size)
+    
+    # scale some parameters if desired causal effect is bigger
+    if causal_scale is not None:
+        scale_array = np.array(causal_scale)
+        coefs[:,1:] = coefs[:,1:] * scale_array
+        
     # Generate noise
     noise = np.random.normal(loc=0,
                              scale=fitted_reg.resid.std(),
@@ -2733,9 +2742,24 @@ class TestSuite(unittest.TestCase):
         difference = abs(ratio-1)
         np.testing.assert_array_less(difference, 0.05) # 0.05 can be discussed
         
-    def test_regression(self):
+    def test_fit_regression(self):
         # Setup
+        x = np.random.randint(100, 3500, size=2000)
+        data = pd.DataFrame(data=x, columns=['x'])
+        data['y'] = 5*data['x'] + 2
+        regressions = {1:('x', 'y')}
+        reg_types = {1:'linear'}
         
+        #Exercise
+        fitted_reg = fit_alternative_regression(regressions,
+                                                reg_types,
+                                                data)
+        
+       # Verify
+        const = fitted_reg['y_on_x'].params['const']
+        x_par = fitted_reg['y_on_x'].params['x']
+        self.assertAlmostEqual(const, 2)
+        self.assertAlmostEqual(x_par, 5)
 
 
 # %%
