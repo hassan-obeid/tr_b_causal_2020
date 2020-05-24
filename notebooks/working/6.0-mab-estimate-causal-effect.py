@@ -2118,11 +2118,11 @@ long_sim_data.loc[long_sim_data.mode_id.isin([1, 2, 3]),
 # %%
 # Calculate probabilities for each alternative
 # based on the estimated model
-posterior_probs = mnl_model.predict(long_sim_data)
+init_mnl_model_prob = mnl_model.predict(long_sim_data)
 
 # %%
 # Simulate choice data
-long_sim_data['sim_choice'] = viz.simulate_choice_vector(posterior_probs,
+long_sim_data['sim_choice'] = viz.simulate_choice_vector(init_mnl_model_prob,
                                long_sim_data['observation_id'].values)
 
 # %% [markdown]
@@ -2155,7 +2155,7 @@ mnl_model_sim.get_statsmodels_summary()
 # ## 4.1 Compute Initial Probabilities Using Estimated Model on Simulated Data
 
 # %%
-initial_probabilities = mnl_model_sim.predict(long_sim_data)
+init_mnl_model_sim_probs = mnl_model_sim.predict(long_sim_data)
 
 # %% [markdown]
 # ## 4.2. Independently Generated Variables
@@ -2283,7 +2283,7 @@ true_probabilities = mnl_model.predict(long_sim_data_causal)
 long_sim_data_causal['true_probabilities'] = true_probabilities
 
 # %%
-long_sim_data['initial_probabilities'] = initial_probabilities
+long_sim_data['init_mnl_model_sim_prob'] = init_mnl_model_sim_prob
 
 # %% [markdown]
 # ## 4.5. Calculate Causal Effects
@@ -2429,7 +2429,7 @@ for sim_size, number in zip(simulation_sizes, sim_number):
     
     
     # Simulate choice data
-    long_sim_data['sim_choice'] = viz.simulate_choice_vector(mnl_model_probs,
+    long_sim_data['sim_choice'] = viz.simulate_choice_vector(init_mnl_model_probs,
                                                              long_sim_data['observation_id'].values)
     
     
@@ -2571,7 +2571,6 @@ for sim_size, number in zip(simulation_sizes, sim_number):
     simulation_data[number]['long_sim_data_causal'] = long_sim_data_causal
     simulation_data[number]['long_sim_data_naive'] = long_sim_data_naive
 
-    
     
     print('Simulation number', number , 'is complete!')
     print('==========================================')
