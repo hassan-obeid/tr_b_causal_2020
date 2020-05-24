@@ -73,3 +73,9 @@ This document should store one's weekly reflections on the project. In particula
     2. Worked on refactoring/very close to step 4
     3. Did not finish refactoring all the helper functions.
     4. We should bug Joan/Vij about the example Tim sent and see whether there is any computational work needed.
+
+12. Week of May 17th, 2020
+    1. Nothing specific
+    2. Worked on refactoring/Got to Step 4
+    3. Nothing in particular
+    4. This week should be 100% focused on having drafts of all our outputs.
