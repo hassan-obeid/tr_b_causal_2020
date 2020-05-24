@@ -35,6 +35,14 @@ The posterior predictive checks are to really ensure that the observed data is w
 4. Produce a scalar summary of the distribution of simulated test statistics if desired.
 
 
+## Needed refactoring
+1. Pass `num_permutations` through `compute_predictive_independence_test_value` and `perform_visual_predictive_cit_test`.
+2. Replace `_make_regressor` and `computed_vs_obs_r2` with their analogous functions in `testing.observable_independence`.
+3. Add type hints and docstrings to `compute_pvalue`. Make sure `obs_r2` can be a scalar or 1D ndarray. `Make sure permuted_r2` is a 1D ndarray.
+4. Add an `output_path` argument to `visualize_predictive_cit_results` and `perform_visual_predictive_cit_test` so that these functions can save the created plot to a given file location.
+5. Move causal graph to standalone file.
+
+
 ## Declare notebook parameters
 
 ```python
@@ -78,6 +86,7 @@ from causalgraphicalmodels import CausalGraphicalModel
 
 sys.path.insert(0, '../../src/')
 import viz
+import testing.observable_independence as oi
 ```
 
 ## Create needed functions for analysis
