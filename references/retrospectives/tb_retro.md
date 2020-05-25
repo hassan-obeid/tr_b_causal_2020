@@ -95,3 +95,14 @@ This document should store one's weekly reflections on the project. In particula
     Job hunting, interview prepping, and doing research on the side is harder than  I imagined.
     4. This week, I think I should only attempt to do one thing: refactor my code.
     It is unlikely that I can review the code of others and edit my own code, given the other job-search-related demands on my time.
+
+14. Week of May 17th, 2020
+   1. Retrospective was never updated and weekly meeting was altered due to UC Berkeley finals.
+
+15. Week of May 24th, 2020
+   1. Learned that one needs to perform model checking when doing model-based testing of conditional mean independence (i.e., an implication of conditional independence).
+   One needs to extract all predictive power from the conditioning variables when testing whether or not a given variable X2 is independent of X1, conditional on a set of variables Z.
+
+   2. Nothing with the project this week went better than expected.
+   3. I didn't finish refactoring the notebook for testing of latent, conditional independence assumptions.
+   4. For the upcoming week I should focus on even less: just refactoring that one notebook on latent, conditional independence assumptions.
