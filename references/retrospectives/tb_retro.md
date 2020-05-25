@@ -101,3 +101,10 @@ This document should store one's weekly reflections on the project. In particula
     2. What went well is that I refactored the notebooks demonstration conditional and marginal independence tests, and I found an example of a recently published paper that I think demonstrates the pitfalls of ignoring the key messages from our presentation.
     3. What went poorly is that I recognized the need for a separate file in the `src` directory that would generate the conditional independence plot needed for the presentation but I did not create the needed file.
     4. For next week, I need to both create the needed file just described, and also refactor the notebook demonstration predictive conditional independence tests.
+
+15. Week of May 24th, 2020
+   1. Learned that one needs to perform model checking when doing model-based testing of conditional mean independence (i.e., an implication of conditional independence).
+   One needs to extract all predictive power from the conditioning variables when testing whether or not a given variable X2 is independent of X1, conditional on a set of variables Z.
+   2. Nothing with the project this week went better than expected.
+   3. I didn't finish refactoring the notebook for testing of latent, conditional independence assumptions.
+   4. For the upcoming week I should focus on even less: just refactoring that one notebook on latent, conditional independence assumptions.
