@@ -94,12 +94,7 @@ import src.testing.latent_independence as li
 from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
 ```
 
-## Extract data for the factor model checks
-
-```python
-# Load the raw data
-df = pd.read_csv(DATA_PATH)
-```
+## Show the motivating causal graph
 
 ```python
 # Draw the causal model motivating this test
@@ -108,7 +103,12 @@ causal_graph.graph_attr.update(size="10,6")
 causal_graph
 ```
 
+## Extract data for the factor model checks
+
 ```python
+# Load the raw data
+df = pd.read_csv(DATA_PATH)
+
 # Create a list of the variables in the drive alone utility
 drive_alone_variables =\
     ['total_travel_distance',
@@ -196,9 +196,7 @@ x_samples_prior =\
     (x_standardized_samples_prior *
      drive_alone_stds[None, :, None] +
      drive_alone_means[None, :, None])
-```
 
-```python
 # Look at the dimensions of the prior predictive samples
 print(x_samples_prior.shape)
 ```
@@ -227,35 +225,25 @@ This lets us know that the prior predictive check of the deconfounder assumption
 ### Perform the prior predictive conditional independence test
 
 ```python
-# Get the values to be used for testing
-obs_x1 =\
-    (drive_alone_df.iloc[:, drive_alone_variables.index(x1_col)]
-                   .values)
-obs_x2 =\
-    (drive_alone_df.iloc[:, drive_alone_variables.index(x2_col)]
-                   .values)
-obs_sample =\
-    np.concatenate((obs_x1[:, None], obs_x2[:, None]), axis=1)
-```
+# Collect the columns being used in the test and info about them.
+columns_for_test = [x1_col, x2_col]
+col_idxs_for_test =\
+    [drive_alone_variables.index(col) for col in columns_for_test]
 
-```python
-cols_for_test =\
-    [drive_alone_variables.index(col) for col in [x1_col, x2_col]]
-# Get the prior predictive values for the test
+# Get the observed values to be used for testing
+obs_sample = drive_alone_df.loc[:, columns_for_test].values
+
+# Get the prior predictive values for testing
 prior_samples_triplet =\
-    np.concatenate((x_samples_prior[:, cols_for_test, :],
+    np.concatenate((x_samples_prior[:, col_idxs_for_test, :],
                     z_samples_prior),
                    axis=1)
 
-# Test out the predictive conditional independence test
+# Use the predictive, conditional independence test
 pval, sampled_pvals, obs_pvals =\
     li.perform_visual_predictive_cit_test(
         prior_samples_triplet,
         obs_sample)
-```
-
-```python
-sbn.kdeplot(sampled_pvals)
 ```
 
 ```python
@@ -271,6 +259,9 @@ However, both of these points are somewhat moot since the prior is in general te
 
 ## Posterior Predictive Conditional Independence Tests
 
+
+### Specify the posterior distribution
+
 ```python
 # Load the parameters of the variational approximation to 
 # the posterior distribution over W and Z
@@ -283,7 +274,12 @@ w_post_params['w_var_inferred'] = w_post_params['w_std_inferred']**2
 w_post_params
 ```
 
+### Generate posterior predictive samples
+
 ```python
+# Set a seed for reproducibility
+np.random.seed(852)
+
 # Create the posterior distribution of
 w_dist_post =\
     norm(loc=w_post_params['w_mean_inferred'].values,
@@ -292,11 +288,6 @@ w_dist_post =\
 z_dist_post =\
     norm(loc=z_post_params['z_mean_inferred'].values,
          scale=z_post_params['z_std_inferred'].values)
-```
-
-```python
-# Set a seed for reproducibility
-np.random.seed(852)
 
 # Get posterior samples of X_standardized
 w_samples_post =\
@@ -323,9 +314,7 @@ x_samples_post =\
     (x_standardized_samples_post *
      drive_alone_stds[None, :, None] +
      drive_alone_means[None, :, None])
-```
 
-```python
 # Look at the dimensions of the prior predictive samples
 print(x_samples_post.shape)
 ```
@@ -361,8 +350,11 @@ Similar to the prior distribution of the same variable, the posterior poorly fit
 As before, we can immediately expect the posterior predictive version of the conditional independence to fail since the observed data is generally unlike the sampled data.
 This is dissimilarity is, a-priori, expected to remain in the conditional independence test.
 
+
+### Perform posterior-predictive conditional independence test
+
 ```python
-# Get the prior predictive values for the test
+# Get the posterior predictive values for the test
 posterior_samples_triplet =\
     np.concatenate((x_samples_post[:, cols_for_test, :],
                     z_samples_post),
@@ -373,10 +365,6 @@ post_pval, post_sampled_pvals, post_obs_pvals =\
     li.perform_visual_predictive_cit_test(
         posterior_samples_triplet,
         obs_sample)
-```
-
-```python
-sbn.kdeplot(post_sampled_pvals)
 ```
 
 ```python

@@ -92,17 +92,19 @@ import src.testing.latent_independence as li
 from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
 # -
 
-# ## Extract data for the factor model checks
-
-# Load the raw data
-df = pd.read_csv(DATA_PATH)
+# ## Show the motivating causal graph
 
 # Draw the causal model motivating this test
 causal_graph = DRIVE_ALONE_UTILITY.draw()
 causal_graph.graph_attr.update(size="10,6")
 causal_graph
 
+# ## Extract data for the factor model checks
+
 # +
+# Load the raw data
+df = pd.read_csv(DATA_PATH)
+
 # Create a list of the variables in the drive alone utility
 drive_alone_variables =\
     ['total_travel_distance',
@@ -190,10 +192,10 @@ x_samples_prior =\
     (x_standardized_samples_prior *
      drive_alone_stds[None, :, None] +
      drive_alone_means[None, :, None])
-# -
 
 # Look at the dimensions of the prior predictive samples
 print(x_samples_prior.shape)
+# -
 
 # ## Visualize the prior predictive distribution
 
@@ -217,33 +219,27 @@ prior_sim_cdf =\
 
 # ### Perform the prior predictive conditional independence test
 
-# Get the values to be used for testing
-obs_x1 =\
-    (drive_alone_df.iloc[:, drive_alone_variables.index(x1_col)]
-                   .values)
-obs_x2 =\
-    (drive_alone_df.iloc[:, drive_alone_variables.index(x2_col)]
-                   .values)
-obs_sample =\
-    np.concatenate((obs_x1[:, None], obs_x2[:, None]), axis=1)
-
 # +
-cols_for_test =\
-    [drive_alone_variables.index(col) for col in [x1_col, x2_col]]
-# Get the prior predictive values for the test
+# Collect the columns being used in the test and info about them.
+columns_for_test = [x1_col, x2_col]
+col_idxs_for_test =\
+    [drive_alone_variables.index(col) for col in columns_for_test]
+
+# Get the observed values to be used for testing
+obs_sample = drive_alone_df.loc[:, columns_for_test].values
+
+# Get the prior predictive values for testing
 prior_samples_triplet =\
-    np.concatenate((x_samples_prior[:, cols_for_test, :],
+    np.concatenate((x_samples_prior[:, col_idxs_for_test, :],
                     z_samples_prior),
                    axis=1)
 
-# Test out the predictive conditional independence test
+# Use the predictive, conditional independence test
 pval, sampled_pvals, obs_pvals =\
     li.perform_visual_predictive_cit_test(
         prior_samples_triplet,
         obs_sample)
 # -
-
-sbn.kdeplot(sampled_pvals)
 
 print(obs_pvals)
 
@@ -255,6 +251,8 @@ print(obs_pvals)
 
 # ## Posterior Predictive Conditional Independence Tests
 
+# ### Specify the posterior distribution
+
 # Load the parameters of the variational approximation to 
 # the posterior distribution over W and Z
 w_post_params = pd.read_csv(PATH_TO_W_PARAMS, index_col=0)
@@ -263,7 +261,12 @@ z_post_params = pd.read_csv(PATH_TO_Z_PARAMS, index_col=0)
 w_post_params['w_var_inferred'] = w_post_params['w_std_inferred']**2
 w_post_params
 
+# ### Generate posterior predictive samples
+
 # +
+# Set a seed for reproducibility
+np.random.seed(852)
+
 # Create the posterior distribution of
 w_dist_post =\
     norm(loc=w_post_params['w_mean_inferred'].values,
@@ -272,10 +275,6 @@ w_dist_post =\
 z_dist_post =\
     norm(loc=z_post_params['z_mean_inferred'].values,
          scale=z_post_params['z_std_inferred'].values)
-
-# +
-# Set a seed for reproducibility
-np.random.seed(852)
 
 # Get posterior samples of X_standardized
 w_samples_post =\
@@ -302,10 +301,10 @@ x_samples_post =\
     (x_standardized_samples_post *
      drive_alone_stds[None, :, None] +
      drive_alone_means[None, :, None])
-# -
 
 # Look at the dimensions of the prior predictive samples
 print(x_samples_post.shape)
+# -
 
 # ### Visualize the posterior predictive distribution
 
@@ -337,8 +336,10 @@ total_travel_dist_samples.describe()
 # As before, we can immediately expect the posterior predictive version of the conditional independence to fail since the observed data is generally unlike the sampled data.
 # This is dissimilarity is, a-priori, expected to remain in the conditional independence test.
 
+# ### Perform posterior-predictive conditional independence test
+
 # +
-# Get the prior predictive values for the test
+# Get the posterior predictive values for the test
 posterior_samples_triplet =\
     np.concatenate((x_samples_post[:, cols_for_test, :],
                     z_samples_post),
@@ -350,8 +351,6 @@ post_pval, post_sampled_pvals, post_obs_pvals =\
         posterior_samples_triplet,
         obs_sample)
 # -
-
-sbn.kdeplot(post_sampled_pvals)
 
 print(post_obs_pvals)
 
