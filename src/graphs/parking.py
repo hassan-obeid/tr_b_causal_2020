@@ -47,7 +47,7 @@ nodes =\
 
 edges =\
     [(parking_duration, parking_cost),
-     (vehicle_type, parking_cost),
+     (vehicle_type, parking_fines),
      (parking_tariffs, parking_cost),
      (parking_fines, parking_cost),
      (parking_duration, parking_fines),
