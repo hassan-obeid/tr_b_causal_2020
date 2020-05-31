@@ -606,7 +606,6 @@ data_mode_specific.plot.scatter('total_travel_distance', 'confounder_all_2')
 
 # ## Putting everything in a function
 
-# +
 def confounder(X, latent_dim, holdout_portion):
     # randomly holdout some entries of X
     num_datapoints, data_dim = X.shape
