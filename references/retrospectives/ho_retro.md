@@ -75,3 +75,12 @@ This document should store one's weekly reflections on the project. In particula
     3. Nothing specific. 
     
     4. Wrapping up the first stage of the work (the work we've done so far) and have it in a format that is ready for public viewing. 
+    
+10. Week of May 24, 2020
+    1. Learning about estimation techniques with random parameters, in order to learn how to estimate the regression when integrating over the distribution of the deconfounder. 
+    
+    2. Good progress on all tasks for this week. 
+    
+    3. Nothing specific. 
+    
+    4. 
