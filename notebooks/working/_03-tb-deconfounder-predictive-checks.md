@@ -35,20 +35,6 @@ The posterior predictive checks are to really ensure that the observed data is w
 4. Produce a scalar summary of the distribution of simulated test statistics if desired.
 
 
-## Needed refactoring
-1. <strike>Pass `num_permutations` through `compute_predictive_independence_test_value` and `perform_visual_predictive_cit_test`.</strike>
-2. <strike>Replace `_make_regressor` and `computed_vs_obs_r2` with their analogous functions in `testing.observable_independence`.</strike>
-3. <strike>Add type hints and docstrings to `compute_pvalue`. Make sure `obs_r2` can be a scalar or 1D ndarray. `Make sure permuted_r2` is a 1D ndarray.</strike>
-4. <strike>Add type hints and docstrings to all functions.</strike>
-5. <strike>Add an `output_path` argument to `visualize_predictive_cit_results` and `perform_visual_predictive_cit_test` so that these functions can save the created plot to a given file location.</strike>
-6. <strike>Move `predictive_cit` functions to standalone file.</strike>
-7. <strike>Move causal graph to standalone file.</strike>
-8. <strike>Create functions for plotting simulated CDFs in a regression context.</strike>
-9. <strike>Move CDF plotting functions to standalone file.</strike>
-10. Move prior and posterior sampling logic to a standalone file.
-11. Write more description of what is being done in the various cells and why.
-
-
 ## Declare notebook parameters
 
 ```python
@@ -92,6 +78,7 @@ import src.viz.sim_cdf as sim_cdf
 import src.testing.observable_independence as oi
 import src.testing.latent_independence as li
 from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
+from src.utils import sample_from_factor_model
 ```
 
 ## Show the motivating causal graph
@@ -173,29 +160,19 @@ epsilon_dist_prior = norm(loc=0, scale=sigma_prior)
 # Get the number of observations for this utility
 num_drive_alone_obs = drive_alone_df.shape[0]
 
-# Set a seed for reproducibility
-np.random.seed(721)
-
-# Get prior samples of X_standardized
-w_samples_prior =\
-    w_dist_prior.rvs((1, num_dimensions, NUM_PRIOR_SAMPLES))
-z_samples_prior =\
-    z_dist_prior.rvs((num_drive_alone_obs, 1, NUM_PRIOR_SAMPLES))
-
-epsilon_samples_prior =\
-    epsilon_dist_prior.rvs(size=(num_drive_alone_obs,
-                                 num_dimensions,
-                                 NUM_PRIOR_SAMPLES))
-
-x_standardized_samples_prior =\
-    (np.einsum('mnr,ndr->mdr', z_samples_prior, w_samples_prior) +
-     epsilon_samples_prior)
-
-# Get samples of X on the original scale of each variable
-x_samples_prior =\
-    (x_standardized_samples_prior *
-     drive_alone_stds[None, :, None] +
-     drive_alone_means[None, :, None])
+# Get samples of x from the prior distribution factor model
+x_samples_prior, z_samples_prior =\
+    sample_from_factor_model(
+        loadings_dist=z_dist_prior,
+        coef_dist=w_dist_prior,
+        noise_dist=epsilon_dist_prior,
+        standard_deviations=drive_alone_stds.values,
+        means=drive_alone_means.values,
+        num_obs=num_drive_alone_obs,
+        num_samples=NUM_PRIOR_SAMPLES,
+        num_factors=1,
+        seed=721
+        )
 
 # Look at the dimensions of the prior predictive samples
 print(x_samples_prior.shape)
@@ -277,43 +254,34 @@ w_post_params
 ### Generate posterior predictive samples
 
 ```python
-# Set a seed for reproducibility
-np.random.seed(852)
-
-# Create the posterior distribution of
+# Create the posterior distribution of coefficients
+# Note we need the arguments to have shape that can,
+# be broadcast to (num_factors, num_predictors, num_samples)
 w_dist_post =\
-    norm(loc=w_post_params['w_mean_inferred'].values,
-         scale=w_post_params['w_std_inferred'].values)
+    norm(loc=w_post_params['w_mean_inferred'].values[None, : , None],
+         scale=w_post_params['w_std_inferred'].values[None :, None])
 
+# Create the posterior distribution of loadings
+# Note we need the arguments to have shape that can,
+# be broadcast to (num_obs, num_factors, num_samples)
 z_dist_post =\
-    norm(loc=z_post_params['z_mean_inferred'].values,
-         scale=z_post_params['z_std_inferred'].values)
+    norm(loc=z_post_params['z_mean_inferred'].values[:, None, None],
+         scale=z_post_params['z_std_inferred'].values[:, None, None])
 
 # Get posterior samples of X_standardized
-w_samples_post =\
-    w_dist_prior.rvs((num_dimensions, NUM_PRIOR_SAMPLES))
-z_samples_post =\
-    z_dist_prior.rvs((num_drive_alone_obs, NUM_PRIOR_SAMPLES))
-
-# Convert the posterior samples to have the desired shapes
-w_samples_post = w_samples_post[None, :, :]
-z_samples_post = z_samples_post[:, None, :]
-
-# Sample epsilon to form the posterior samples of X_standardized
-epsilon_samples_post =\
-    epsilon_dist_prior.rvs(size=(num_drive_alone_obs,
-                                 num_dimensions,
-                                 NUM_PRIOR_SAMPLES))
-
-x_standardized_samples_post =\
-    (np.einsum('mnr,ndr->mdr', z_samples_post, w_samples_post) +
-     epsilon_samples_post)
-
-# Get samples of X on the original scale of each variable
-x_samples_post =\
-    (x_standardized_samples_post *
-     drive_alone_stds[None, :, None] +
-     drive_alone_means[None, :, None])
+x_samples_post, z_samples_post =\
+    sample_from_factor_model(
+        loadings_dist=z_dist_post,
+        coef_dist=w_dist_post,
+        noise_dist=epsilon_dist_prior,
+        standard_deviations=drive_alone_stds.values,
+        means=drive_alone_means.values,
+        num_obs=num_drive_alone_obs,
+        num_samples=NUM_PRIOR_SAMPLES,
+        num_factors=1,
+        post=False,
+        seed=852
+        )
 
 # Look at the dimensions of the prior predictive samples
 print(x_samples_post.shape)
@@ -334,11 +302,13 @@ posterior_sim_cdf =\
 ```
 
 ```python
-# Compare a single sample from the prior and posterior distributions
-# to the observed data
+# Compare the observed data with means from
+# the prior and posterior distributions.
 total_travel_dist_samples =\
-    pd.DataFrame({'total_travel_distance_prior': x_samples_prior[:, 0, 0],
-                  'total_travel_distance_post': x_samples_post[:, 0, 0],
+    pd.DataFrame({'total_travel_distance_prior':
+                      x_samples_prior[:, 0, :].mean(axis=1),
+                  'total_travel_distance_post':
+                      x_samples_post[:, 0, :].mean(axis=1),
                   'total_travel_distance_obs':
                       drive_alone_df['total_travel_distance'].values})
 
@@ -356,7 +326,7 @@ This is dissimilarity is, a-priori, expected to remain in the conditional indepe
 ```python
 # Get the posterior predictive values for the test
 posterior_samples_triplet =\
-    np.concatenate((x_samples_post[:, cols_for_test, :],
+    np.concatenate((x_samples_post[:, col_idxs_for_test, :],
                     z_samples_post),
                    axis=1)
 
@@ -378,7 +348,7 @@ Make sure that the predictive condidtional independence tests are passed when us
 chosen_sim_idx = 50
 
 # Test the predictive C.I.T with a prior sample
-prior_sim_sample = x_samples_prior[:, cols_for_test, chosen_sim_idx]
+prior_sim_sample = x_samples_prior[:, col_idxs_for_test, chosen_sim_idx]
 prior_pval_sim, prior_sampled_pvals_sim, prior_obs_pvals_sim =\
     li.perform_visual_predictive_cit_test(
         prior_samples_triplet,
@@ -395,7 +365,7 @@ prior_obs_pvals_sim
 
 ```python
 # Test the predictive C.I.T with a posterior sample
-post_sim_sample = x_samples_post[:, cols_for_test, chosen_sim_idx]
+post_sim_sample = x_samples_post[:, col_idxs_for_test, chosen_sim_idx]
 post_pval_sim, post_sampled_pvals_sim, post_obs_pvals_sim =\
     li.perform_visual_predictive_cit_test(
         posterior_samples_triplet,
