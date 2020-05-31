@@ -317,6 +317,7 @@ def plot_simulated_vs_observed_cdf(
     ax : matplotlib.axes.Axes
         The Axes instance containing the simulated and observed CDFs.
     """
+    sbn.set_style('white')
     # Determine the number of simulations
     num_simulations = simulated_array.shape[1]
 
