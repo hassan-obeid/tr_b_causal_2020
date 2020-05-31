@@ -2,10 +2,17 @@
 """
 Generic utilities that helpful across project-submodules.
 """
+# Built-in modules
 from pathlib import Path
 
-from scipy.stats.distributions import rv_generic
+# Third-party modules
+import numpy as np
+from scipy.stats.distributions import rv_continuous, rv_discrete
 from causalgraphicalmodels import CausalGraphicalModel
+
+from typing import Union, Tuple
+
+DISTRIBUTION_TYPE = Union[rv_continuous, rv_discrete]
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -56,24 +63,85 @@ def create_graph_image(
     return None
 
 
-def sample_from_factor_model(loadings_dist: rv_generic,
-                             coef_dist: rv_generic,
-                             noise_dist: rv_generic,
+def sample_from_factor_model(loadings_dist: DISTRIBUTION_TYPE,
+                             coef_dist: DISTRIBUTION_TYPE,
+                             noise_dist: DISTRIBUTION_TYPE,
                              standard_deviations: np.ndarray,
                              means: np.ndarray,
                              num_obs: int,
-                             num_predictors: int,
                              num_samples: int,
-                             num_factors: int=1) -> np.ndarray:
-    # Get samples of loadings, coefficients, and noise terms
-    coef_samples =\
-        coef_dist.rvs((num_factors, num_predictors, num_samples))
+                             num_factors: int=1,
+                             post: bool=False,
+                             seed: int=728) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Draws samples from a factor model of the form:
+    `(loadings * coeffcients + noise) * standard_deviations + means`.
+
+    Parameters
+    ----------
+    loadings_dist : DISTRIBUTION_TYPE.
+        Continuous or discrete scipy.stats distribution. All arguments of the
+        distribution must be broadcastable to the shape of
+        `(num_obs, num_factors, num_samples)`.
+    coef_dist : DISTRIBUTION_TYPE.
+        Continuous or discrete scipy.stats distribution. All arguments of the
+        distribution must be broadcastable to the shape of
+        `(num_factors, means.size, num_samples)`.
+    noise_dist : DISTRIBUTION_TYPE.
+        Continuous or discrete scipy.stats distribution. All arguments of the
+        distribution must be broadcastable to the shape of
+        `(num_obs, means.size, num_samples)`.
+    standard_deviations : 1D ndarray.
+        Should have length `num_predictors`. Denotes the standard deviations of
+        each column of variables.
+    means : 1D ndarray.
+        Should have length `num_predictors`. Denotes the means of each column
+        of variables.
+    num_obs : positive int.
+        The number of observations being simulated per sample.
+    num_samples : positive int.
+        The number of samples to draw from the factor model.
+    num_factors : optional, positive int.
+        The number of factors for predicting each column. Default == 1.
+    seed : optional, positive int.
+        Random seed to ensure reproducibility of sampling results.
+        Default == 728.
+
+    Returns
+    -------
+    x_samples : 3D np.ndarray.
+        Samples from the specified factor model. Will have shape
+        `(num_obs, num_predictors, num_samples)`.
+    loadings_samples : 3D np.ndarray.
+        Samples from loadings_dist. The observed covariates are supposed to be
+        conditionally independent given the latent loading variables. Will have
+        shape `(num_obs, num_factors, num_samples)`.
+    """
+    # Basic argument checking
+    msg = None
+    ndarray_condition =\
+        any((not isinstance(x, np.ndarray) for x in
+            (means, standard_deviations)))
+    if ndarray_condition:
+        msg = '`means` and `standard_deviations` MUST be ndarrays.'
+    if means.ndim != 1 or standard_deviations.ndim != 1:
+        msg = '`means` and `standard_deviations` MUST be 1D.'
+    if means.size != standard_deviations.size:
+        msg = '`means` and `standard_deviations` MUST have equal lengths.'
+    if msg is not None:
+        raise ValueError(msg)
+
+    # Figure out the number of predictors being simulated
+    num_predictors = means.size
+    # Set the seed for reproducibility
+    np.random.seed(seed)
+    # Get samples of loadings, coefficients, and noise terms.
     loadings_samples =\
         loadings_dist.rvs((num_obs, num_factors, num_samples))
+    coef_samples =\
+        coef_dist.rvs((num_factors, num_predictors, num_samples))
     noise_samples =\
-        noise_dist.rvs(size=(num_obs,
-                             num_predictors,
-                             num_samples))
+        noise_dist.rvs(size=(num_obs, num_predictors, num_samples))
     # Combine the samples according to the probabilistic factor model
     x_standardized_samples =\
         (np.einsum('mnr,ndr->mdr', loadings_samples, coef_samples) +
@@ -83,4 +151,4 @@ def sample_from_factor_model(loadings_dist: rv_generic,
         (x_standardized_samples *
          standard_deviations[None, :, None] +
          means[None, :, None])
-    return x_samples
+    return x_samples, loadings_samples
