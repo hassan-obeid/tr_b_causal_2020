@@ -34,6 +34,27 @@ def create_conditional_independence_testing_results(
     num_permutations: int=100,
     permuted_color: str='#a6bddb'
     ) -> None:
+    """
+    Computes and stores the results of permutation testing the implication
+    of conditional mean independence between travel time  and travel cost,
+    conditional on travel distance, for the drive alone utility.
+
+    Parameters
+    ----------
+    output_path : str.
+        Specifies the path to the location where the plot of the testing
+        results should be stored.
+    num_permutations : optional, int.
+        Denotes the number of permutations to use for the test. Default == 100.
+    permuted_color : optional, str.
+        The hex string specifying the color of the kernel density estimate used
+        to display the distribution of permutation test-statistic values.
+        Default == '#a6bddb'.
+
+    Returns
+    -------
+    None.
+    """
     # Load the raw data
     df = pd.read_csv(DATA_PATH)
 
