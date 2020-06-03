@@ -34,10 +34,14 @@
 
 
 # ## Marginal independence tests
+#
+# ### Main idea
 
 
 
 # ## Conditional independence tests
+#
+# ### Main idea
 
 
 
@@ -46,6 +50,13 @@
 
 
 # ## Latent conditional independence tests
+#
+
+# ### Show the posited causal graph
+
+
+
+# ### Main idea
 
 
 
