@@ -116,3 +116,13 @@ This document should store one's weekly reflections on the project. In particula
     All went well though.
     3. Nothing in the project went poorly, in my opinion.
     4. For the upcoming week I think we should all create our public notebooks.
+
+17. Week of June 7th, 2020
+    1. Didn't learn anything specific to causal inference.
+    Learned that in general, the mamba package manager from Quantstack can be used to greatly speed up conda installations.
+    See notes at https://github.com/timothyb0912/check-yourself/wiki.
+    2. Nothing with the project this week went better than expected.
+    3. What went poorly was not spending the planned amount of time on this project on Wednesday.
+    Then, the rest of my week was too packed to easily make up this lost time, thus making it difficult to recover and complete the week's planned tasks.
+    4. For the upcoming week we should finish public notebook creation and unit tests.
+    Ideally, we should end the week able to create a reproducible project workflow for others.
