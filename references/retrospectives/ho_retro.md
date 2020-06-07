@@ -84,3 +84,13 @@ This document should store one's weekly reflections on the project. In particula
     3. Nothing specific. 
     
     4. 
+    
+ 11. Week of May 31, 2020
+    1. Nothing specific
+    
+    2. Pushed v1 of the two pubic notebooks on investigating deconfounder algorithm and applying it on simulation data
+    
+    3. Nothing specific. 
+    
+    4. Keep pushin'
+
