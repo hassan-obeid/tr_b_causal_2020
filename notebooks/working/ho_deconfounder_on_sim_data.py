@@ -21,12 +21,62 @@ from causalgraphicalmodels import CausalGraphicalModel, StructuralCausalModel
 from collections import OrderedDict
 import pylogit as cm
 from functools import reduce
-
+from factor_models import *
 
 
 import os
 os.listdir('.')
+
+
 # -
+
+# # Notebook narrative
+# In this notebook, we use a simulated mode choice data where travel time and travel cost are both linearly confounded with travel distance. We then mask the travel distance data and treat it as an unobserved variable. 
+#
+# We estimate three models:
+# - Model 1: A multinomial logit with the correct original specification, EXCEPT we ommit the travel distance variable in the specification without trying to adjust for it. 
+# - Model 2: We use the deconfounder algorithm to try to recover the confounder (travel distance). In this method, we use all the variables in each mode's utility to recover that mode's confounder.
+# - Model 3: We use the deconfounder algorithm to try to recover the confounder (travel distance), but this time, we only use travel time and cost in the factor model, instead of all the variables in the utility specification of each mode. 
+#
+# We compare the estimates of the coefficients on travel time and cost to the true estimates used in the simulation. The main findings of this exercise are the following:
+# - Using the true variable believed to be confounded (i.e. method 3 where only travel time and cost are used to recover the confounder) leads to a better recovery of the true confounder. This suggests that it may be better to run the deconfounder algorithm based on a hypothesized causal graph, rather than just running it on all the observed covariates. 
+# - Similar to what we found in the investigating_decounfounder notebook, the effectiveness of the deconfounder algorithm is very sensitive to small deviations in the recovered confounder. Although method 3 returns a relatively good fit of the true confounder, the adjusted coefficients on travel time and cost do not improve, and the coefficients on the recovered confounder are highly insignificant. This raises questions about the usefulness of the deconfounder algorithm in practice.
+
+# ## Useful function
+
+def specifications(mnl_specification, num_modes):
+    newDict= dict()
+
+    for i in range(1,num_modes+1):
+        variables = []
+        # Iterate over all the items in dictionary and filter items which has even keys
+        for (key, value) in mnl_specification.items():
+           # Check if key is even then add pair to new dictionary
+    
+
+
+
+            if any(isinstance(sub, list) for sub in value):
+                for sub in value:
+                    if isinstance(sub, list):
+                        if (i in sub): 
+                            variables.append(key)
+                            
+                    else:
+                        if i == sub:
+                            variables.append(key)
+
+            else:
+                if i in value:
+        #             print(variables)
+
+                    variables.append(key)
+
+        newDict[i] = variables
+
+    return newDict
+
+# ## Analysis
 
 PATH = '../../data/raw/'
 file_name = 'simulated_long_format_bike_data.csv'
@@ -34,8 +84,6 @@ file_name = 'simulated_long_format_bike_data.csv'
 data = pd.read_csv(PATH+file_name)
 data = data.drop('Unnamed: 0', axis = 1)
 data.columns
-
-data['mode_id'].unique()
 
 # +
 X_columns = ['total_travel_time',
@@ -49,7 +97,9 @@ X_columns = ['total_travel_time',
 y_column = data['mode_id']
 
 # +
-sprinkler = CausalGraphicalModel(
+## Specify the true causal graph used in the simulation of the choices
+
+causal_graph = CausalGraphicalModel(
     nodes=["Travel_Time", "Travel_Distance", "Travel_Cost", "Cross_Bay_Bridge", "HH_Size", "num_of_kids_household",
           "Autos_per_licensed_drivers", "Gender", "Mode_Choice"],
     edges=[
@@ -79,75 +129,13 @@ sprinkler = CausalGraphicalModel(
 )
 
 # draw return a graphviz `dot` object, which jupyter can render
-sprinkler.draw()
+causal_graph.draw()
 # -
 
 # # MNL specification
 
 # +
-# # Create my specification and variable names for the basic MNL model
-# # NOTE: - Keys should be variables within the long format dataframe.
-# #         The sole exception to this is the "intercept" key.
-# #       - For the specification dictionary, the values should be lists
-# #         or lists of lists. Within a list, or within the inner-most
-# #         list should be the alternative ID's of the alternative whose
-# #         utility specification the explanatory variable is entering.
-
-# mnl_specification = OrderedDict()
-# mnl_names = OrderedDict()
-
-# mnl_specification["intercept"] = list(range(2, 9))
-# mnl_names["intercept"] = ['ASC Shared Ride: 2',
-#                           'ASC Shared Ride: 3+',
-#                           'ASC Walk-Transit-Walk',
-#                           'ASC Drive-Transit-Walk',
-#                           'ASC Walk-Transit-Drive',
-#                           'ASC Walk',
-#                           'ASC Bike']
-
-# mnl_specification["total_travel_time"] = [1, 2, 3, 4, 5, 6]
-# mnl_names["total_travel_time"] = ['Travel Time, units:min (Drive Alone)',
-#                                   'Travel Time, units:min (SharedRide-2)',
-#                                   'Travel Time, units:min (SharedRide-3)',
-#                                   'Travel Time, units:min Walk-Transit-Walk',
-#                                  'Travel Time, units:min Drive-Transit-Walk',
-#                                  'Travel Time, units:min Walk-Transit-Drive']
-
-# mnl_specification["total_travel_cost"] = [[4, 5, 6]]
-# mnl_names["total_travel_cost"] = ['Travel Cost, units:$ (All Transit Modes)']
-
-# mnl_specification["cost_per_distance"] = [1, 2, 3]
-# mnl_names["cost_per_distance"] = ["Travel Cost per Distance, units:$/mi (Drive Alone)",
-#                                   "Travel Cost per Distance, units:$/mi (SharedRide-2)",
-#                                   "Travel Cost per Distance, units:$/mi (SharedRide-3+)"]
-
-# mnl_specification["cars_per_licensed_drivers"] = [[1, 2, 3]]
-# mnl_names["cars_per_licensed_drivers"] = ["Autos per licensed drivers (All Auto Modes)"]
-
-# mnl_specification["total_travel_distance"] = [7, 8]
-# mnl_names["total_travel_distance"] = ['Travel Distance, units:mi (Walk)',
-#                                       'Travel Distance, units:mi (Bike)']
-
-# # mnl_specification["cross_bay"] = [[2, 3], [4, 5, 6]]
-# # mnl_names["cross_bay"] = ["Cross-Bay Tour (Shared Ride 2 & 3+)",
-# #                           "Cross-Bay Tour (All Transit Modes)"]
-# mnl_specification["cross_bay"] = [[2, 3]]
-# mnl_names["cross_bay"] = ["Cross-Bay Tour (Shared Ride 2 & 3+)"]
-
-# mnl_specification["household_size"] = [[2, 3]]
-# mnl_names["household_size"] = ['Household Size (Shared Ride 2 & 3+)']
-
-# mnl_specification["num_kids"] = [[2, 3]]
-# mnl_names["num_kids"] = ["Number of Kids in Household (Shared Ride 2 & 3+)"]
-
-# +
-# Create my specification and variable names for the basic MNL model
-# NOTE: - Keys should be variables within the long format dataframe.
-#         The sole exception to this is the "intercept" key.
-#       - For the specification dictionary, the values should be lists
-#         or lists of lists. Within a list, or within the inner-most
-#         list should be the alternative ID's of the alternative whose
-#         utility specification the explanatory variable is entering.
+## Below is the specification of the true model used in the simulation of the choices
 
 mnl_specification = OrderedDict()
 mnl_names = OrderedDict()
@@ -203,56 +191,16 @@ mnl_names["num_kids"] = ["Number of Kids in Household (Shared Ride 2 & 3+)"]
 
 # # Deconfounder
 
-# +
-import tensorflow as tf
-import numpy as np
-import numpy.random as npr
-import pandas as pd
-import tensorflow as tf
-import tensorflow_probability as tfp
-import statsmodels.api as sm
-
-from tensorflow_probability import edward2 as ed
-from sklearn.datasets import load_breast_cancer
-from pandas.plotting import scatter_matrix
-from scipy import sparse, stats
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression 
-from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score, roc_curve
-
-import matplotlib
-matplotlib.rcParams.update({'font.sans-serif' : 'Helvetica',
-                            'axes.labelsize': 10,
-                            'xtick.labelsize' : 6,
-                            'ytick.labelsize' : 6,
-                            'axes.titlesize' : 10})
-import matplotlib.pyplot as plt
-
-import seaborn as sns
-color_names = ["windows blue",
-               "amber",
-               "crimson",
-               "faded green",
-               "dusty purple",
-               "greyish"]
-colors = sns.xkcd_palette(color_names)
-sns.set(style="white", palette=sns.xkcd_palette(color_names), color_codes = False)
+# ## Method 1
+#
+# In this method, we used all the variables in each mode's utility specification to recover its confounder, in line with Blei et al.'s approach in their paper.
 
 # +
-X_columns = ['total_travel_time',
-       'total_travel_cost', 
-#              'total_travel_distance', 
-             'cross_bay', 'household_size', 'num_kids', 
-              'cars_per_licensed_drivers', 
-             'gender'
-             
-            ]
-
-y_column = data['mode_id']
-# -
+## Return the variables of each utility specification
 
 spec_dic = specifications(mnl_specification=mnl_specification, num_modes=8)
 spec_dic
+# -
 
 confounder_vectors = []
 holdout_dfs = []
@@ -269,102 +217,51 @@ for i in data['mode_id'].unique():
     
     if 'intercept' in X_columns:
         X_columns.remove('intercept')
-        print(i, X_columns)
+        
+    if 'total_travel_distance' in X_columns:
+        X_columns.remove('total_travel_distance')
+        
+    print(i, X_columns)
     
     X = np.array((data_mode_i[X_columns] - data_mode_i[X_columns].mean())/data_mode_i[X_columns].std())
     
-    confounders, holdouts, holdoutmasks, holdoutrow= confounder(holdout_portion=0.2, X=X, latent_dim=latent_dim)
+    confounders, holdouts, holdoutmasks, holdoutrow= confounder_ppca(holdout_portion=0.2, X=X, latent_dim=latent_dim)
 
     confounder_vectors.append(confounders)
     holdout_dfs.append(holdouts)
     masks_df.append(holdoutmasks)
     rows_df.append(holdoutrow)
 
-# # Predictive checks for confounder -- draft version
+# ## Method 2
+#
+# In this method, we only run the deconfounder's factor model on travel_time and travel_cost, which are the only variables confounded with travel_distance in our simulation
 
 # +
-### Get heldout and confounder data for modes where deconfounder is to be included 
-holdouts_req = holdout_dfs[:3]
-holdouts_req[0].shape
+xs = ['total_travel_time', 'total_travel_cost']
+X_DA = (data[data['mode_id']==1][xs] - data[data['mode_id']==1][xs].mean())/data[data['mode_id']==1][xs].std()
 
-confounder_req = confounder_vectors[:3]
+X_SR2 = (data[data['mode_id']==2][xs] - data[data['mode_id']==2][xs].mean())/data[data['mode_id']==2][xs].std()
+
+X_SR3 = (data[data['mode_id']==3][xs] - data[data['mode_id']==3][xs].mean())/data[data['mode_id']==3][xs].std()
+
+(confounders_DA, holdouts_DA, 
+ holdoutmasks_DA, holdoutrow_DA)= confounder_ppca(holdout_portion=0.2, 
+                                       X=X_DA, latent_dim=latent_dim)
+
+(confounders_SR2, holdouts_SR2, 
+ holdoutmasks_SR2, holdoutrow_SR2)= confounder_ppca(holdout_portion=0.2, 
+                                       X=X_SR2, latent_dim=latent_dim)
+
+(confounders_SR3, holdouts_SR3, 
+ holdoutmasks_SR3, holdoutrow_SR3)= confounder_ppca(holdout_portion=0.2, 
+                                       X=X_SR3, latent_dim=latent_dim)
 
 
-# +
-n_rep = 100 # number of replicated datasets we generate
-holdout_gen_util = []
 
-for j in range(len(holdouts_req)):
-    holdout_gen = np.zeros((n_rep,*(holdouts_req[j].shape)))
-    for i in range(n_rep):
-        w_sample = npr.normal(confounder_req[j][0], confounder_req[j][1])
-        z_sample = npr.normal(confounder_req[j][2], confounder_req[j][3])
-        
-        data_dim_temp = holdouts_req[j].shape[1]
-        latent_dim_temp = confounder_req[j][2].shape[1]
-        num_datapoints_temp = holdouts_req[j].shape[0]
-        
-        with ed.interception(replace_latents(w_sample, z_sample)):
-            generate = ppca_model(
-                data_dim=data_dim_temp, latent_dim=latent_dim_temp,
-                num_datapoints=num_datapoints_temp, stddv_datapoints=0.1, holdout_mask=masks_df[j])
 
-        with tf.Session() as sess:
-            x_generated, _ = sess.run(generate)
-
-        # look only at the heldout entries
-        holdout_gen[i] = np.multiply(x_generated, masks_df[j])
-        
-    holdout_gen_util.append(holdout_gen)
 # -
 
-n_eval = 100 # we draw samples from the inferred Z and W
-obs_ll_per_zi_per_mode = []
-rep_ll_per_zi_per_mode = []
-stddv_datapoints=0.1
-for mode in range(len(holdouts_req)):
-    obs_ll = []
-    rep_ll = []
-
-    for j in range(n_eval):
-        w_sample = npr.normal(confounder_req[mode][0], confounder_req[mode][1])
-        z_sample = npr.normal(confounder_req[mode][2], confounder_req[mode][3])
-
-        holdoutmean_sample = np.multiply(z_sample.dot(w_sample), masks_df[mode])
-        obs_ll.append(np.mean(stats.norm(holdoutmean_sample, \
-                            stddv_datapoints).logpdf(holdouts_req[mode]), axis=1))
-
-        rep_ll.append(np.mean(stats.norm(holdoutmean_sample, \
-                            stddv_datapoints).logpdf(holdout_gen_util[mode]),axis=2))
-
-    obs_ll_per_zi, rep_ll_per_zi = np.mean(np.array(obs_ll), axis=0), np.mean(np.array(rep_ll), axis=0)
-    obs_ll_per_zi_per_mode.append(obs_ll_per_zi)
-    rep_ll_per_zi_per_mode.append(rep_ll_per_zi)
-
-# +
-pval_mode = []
-for mode in range(len(holdouts_req)):
-    pvals = np.array([np.mean(rep_ll_per_zi_per_mode[mode][:,i] < obs_ll_per_zi_per_mode[mode][i]) 
-                      for i in range(holdouts_req[mode].shape[0])])
-    holdout_subjects = np.unique(rows_df[mode])
-    overall_pval = np.mean(pvals[holdout_subjects])
-    pval_mode.append(overall_pval)
-#     print("Predictive check p-values", overall_pval)
-
-pval_mode
-# -
-
-len(rows_df[6])
-
-# +
-holdout_subjects_0 = np.unique(rows_df[0])
-
-subject_no = npr.choice(holdout_subjects_0) 
-sns.kdeplot(rep_ll_per_zi_per_mode[0][:,subject_no]).set_title("Predictive check for subject "+str(subject_no))
-plt.axvline(x=obs_ll_per_zi_per_mode[0][subject_no], linestyle='--')
-# -
-
-# ### Adding confounders to original DF
+# ## Adding confounders to original DF
 
 # +
 for i in data['mode_id'].unique():
@@ -378,14 +275,35 @@ for i in data['mode_id'].unique():
 data['confounder_all'] = data[['confounder_for_mode_1','confounder_for_mode_2','confounder_for_mode_3',
                               'confounder_for_mode_4', 'confounder_for_mode_5', 'confounder_for_mode_6',
                               'confounder_for_mode_7', 'confounder_for_mode_8']].sum(axis=1)
+
+
+data.loc[data['mode_id']==1, 'confounder_da'] = confounders_DA[2]
+data['confounder_da'] = data['confounder_da'].fillna(0)
+
+data.loc[data['mode_id']==2, 'confounder_sr2'] = confounders_SR2[2]
+data['confounder_sr2'] = data['confounder_sr2'].fillna(0)
+
+data.loc[data['mode_id']==3, 'confounder_sr3'] = confounders_SR3[2]
+data['confounder_sr3'] = data['confounder_sr3'].fillna(0)
+
+data['confounder_all_2'] = data[['confounder_da', 'confounder_sr2', 'confounder_sr3']].sum(axis=1)
+data.head()
+
 # -
 
-data['confounder_all_2'] = confounders_using_all[2]
+# # Compare recovered confounder to actual confounder
+#
+# Notice here that although the recovered confounder correlates well with the true confounder, there is more noise in method 1 where we use all the variables in each utility to recover the confounder. Method 2 has less noise, but as we will see later in the notebook, this noise is still high enough that our estimates on travel_time and travel_cost will still be biased even after adjusting for the recovered confounder.
 
-# ## Estimate original MNL
+# +
+data_da = data[data['mode_id']==1]
 
-# data
+data_da.plot.scatter('total_travel_distance', 'confounder_all')
 
+data_da.plot.scatter('total_travel_distance', 'confounder_all_2')
+# -
+
+# ## True Model
 
 # +
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
@@ -407,7 +325,7 @@ mnl_model.fit_mle(np.zeros(num_vars),
 mnl_model.get_statsmodels_summary()
 # -
 
-# ## Estimate non-causal MNL -- omit travel distance
+# ## Model 1
 
 # +
 # Create my specification and variable names for the basic MNL model
@@ -489,321 +407,105 @@ mnl_model_noncausal.fit_mle(np.zeros(num_vars_noncausal),
 mnl_model_noncausal.get_statsmodels_summary()
 # -
 
-# ## Estimate Causal MNL - method 1
+# ## Model 2
 
 # +
-mnl_specification_causal = mnl_specification_noncausal.copy()
-mnl_names_causal = mnl_names_noncausal.copy()
+mnl_specification_causal_1 = mnl_specification_noncausal.copy()
+mnl_names_causal_1 = mnl_names_noncausal.copy()
 
-mnl_specification_causal["confounder_all"] = [1, 2, 3]
-mnl_names_causal["confounder_all"] = ["Confounder - Drive alone",
+mnl_specification_causal_1["confounder_all"] = [1, 2, 3]
+mnl_names_causal_1["confounder_all"] = ["Confounder - Drive alone",
                                      "Confounder - Shared ride 2", 
                                      "Confounder - Shared ride 3"]
 
 # +
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
-mnl_model_causal = cm.create_choice_model(data=data,
+mnl_model_causal_1 = cm.create_choice_model(data=data,
                                    alt_id_col="mode_id",
                                    obs_id_col="observation_id",
                                    choice_col="sim_choice",
-                                   specification=mnl_specification_causal,
+                                   specification=mnl_specification_causal_1,
                                    model_type="MNL",
-                                   names=mnl_names_causal)
+                                   names=mnl_names_causal_1)
 
-num_vars = len(reduce(lambda x, y: x + y, mnl_names_causal.values()))
+num_vars = len(reduce(lambda x, y: x + y, mnl_names_causal_1.values()))
 # Note newton-cg used to ensure convergence to a point where gradient 
 # is essentially zero for all dimensions. 
-mnl_model_causal.fit_mle(np.zeros(num_vars),
+mnl_model_causal_1.fit_mle(np.zeros(num_vars),
                   method="BFGS")
 
 # Look at the estimation results
-mnl_model_causal.get_statsmodels_summary()
+mnl_model_causal_1.get_statsmodels_summary()
 # -
 
-# ## Estimate Causal MNL - method 2
+# ## Model 3
 
 # +
-xs = ['total_travel_time', 'total_travel_cost']
-X_DA = (data[data['mode_id']==1][xs] - data[data['mode_id']==1][xs].mean())/data[data['mode_id']==1][xs].std()
+mnl_specification_causal_2 = mnl_specification_noncausal.copy()
+mnl_names_causal_2 = mnl_names_noncausal.copy()
 
-X_SR2 = (data[data['mode_id']==2][xs] - data[data['mode_id']==2][xs].mean())/data[data['mode_id']==2][xs].std()
-
-X_SR3 = (data[data['mode_id']==3][xs] - data[data['mode_id']==3][xs].mean())/data[data['mode_id']==3][xs].std()
-
-# +
-(confounders_DA, holdouts_DA, 
- holdoutmasks_DA, holdoutrow_DA)= confounder(holdout_portion=0.2, 
-                                       X=X_DA, latent_dim=latent_dim)
-
-(confounders_SR2, holdouts_SR2, 
- holdoutmasks_SR2, holdoutrow_SR2)= confounder(holdout_portion=0.2, 
-                                       X=X_SR2, latent_dim=latent_dim)
-
-(confounders_SR3, holdouts_SR3, 
- holdoutmasks_SR3, holdoutrow_SR3)= confounder(holdout_portion=0.2, 
-                                       X=X_SR3, latent_dim=latent_dim)
-
-# +
-data.loc[data['mode_id']==1, 'confounder_da'] = confounders_DA[2]
-data['confounder_da'] = data['confounder_da'].fillna(0)
-
-data.loc[data['mode_id']==2, 'confounder_sr2'] = confounders_SR2[2]
-data['confounder_sr2'] = data['confounder_sr2'].fillna(0)
-
-data.loc[data['mode_id']==3, 'confounder_sr3'] = confounders_SR3[2]
-data['confounder_sr3'] = data['confounder_sr3'].fillna(0)
-
-data['confounder_all_2'] = data[['confounder_da', 'confounder_sr2', 'confounder_sr3']].sum(axis=1)
-data.head()
-
-
-
-
-
-# +
-mnl_specification_causal = mnl_specification_noncausal.copy()
-mnl_names_causal = mnl_names_noncausal.copy()
-
-mnl_specification_causal["confounder_all_2"] = [1, 2, 3]
-mnl_names_causal["confounder_all_2"] = ["Confounder - Drive alone",
+mnl_specification_causal_2["confounder_all_2"] = [1, 2, 3]
+mnl_names_causal_2["confounder_all_2"] = ["Confounder - Drive alone",
                                      "Confounder - Shared ride 2", 
                                      "Confounder - Shared ride 3"]
 
 # +
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
-mnl_model_causal = cm.create_choice_model(data=data,
+mnl_model_causal_2 = cm.create_choice_model(data=data,
                                    alt_id_col="mode_id",
                                    obs_id_col="observation_id",
                                    choice_col="sim_choice",
-                                   specification=mnl_specification_causal,
+                                   specification=mnl_specification_causal_2,
                                    model_type="MNL",
-                                   names=mnl_names_causal)
+                                   names=mnl_names_causal_2)
 
-num_vars = len(reduce(lambda x, y: x + y, mnl_names_causal.values()))
+num_vars = len(reduce(lambda x, y: x + y, mnl_names_causal_2.values()))
 # Note newton-cg used to ensure convergence to a point where gradient 
 # is essentially zero for all dimensions. 
-mnl_model_causal.fit_mle(np.zeros(num_vars),
+mnl_model_causal_2.fit_mle(np.zeros(num_vars),
                   method="BFGS")
 
 # Look at the estimation results
-mnl_model_causal.get_statsmodels_summary()
+mnl_model_causal_2.get_statsmodels_summary()
 # -
 
-# ## Investigate
+# ## Compare estimates on travel time and cost
 
 # +
-data_da = data[data['mode_id']==1]
+results_summary_true = mnl_model.get_statsmodels_summary()
+results_summary_non_causal = mnl_model_noncausal.get_statsmodels_summary()
+results_summary_method_1 = mnl_model_causal_1.get_statsmodels_summary()
+results_summary_method_2 = mnl_model_causal_2.get_statsmodels_summary()
 
-data_da.plot.scatter('total_travel_distance', 'confounder_all')
+results_as_html_true = results_summary_true.tables[1].as_html()
+results_as_html_true = pd.read_html(results_as_html_true, header=0, index_col=0)[0]
+
+results_as_html_noncausal = results_summary_non_causal.tables[1].as_html()
+results_as_html_noncausal = pd.read_html(results_as_html_noncausal, header=0, index_col=0)[0]
+
+results_as_html_method_1 = results_summary_method_1.tables[1].as_html()
+results_as_html_method_1 = pd.read_html(results_as_html_method_1, header=0, index_col=0)[0]
+
+results_as_html_method_2 = results_summary_method_2.tables[1].as_html()
+results_as_html_method_2 = pd.read_html(results_as_html_method_2, header=0, index_col=0)[0]
 
 # +
-data_mode_specific = data[data['mode_id']==3]
+locs = ['Travel Time, units:min (Drive Alone)','Travel Time, units:min (SharedRide-2)',
+       'Travel Time, units:min (SharedRide-3+)', 'Travel Cost, units:$ (Drive Alone)',
+       'Travel Cost, units:$ (SharedRide-2)', 'Travel Cost, units:$ (SharedRide-3+)']
+cols = ['coef', 'std err']
 
-data_mode_specific.plot.scatter('total_travel_distance', 'confounder_all_2')
+results_comparison = results_as_html_true.loc[locs][cols].join(results_as_html_noncausal.loc[locs][cols], 
+                                                               lsuffix = '_true', rsuffix = '_non_causal').join(
+    results_as_html_method_1.loc[locs][cols].join(results_as_html_method_2.loc[locs][cols],
+                                               lsuffix = '_method_1', rsuffix = '_method_2'))
 
-
+results_comparison
 # -
 
-# ## Putting everything in a function
-
-def confounder(X, latent_dim, holdout_portion):
-    # randomly holdout some entries of X
-    num_datapoints, data_dim = X.shape
-
-    holdout_portion = holdout_portion
-    n_holdout = int(holdout_portion * num_datapoints * data_dim)
-
-    holdout_row = np.random.randint(num_datapoints, size=n_holdout)
-    holdout_col = np.random.randint(data_dim, size=n_holdout)
-    holdout_mask = (sparse.coo_matrix((np.ones(n_holdout), \
-                                (holdout_row, holdout_col)), \
-                                shape = X.shape)).toarray()
-
-    holdout_subjects = np.unique(holdout_row)
-
-    x_train = np.multiply(1-holdout_mask, X)
-    x_vad = np.multiply(holdout_mask, X)
-
-    def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints):
-        w = ed.Normal(loc=tf.zeros([latent_dim, data_dim]),
-                    scale=tf.ones([latent_dim, data_dim]),
-                    name="w")  # parameter
-        z = ed.Normal(loc=tf.zeros([num_datapoints, latent_dim]),
-                    scale=tf.ones([num_datapoints, latent_dim]), 
-                    name="z")  # local latent variable / substitute confounder
-        x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
-                    scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),
-                    name="x")  # (modeled) data
-        return x, (w, z)
-
-    log_joint = ed.make_log_joint_fn(ppca_model)
-
-    latent_dim = latent_dim
-    stddv_datapoints = 0.1
-
-    model = ppca_model(data_dim=data_dim,
-                       latent_dim=latent_dim,
-                       num_datapoints=num_datapoints,
-                       stddv_datapoints=stddv_datapoints)
-
-    def variational_model(qw_mean, qw_stddv, qz_mean, qz_stddv):
-        qw = ed.Normal(loc=qw_mean, scale=qw_stddv, name="qw")
-        qz = ed.Normal(loc=qz_mean, scale=qz_stddv, name="qz")
-        return qw, qz
-
-
-    log_q = ed.make_log_joint_fn(variational_model)
-
-    def target(w, z):
-        """Unnormalized target density as a function of the parameters."""
-        return log_joint(data_dim=data_dim,
-                       latent_dim=latent_dim,
-                       num_datapoints=num_datapoints,
-                       stddv_datapoints=stddv_datapoints,
-                       w=w, z=z, x=x_train)
-
-    def target_q(qw, qz):
-        return log_q(qw_mean=qw_mean, qw_stddv=qw_stddv,
-                   qz_mean=qz_mean, qz_stddv=qz_stddv,
-                   qw=qw, qz=qz)
-
-
-    qw_mean = tf.Variable(np.ones([latent_dim, data_dim]), dtype=tf.float32)
-    qz_mean = tf.Variable(np.ones([num_datapoints, latent_dim]), dtype=tf.float32)
-    qw_stddv = tf.nn.softplus(tf.Variable(-4 * np.ones([latent_dim, data_dim]), dtype=tf.float32))
-    qz_stddv = tf.nn.softplus(tf.Variable(-4 * np.ones([num_datapoints, latent_dim]), dtype=tf.float32))
-
-    qw, qz = variational_model(qw_mean=qw_mean, qw_stddv=qw_stddv,
-                               qz_mean=qz_mean, qz_stddv=qz_stddv)
-
-
-    energy = target(qw, qz)
-    entropy = -target_q(qw, qz)
-
-    elbo = energy + entropy
-
-
-    optimizer = tf.train.AdamOptimizer(learning_rate = 0.05)
-    train = optimizer.minimize(-elbo)
-
-    init = tf.global_variables_initializer()
-
-    t = []
-
-    num_epochs = 500
-
-    with tf.Session() as sess:
-        sess.run(init)
-
-        for i in range(num_epochs):
-            sess.run(train)
-            if i % 5 == 0:
-                t.append(sess.run([elbo]))
-
-            w_mean_inferred = sess.run(qw_mean)
-            w_stddv_inferred = sess.run(qw_stddv)
-            z_mean_inferred = sess.run(qz_mean)
-            z_stddv_inferred = sess.run(qz_stddv)
-
-    print("Inferred axes:")
-    print(w_mean_inferred)
-    print("Standard Deviation:")
-    print(w_stddv_inferred)
-
-    plt.plot(range(1, num_epochs, 5), t)
-    plt.show()
-
-    def replace_latents(w, z):
-
-        def interceptor(rv_constructor, *rv_args, **rv_kwargs):
-            """Replaces the priors with actual values to generate samples from."""
-            name = rv_kwargs.pop("name")
-            if name == "w":
-                rv_kwargs["value"] = w
-            elif name == "z":
-                rv_kwargs["value"] = z
-            return rv_constructor(*rv_args, **rv_kwargs)
-
-        return interceptor
-    
-    return [w_mean_inferred, w_stddv_inferred, z_mean_inferred, z_stddv_inferred], x_vad, holdout_mask, holdout_row
 
 
 
-# +
-
-def specifications(mnl_specification, num_modes):
-    newDict= dict()
-
-    for i in range(1,num_modes+1):
-        variables = []
-        # Iterate over all the items in dictionary and filter items which has even keys
-        for (key, value) in mnl_specification.items():
-           # Check if key is even then add pair to new dictionary
-
-            if any(isinstance(sub, list) for sub in value):
-                if any(i in sl for sl in value):
-                    variables.append(key)
-
-            else:
-                if i in value:
-        #             print(variables)
-
-                    variables.append(key)
-
-        newDict[i] = variables
-
-    return newDict
-
-
-# +
-def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints, holdout_mask):
-    w = ed.Normal(loc=tf.zeros([latent_dim, data_dim]),
-                scale=tf.ones([latent_dim, data_dim]),
-                name="w")  # parameter
-    z = ed.Normal(loc=tf.zeros([num_datapoints, latent_dim]),
-                scale=tf.ones([num_datapoints, latent_dim]), 
-                name="z")  # local latent variable / substitute confounder
-    x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
-                scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),
-                name="x")  # (modeled) data
-    return x, (w, z)
-
-
-
-def variational_model(qw_mean, qw_stddv, qz_mean, qz_stddv):
-    qw = ed.Normal(loc=qw_mean, scale=qw_stddv, name="qw")
-    qz = ed.Normal(loc=qz_mean, scale=qz_stddv, name="qz")
-    return qw, qz
-
-
-
-def target(w, z):
-    """Unnormalized target density as a function of the parameters."""
-    return log_joint(data_dim=data_dim,
-                   latent_dim=latent_dim,
-                   num_datapoints=num_datapoints,
-                   stddv_datapoints=stddv_datapoints,
-                   w=w, z=z, x=x_train)
-
-def target_q(qw, qz):
-    return log_q(qw_mean=qw_mean, qw_stddv=qw_stddv,
-               qz_mean=qz_mean, qz_stddv=qz_stddv,
-               qw=qw, qz=qz)
-
-def replace_latents(w, z):
-
-    def interceptor(rv_constructor, *rv_args, **rv_kwargs):
-        """Replaces the priors with actual values to generate samples from."""
-        name = rv_kwargs.pop("name")
-        if name == "w":
-            rv_kwargs["value"] = w
-        elif name == "z":
-            rv_kwargs["value"] = z
-        return rv_constructor(*rv_args, **rv_kwargs)
-
-    return interceptor
-# -
 
 
 
