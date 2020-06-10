@@ -215,8 +215,8 @@ def visualize_permutation_results(obs_r2: float,
 
     if verbose:
         msg =\
-            'The p-value of the permutation C.I.T. is {:.2f}.'.format(p_value)
-        print(msg)
+            'The p-value of the permutation independence test is {:.2f}.'
+        print(msg.format(p_value))
 
     sbn.kdeplot(
         permuted_r2, ax=ax, color=permutation_color, label='Simulated')
