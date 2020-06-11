@@ -14,16 +14,20 @@
 # ---
 
 # # To-Do:
-# - Fill in overall purpose for the notebook.
-# - Fill in caveats and pitfalls for marginal independence tests.
 # - Fill in main idea for latent conditional independence tests.
-# - Fill in posited causal graph for latent conditional independence tests.
-# - Fill in caveats and pitfalls for latent conditional independence tests.
-# - Fill in summary for notebook.
 #
 # # Testing your causal graph
 #
 # ## Purpose
+# This notebook describes and demonstrates methods for testing the assumptions of one's causal graph.
+# Three types of assumptions are tested:
+# - marginal independence assumptions,
+# - conditional independence assumptions, and
+# - latent, conditional independence assumptions.
+#
+# For each type of assumption, we first describe the logic used to test it.
+# Then, one mechanism for testing the assumption according to that logic is demonstrated.
+#
 
 # ## Set notebook parameters
 
@@ -83,7 +87,8 @@ import src.viz.sim_cdf as sim_cdf
 import src.testing.observable_independence as oi
 import src.testing.latent_independence as li
 
-from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
+from src.graphs.drive_alone_utility import (DRIVE_ALONE_UTILITY,
+                                            LATENT_DRIVE_ALONE_UTILITY)
 from src.utils import sample_from_factor_model
 # -
 
@@ -157,7 +162,17 @@ oi.visual_permutation_test(
 # -
 
 # ### Caveats and pitfalls
+# Two important issues when testing the assumption of mean independence between $X_1$ and $X_2$ are underfitting and overfitting of the model for $E \left[ X_1 \mid X_2 \right]$.
 #
+# If $E \left[ X_1 \mid X_2 \right]$ is underfit, then one's observed test statitic ($r^2$) will be lower than it would be under a correctly specified model.
+# This will increase the probability of one failing to reject the null-hypothesis when it is false.
+# Underfitting reduces the power of one's predictive test.
+# To guard against underfitting, one should make extensive use of posterior predictive checks and model selection techniques to select the predictively most powerful models that do no show signs of overfitting.
+#
+# Conversely, if $E \left[ X_1 \mid X_2 \right]$ is overfit, then one's observed test statitic ($r^2$) will be higher than it would be under a correctly specified model.
+# This will increase the probability of one rejecting the null-hypothesis when it is true.
+# Overfitting increases the probability of Type-1 errors.
+# To guard against overfitting, one should make thorough use of cross-validation and related resampling techniques to ensure that one's model performance does not degreade appreciably outside of the training set.
 
 # ## Conditional independence tests
 #
@@ -220,13 +235,21 @@ oi.visual_permutation_test(
 # - overfitting of $E \left[ X_1 \mid X_2, Z \right]$ shifts one's observed test statistic to the right, while leaving one's reference distribution unchanged.
 #
 # To avoid all such problems or the combination of these problems, be sure to check one's models of $E \left[ X_1 \mid Z \right]$ and $E \left[ X_1 \mid X_2, Z \right]$ for both under- and over-fitting.
+# As mentioned above, posterior predictive checks are most helpful for identifying underfitting in one's models.
+# Cross-validatory and resampling techniques are great for identifying overfitting.
 
 # ## Latent conditional independence tests
 #
 
 # ### Show the posited causal graph
+# The key differences between the graph underlying the latent, conditional independence tests and the graph underlying the tests above are that:
+# 1. a latent confounder is posited to exist
+# 2. the observed variables are posited to be conditionally independent, given the latent confounder.
 
-
+# Draw the causal model being tested
+latent_causal_graph = LATENT_DRIVE_ALONE_UTILITY.draw()
+latent_causal_graph.graph_attr.update(size="10,6")
+latent_causal_graph
 
 # ### Main idea
 #
@@ -353,6 +376,48 @@ post_pval, post_sampled_pvals, post_obs_pvals =\
 
 # ### Caveats and pitfalls
 
+# +
+# Choose a column of data to compare, e.g., the
+# travel time column.
+current_col = TIME_COLUMN
+current_col_idx = UTILITY_COLUMNS.index(TIME_COLUMN)
 
+print('Prior')
+prior_sim_cdf =\
+    li.plot_simulated_vs_observed_cdf(
+        drive_alone_df.iloc[:, current_col_idx].values,
+        x_samples_prior[:, current_col_idx, :],
+        x_label=current_col
+        )
+
+print('Posterior')
+posterior_sim_cdf =\
+    li.plot_simulated_vs_observed_cdf(
+        drive_alone_df.iloc[:, current_col_idx].values,
+        x_samples_post[:, current_col_idx, :],
+        x_label=current_col
+        )
+# -
+
+# Overall, the caveats and pitfalls only increase from marginal to conditional to latent, conditional independence tests.
+#
+# When testing for latent, conditional independence, one has to be wary of the same caveats as with conditional independence: under-/overfitting of the models for $E \left[ X_1 \mid Z \right]$ and $E \left[ X_1 \mid X_2, Z \right]$.
+#
+# Additionally however, one must also be wary of any combination of:
+# - models for the latent confounder
+# - models for how the latent confounder causes the observed variables
+# - prior distributions for the parameters of these models
+# - posterior distributions for the parameters of these models
+# that generates unrealistic data in a prior or posterior check.
+# We hypothesize that if the your model and prior / posterior distribution generates data that is generally dissimilar to the observed data, then it is unlikely that these generated datasets will be similar in terms of conditional, mean independence measures.
 
 # ## Summary
+# The tests performed above collectively point to a few conclusions.
+#
+# 1. The originally posited causal graph is strongly refuted by the available data.
+# This is shown by the marginal and conditional independence tests.
+# 2. The second posited causal graph (featuring an unobserved confounder) is also refuted by the data, based on the given prior or posterior distributions for the unobserved confounder.
+# This is shown by the latent, conditional independence tests.
+# 3. Checking the predictive models used in one's tests for underfitting and overfitting is noted to be important for obtaining tests with high power and low probability of Type-1 error.
+# 4. The latent, conditional independence tests exemplifies the utility of general, prior and posterior predictive checks of one's generative model.
+# The resulting hypothesis is that if one's model and prior/posterior distributions indicate general data conflict, then one's latent, conditional independence tests are likely to fail with the same prior/posterior distributions.
