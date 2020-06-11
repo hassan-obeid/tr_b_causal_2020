@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: ipynb,py:light
+#     formats: ipynb,py:light,md
 #     text_representation:
 #       extension: .py
 #       format_name: light
@@ -13,20 +13,17 @@
 #     name: python3
 # ---
 
-# # To-Do:
-# - Fill in main idea for latent conditional independence tests.
-#
 # # Testing your causal graph
 #
 # ## Purpose
 # This notebook describes and demonstrates methods for testing the assumptions of one's causal graph.
-# Three types of assumptions are tested:
+# We test three types of assumptions:
 # - marginal independence assumptions,
 # - conditional independence assumptions, and
 # - latent, conditional independence assumptions.
 #
-# For each type of assumption, we first describe the logic used to test it.
-# Then, one mechanism for testing the assumption according to that logic is demonstrated.
+# For each assumption, we first describe the logic used to test it.
+# Then, we demonstrate one mechanism for testing the assumption according to that logic.
 #
 
 # ## Set notebook parameters
@@ -139,9 +136,9 @@ causal_graph
 # This means that shuffling / permuting the $X_2$ columns should make no difference to predicting $X_1$, once one predicts $\bar{X_1}$.
 #
 # The test demonstrated below works by estimating a linear regression to predict $E \left[ X_1 \mid X_2 \right]$.
-# The $r^2$ from these regressions is computed using the observed value of $X_2$, and it is also computed using the permuted values of $X_2$ (which are independent of $X_1$ by construction).
+# We compute the $r^2$ from these regressions using the observed value of $X_2$ and also using the permuted values of $X_2$, which are independent of $X_1$ by construction.
 #
-# If $X_1$ is marginally independent of $X_2$, then the $r^2$ using the observed values of $X_2$ should be similar to the distribution of $r^2$ using the permuted values of $X_2$.
+# If $X_1$ is marginally independent of $X_2$, then the $r^2$ using the observed values of $X_2$ should resemble the distribution of $r^2$ using the permuted values of $X_2$.
 #
 # For this test, we'll use the following marginal independence assumption implied by the causal graph above:<br>
 # $
@@ -165,14 +162,14 @@ oi.visual_permutation_test(
 # Two important issues when testing the assumption of mean independence between $X_1$ and $X_2$ are underfitting and overfitting of the model for $E \left[ X_1 \mid X_2 \right]$.
 #
 # If $E \left[ X_1 \mid X_2 \right]$ is underfit, then one's observed test statitic ($r^2$) will be lower than it would be under a correctly specified model.
-# This will increase the probability of one failing to reject the null-hypothesis when it is false.
+# This will increase the probability of one failing to reject the null-hypothesis when the null is false.
 # Underfitting reduces the power of one's predictive test.
 # To guard against underfitting, one should make extensive use of posterior predictive checks and model selection techniques to select the predictively most powerful models that do no show signs of overfitting.
 #
-# Conversely, if $E \left[ X_1 \mid X_2 \right]$ is overfit, then one's observed test statitic ($r^2$) will be higher than it would be under a correctly specified model.
-# This will increase the probability of one rejecting the null-hypothesis when it is true.
+# Conversely, if $E \left[ X_1 \mid X_2 \right]$ is overfit, then one's observed test statistic ($r^2$) will be higher than it would be under a correctly specified model.
+# This will increase the probability of one rejecting the null-hypothesis when the null is true.
 # Overfitting increases the probability of Type-1 errors.
-# To guard against overfitting, one should make thorough use of cross-validation and related resampling techniques to ensure that one's model performance does not degreade appreciably outside of the training set.
+# To guard against overfitting, one should make thorough use of cross-validation and related resampling techniques to ensure that one's model performance does not degrade appreciably outside of the training set.
 
 # ## Conditional independence tests
 #
@@ -186,11 +183,11 @@ oi.visual_permutation_test(
 # \end{aligned}
 # $
 #
-# In other words, if $X_1$ is conditionally independent of $X_2$ given $Z$, then the expectation of $X_1$ conditional on $X_2$ and $Z$ is equal to the expectation of $X_1$ conditional on just $Z$.
+# In other words, if $X_1$ is conditionally independent of $X_2$ given $Z$, then the expectation of $X_1$ conditional on $X_2$ and $Z$ is equal to the expectation of $X_1$ conditional on $Z$ alone.
 # This implies that shuffling / permuting $X_2$ should make no difference for predicting $X_1$ once we've included $Z$ while predicting.
 #
 # In other words, one's ability predict to predict $X_1$ should not depend on whether one uses the original $X_2$ or the permuted $X_2$, as long as one conditions on $Z$ when predicting $X_1$.
-# This invariance will be tested by using a simple predictive model, linear regression, and comparing $r^2$ as a measure of predictive ability when using $Z$ and the original $X_2$ versus $r^2$ when using $Z$ and the permuted $X_2$.
+# In this notebook, we test this invariance using a simple predictive model, linear regression, but in general, one need not and should not restrict oneself to linear predictive models. Upon estimating each regression, we compare $r^2$ as a measure of predictive ability when using $Z$ and the original $X_2$ versus $r^2$ when using $Z$ and the permuted $X_2$.
 #
 # For this test, we'll use the following conditional independence assumption implied by the causal graph above:<br>
 # $
@@ -214,7 +211,7 @@ oi.visual_permutation_test(
 # When testing conditional mean independence (i.e., $E \left[ X_1 \mid X_2, Z \right] = E \left[ X_1 \mid Z \right]$), there are four potential issues of interest.
 #
 # The first issue is misspecification of $E \left[ X_1 \mid Z \right]$.
-# If the conditional mean of $X_1$ is affected by un-modeled functions of $Z$ and $Z \rightarrow X_2$, then the inclusion of $X_2$ in one's model may simply act as a proxy for the un-modeled function of $Z$.
+# If the conditional mean of $X_1$ depends on un-modeled functions of $Z$ and $Z \rightarrow X_2$, then the inclusion of $X_2$ in one's model may serve as a proxy for the un-modeled function of $Z$.
 # Such proxy behavior would lead one to observe "inflated" values of $r^2$ when modeling $E \left[ X_1 \mid X_2, Z \right]$, thus increasing the probability that one will falsely reject the null-hypothesis of conditional independence.
 #
 # In other words, to guard against higher-than-nominal probabilities of type-1 error, one needs to guard against underfitting of the model for $E \left[ X_1 \mid Z \right]$ **before** computing one's test-statistic and (permutation-based) reference-distribution.
@@ -236,15 +233,15 @@ oi.visual_permutation_test(
 #
 # To avoid all such problems or the combination of these problems, be sure to check one's models of $E \left[ X_1 \mid Z \right]$ and $E \left[ X_1 \mid X_2, Z \right]$ for both under- and over-fitting.
 # As mentioned above, posterior predictive checks are most helpful for identifying underfitting in one's models.
-# Cross-validatory and resampling techniques are great for identifying overfitting.
+# Cross-validation and resampling techniques are great for identifying overfitting.
 
 # ## Latent conditional independence tests
 #
 
 # ### Show the posited causal graph
-# The key differences between the graph underlying the latent, conditional independence tests and the graph underlying the tests above are that:
-# 1. a latent confounder is posited to exist
-# 2. the observed variables are posited to be conditionally independent, given the latent confounder.
+# The key differences between the graph underlying the latent, conditional independence tests and the graph underlying the tests above are that, now, we posit:
+# 1. the existence of a latent confounder
+# 2. the conditional independence of the observed variables, given the latent confounder.
 
 # Draw the causal model being tested
 latent_causal_graph = LATENT_DRIVE_ALONE_UTILITY.draw()
@@ -252,6 +249,29 @@ latent_causal_graph.graph_attr.update(size="10,6")
 latent_causal_graph
 
 # ### Main idea
+# The latent, conditional independence test is a prior / posterior predictive test that involves a latent variable.
+#
+# Section 2.2 of
+# > Gelman, Andrew, Xiao-Li Meng, and Hal Stern. "Posterior predictive assessment of model fitness via realized discrepancies." Statistica sinica (1996): 733-760.
+#
+# describes these tests.
+#
+# The basic idea is to select a test-statistic or discrepancy measure $D \left( \textrm{Data} ; \theta \right)$ that is a function of both the observed or simulated data and of the latent variables $\theta$.
+# In the test demonstrated below, $D \left( \textrm{Data} ; \theta \right)$ is the p-value resulting from the visual conditional independence function above.
+# This discrepancy value is an estimate of the probability that the chosen $X_1$ and $X_2$ variables are not conditionally independent given a particular vector $\theta$ of latent confounders.
+#
+# The tail-area probability (i.e. the analog of the classical p-value) that corresponds to this discrepancy value is:<br>
+# $
+# P \left[ D \left( \textrm{Data}^{\textrm{rep}} ; \theta \right) \geq D \left( \textrm{Data}^{\textrm{obs}} ; \theta \right) \mid \textrm{Model}, \textrm{Data}^{\textrm{obs}} \right] =\\
+# \int \left[ D \left( \textrm{Data}^{\textrm{rep}} ; \theta \right) \geq D \left( \textrm{Data}^{\textrm{obs}} ; \theta \right) \mid \textrm{Model}, \textrm{Data}^{\textrm{obs}} \right] \partial P \left( \textrm{Data}^{\textrm{rep}}, \theta \mid \textrm{Model}, \textrm{Data}^{\textrm{obs}} \right)
+# $
+#
+# In words, the demonstrated test iteratively samples the latent confounder and then simulates a dataset of replicated variables.
+# For each sample of the confounder and replicated dataset, we calculate the p-value of the visual, conditional independence test for both:
+# - the observed covariates and currently sampled confounder vector,
+# - the replicated dataset and currently sampled confounder vector.
+#
+# The overall p-value of the latent conditional independence test is then calculated by averaging the number of times that the p-value with the replicated dataset is more extreme (i.e., greater than) than the p-value with the observed dataset.
 #
 # #### Prior distribution based test
 
@@ -321,7 +341,7 @@ pval, sampled_pvals, obs_pvals =\
 # #### Posterior distribution based test
 
 # +
-# Load the parameters of the variational approximation to 
+# Load the parameters of the variational approximation to
 # the posterior distribution over W and Z
 w_post_params = pd.read_csv(PATH_TO_W_PARAMS, index_col=0)
 z_post_params = pd.read_csv(PATH_TO_Z_PARAMS, index_col=0)
@@ -399,17 +419,17 @@ posterior_sim_cdf =\
         )
 # -
 
-# Overall, the caveats and pitfalls only increase from marginal to conditional to latent, conditional independence tests.
+# Overall, the caveats and pitfalls only increase as one moves from marginal to conditional to latent, conditional independence tests.
 #
 # When testing for latent, conditional independence, one has to be wary of the same caveats as with conditional independence: under-/overfitting of the models for $E \left[ X_1 \mid Z \right]$ and $E \left[ X_1 \mid X_2, Z \right]$.
 #
-# Additionally however, one must also be wary of any combination of:
+# Additionally, however, one must also be wary of any combination of:
 # - models for the latent confounder
 # - models for how the latent confounder causes the observed variables
 # - prior distributions for the parameters of these models
 # - posterior distributions for the parameters of these models
 # that generates unrealistic data in a prior or posterior check.
-# We hypothesize that if the your model and prior / posterior distribution generates data that is generally dissimilar to the observed data, then it is unlikely that these generated datasets will be similar in terms of conditional, mean independence measures.
+# We hypothesize that if the your model and prior / posterior distribution generates data that is generally dissimilar to the observed data, then these generated datasets are unlikely to have similar conditional, mean independence measures.
 
 # ## Summary
 # The tests performed above collectively point to a few conclusions.
