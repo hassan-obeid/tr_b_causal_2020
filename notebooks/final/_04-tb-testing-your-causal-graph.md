@@ -165,7 +165,7 @@ oi.visual_permutation_test(
 Two important issues when testing the assumption of mean independence between $X_1$ and $X_2$ are underfitting and overfitting of the model for $E \left[ X_1 \mid X_2 \right]$.
 
 If $E \left[ X_1 \mid X_2 \right]$ is underfit, then one's observed test statitic ($r^2$) will be lower than it would be under a correctly specified model.
-This will increase the probability of one failing to reject the null-hypothesis when the null is false.
+This will increase the probability of Type-2 error, failing to reject the null-hypothesis when the null is false.
 Underfitting reduces the power of one's predictive test.
 To guard against underfitting, one should make extensive use of posterior predictive checks and model selection techniques to select the predictively most powerful models that do no show signs of overfitting.
 
@@ -224,10 +224,10 @@ The second issue is misspecification of $E \left[ X_1 \mid X_2, Z \right]$.
 If one's model for $E \left[ X_1 \mid X_2, Z \right]$ is underfit with respect to $X_2$, then one's test-statistic ($r^2$) will be lower than it should be under accurate specification.
 This leads to lower probability of correctly rejecting the null-hypothesis.
 
-The last two issues are the converse of the problems and effects above.
+The two overfitting issues below are the converse of the underfitting problems discussed in the last two paragraphs.
 If one's model for $E \left[ X_1 \mid Z \right]$ is overfit, then the reference-distribution of the test statistic will be artificially high.
-This will lead to lower probability of correctly rejecting the null hypothesis of conditional independence.
-Likewise, if one's model for $E \left[ X_1 \mid X_2, Z \right]$ is overfit with respect to $X_2$, then one's test-statistic will be artificially high, thus increasing the probability of incorrectly rejecting the null-hypothesis.
+This will lead to higher probability of Type-2 error: i.e., lower probability of rejecting the null hypothesis of conditional independence when it is indeed false.
+Likewise, if one's model for $E \left[ X_1 \mid X_2, Z \right]$ is overfit to $X_2$, then one's test-statistic will be artificially high, thus increasing the probability of Type-1 error--incorrectly rejecting the null-hypothesis when it is true.
 
 Visually, the way to think about these four issues is that, relative to using well-specified models for $E \left[ X_1 \mid Z \right]$ and $E \left[ X_1 \mid X_2, Z \right]$:
 - underfitting of $E \left[ X_1 \mid Z \right]$ shifts one's reference distribution to the left, while leaving one's observed test statistic unchanged;
