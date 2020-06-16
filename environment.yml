@@ -28,4 +28,5 @@ dependencies:
   - pip:
     - causalgraphicalmodels==0.0.4
     - cdt=0.5.18
+    - mypy==0.770
 prefix: /Users/tbrathwaite/anaconda2/envs/causalTRB2020
