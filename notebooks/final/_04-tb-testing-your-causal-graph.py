@@ -212,24 +212,18 @@ oi.visual_permutation_test(
 #
 # The first issue is misspecification of $E \left[ X_1 \mid Z \right]$.
 # If the conditional mean of $X_1$ depends on un-modeled functions of $Z$ and $Z \rightarrow X_2$, then the inclusion of $X_2$ in one's model may serve as a proxy for the un-modeled function of $Z$.
-# Such proxy behavior would lead one to observe "inflated" values of $r^2$ when modeling $E \left[ X_1 \mid X_2, Z \right]$, thus increasing the probability that one will falsely reject the null-hypothesis of conditional independence.
+# Such proxy behavior would lead one to observe "inflated" values of $r^2$ when modeling $E \left[ X_1 \mid X_2, Z \right]$, thus increasing the probability that one will reject the null-hypothesis of conditional independence when it is true.
 #
 # In other words, to guard against higher-than-nominal probabilities of type-1 error, one needs to guard against underfitting of the model for $E \left[ X_1 \mid Z \right]$ **before** computing one's test-statistic and (permutation-based) reference-distribution.
 #
 # The second issue is misspecification of $E \left[ X_1 \mid X_2, Z \right]$.
 # If one's model for $E \left[ X_1 \mid X_2, Z \right]$ is underfit with respect to $X_2$, then one's test-statistic ($r^2$) will be lower than it should be under accurate specification.
-# This leads to lower probability of correctly rejecting the null-hypothesis.
+# This leads to greater probability of type-2 error, i.e., failing to reject the null hypothesis when it is false.
 #
 # The two overfitting issues below are the converse of the underfitting problems discussed in the last two paragraphs.
 # If one's model for $E \left[ X_1 \mid Z \right]$ is overfit, then the reference-distribution of the test statistic will be artificially high.
 # This will lead to higher probability of Type-2 error: i.e., lower probability of rejecting the null hypothesis of conditional independence when it is indeed false.
 # Likewise, if one's model for $E \left[ X_1 \mid X_2, Z \right]$ is overfit to $X_2$, then one's test-statistic will be artificially high, thus increasing the probability of Type-1 error--incorrectly rejecting the null-hypothesis when it is true.
-#
-# Visually, the way to think about these four issues is that, relative to using well-specified models for $E \left[ X_1 \mid Z \right]$ and $E \left[ X_1 \mid X_2, Z \right]$:
-# - underfitting of $E \left[ X_1 \mid Z \right]$ shifts one's reference distribution to the left, while leaving one's observed test statistic unchanged;
-# - underfitting of $E \left[ X_1 \mid X_2, Z \right]$ shifts one's observed test statistic to the left, while leaving one's reference distribution unchanged;
-# - overfitting of $E \left[ X_1 \mid Z \right]$ shifts one's reference distribution to the right, while leaving one's observed test statistic unchanged;
-# - overfitting of $E \left[ X_1 \mid X_2, Z \right]$ shifts one's observed test statistic to the right, while leaving one's reference distribution unchanged.
 #
 # To avoid all such problems or the combination of these problems, be sure to check one's models of $E \left[ X_1 \mid Z \right]$ and $E \left[ X_1 \mid X_2, Z \right]$ for both under- and over-fitting.
 # As mentioned above, posterior predictive checks are most helpful for identifying underfitting in one's models.
