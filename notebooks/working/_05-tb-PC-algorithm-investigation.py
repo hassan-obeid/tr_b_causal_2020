@@ -55,6 +55,7 @@ PERMUTED_COLOR = '#a6bddb'
 # Built-in modules
 import sys
 import itertools
+from typing import Optional, Tuple
 
 # Third party modules
 import numpy as np
@@ -159,3 +160,207 @@ for col_1, col_2, col_3 in triplets:
         z_array=col_3_array,
         num_permutations=NUM_PERMUTATIONS,
         permutation_color=PERMUTED_COLOR)
+
+# ## Findings
+# Based on the conditional independence tests, I should investigate the joint distributions between:
+# - total_travel_time indep num_licensed_drivers given total_travel_cost
+# - **total_travel_time indep num_cars given total_travel_cost**
+# - total_travel_cost indep num_licensed_drivers given total_travel_time
+# - num_licensed_drivers indep total_travel_time given total_travel_cost
+# - num_licensed_drivers indep total_travel_cost given total_travel_time
+# - **num_cars indep total_travel_time given total_travel_cost**
+#
+# However, from the marginal independence tests, we are already assuming that `num_licensed_drivers` is marginally independent of travel time, cost, and distance.
+#
+# Accordingly, we would only now need to investigate `num_cars` being conditionally independent of travel time given travel cost.
+#
+# Let's make this assumption and proceed. I'll check the assumption afterwards.
+
+# ## Step 5: Update working graph
+
+
+
+# ## Step 6: Test all "2nd-order" interactions.
+# In other look for conditional independencies once controlling for two variables.
+
+def computed_vs_obs_r2_order_2(
+    x1_array: np.ndarray,
+    x2_array: np.ndarray,
+    z_array: Optional[np.ndarray]=None,
+    seed: Optional[int]=None,
+    num_permutations: int=100,
+    progress: bool=True) -> Tuple[float, np.ndarray]:
+    """
+    Using sklearn's default LinearRegression regressor to predict `x1_array`
+    given `x2_array` (and optionally, `z_array`), this function computes
+    r2 using the observed `x2_array` and permuted versions of `x2_array`.
+
+    Parameters
+    ----------
+    x1_array : 1D np.ndarray.
+        Denotes the target variable to be predicted.
+    x2_array : 1D np.ndarray.
+        Denotes the explanatory variable to be used and permuted when trying to
+        predict `x1_array`.
+    z_array : optional, 1D ndarray or None.
+        Detnoes an explanatory variable to be conditioned on, but not to be
+        permuted when predicting `x1_array`. Default == None.
+    seed : optional, positive int or None.
+        Denotes the random seed to be used when permuting `x2_array`.
+        Default == None.
+    num_permutations : optional, positive int.
+        Denotes the number of permutations to use when predicting `x1_array`.
+        Default == 100.
+    progress : optional, bool.
+        Denotes whether or not a tqdm progress bar should be displayed as this
+        function is run. Default == True.
+
+    Returns
+    -------
+    obs_r2 : float
+        Denotes the r2 value obtained using `x2_array` to predict `x1_array`,
+        given `z_array` if it was not None.
+    permuted_r2 : 1D np.ndarray
+        Should have length `num_permutations`. Each element denotes the r2
+        attained using a permuted version of `x2_array` to predict `x1_array`,
+        given `z_array` if it was not None.
+    """
+    # Set a random seed for reproducibility
+    if seed is not None:
+        np.random.seed(seed)
+
+    # Determine how to create the predictors for the permutation test, based
+    # on whether we want a marginal independence test (i.e. z_array = None)
+    # or a conditional independence test (isinstance(z_array, np.ndarray))
+    def create_predictors(array_2):
+        if z_array is None:
+            return oi._create_predictors((array_2,))
+        return oi._create_predictors((array_2, z_array[:, 0], z_array[:, 1]))
+
+    # Combine the various predictors
+    combined_obs_predictors = create_predictors(x2_array)
+
+    # Determine the number of rows being plotted
+    num_rows = x1_array.shape[0]
+
+    # Create a regressor to be used to compute the conditional expectations
+    regressor = oi._make_regressor(combined_obs_predictors, x1_array)
+
+    # Get the observed expectations
+    obs_expectation = regressor.predict(combined_obs_predictors)
+    obs_r2 = oi.r2_score(x1_array, obs_expectation)
+
+    # Initialize arrays to store the permuted expectations and r2's
+    permuted_expectations = np.empty((num_rows, num_permutations))
+    permuted_r2 = np.empty(num_permutations, dtype=float)
+
+    # Get the permuted expectations
+    shuffled_index_array = np.arange(num_rows)
+
+    iterable = range(num_permutations)
+    if progress:
+        iterable = oi.tqdm(iterable)
+
+    for i in iterable:
+        # Shuffle the index array
+        np.random.shuffle(shuffled_index_array)
+        # Get the new set of permuted X_2 values
+        current_x2 = x2_array[shuffled_index_array]
+        # Get the current combined predictors
+        current_predictors = create_predictors(current_x2)
+        # Fit a new model and store the current expectation
+        current_regressor =\
+            oi._make_regressor(current_predictors, x1_array)
+        permuted_expectations[:, i] =\
+            current_regressor.predict(current_predictors)
+        permuted_r2[i] = oi.r2_score(x1_array, permuted_expectations[:, i])
+    return obs_r2, permuted_r2
+
+
+# +
+# Test case: x=cost, y=num_cars, z={time, distance}
+cost_array = drive_alone_df[COST_COLUMN].values
+num_car_array = drive_alone_df[NUM_AUTOS_COLUMN].values
+test_z_array = drive_alone_df[[TIME_COLUMN, DISTANCE_COLUMN]].values
+
+test_obs_r2, test_permuted_r2 =\
+    computed_vs_obs_r2_order_2(cost_array, num_car_array, test_z_array)
+
+oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
+
+# +
+# Test case: x=cost, y=time, z={num_cars, distance}
+cost_array = drive_alone_df[COST_COLUMN].values
+time_array = drive_alone_df[TIME_COLUMN].values
+test_z_array = drive_alone_df[[NUM_AUTOS_COLUMN, DISTANCE_COLUMN]].values
+
+test_obs_r2, test_permuted_r2 =\
+    computed_vs_obs_r2_order_2(cost_array, time_array, test_z_array)
+
+oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
+
+# +
+# Test case: x=cost, y=distance, z={num_cars, time}
+cost_array = drive_alone_df[COST_COLUMN].values
+distance_array = drive_alone_df[DISTANCE_COLUMN].values
+test_z_array = drive_alone_df[[NUM_AUTOS_COLUMN, TIME_COLUMN]].values
+
+test_obs_r2, test_permuted_r2 =\
+    computed_vs_obs_r2_order_2(cost_array, distance_array, test_z_array)
+
+oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
+
+# +
+# Test case: x=distance, y=num_cars, z={time, cost}
+distance_array = drive_alone_df[DISTANCE_COLUMN].values
+num_cars_array = drive_alone_df[NUM_AUTOS_COLUMN].values
+test_z_array = drive_alone_df[[TIME_COLUMN, COST_COLUMN]].values
+
+test_obs_r2, test_permuted_r2 =\
+    computed_vs_obs_r2_order_2(distance_array, num_cars_array, test_z_array)
+
+oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
+
+# +
+# Test case: x=distance, y=time, z={num_cars, cost}
+distance_array = drive_alone_df[DISTANCE_COLUMN].values
+time_array = drive_alone_df[TIME_COLUMN].values
+test_z_array = drive_alone_df[[NUM_AUTOS_COLUMN, COST_COLUMN]].values
+
+test_obs_r2, test_permuted_r2 =\
+    computed_vs_obs_r2_order_2(distance_array, time_array, test_z_array)
+
+oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
+
+# +
+# Test case: x=num_cars, y=cost, z={time, distance}
+cost_array = drive_alone_df[COST_COLUMN].values
+num_car_array = drive_alone_df[NUM_AUTOS_COLUMN].values
+test_z_array = drive_alone_df[[TIME_COLUMN, DISTANCE_COLUMN]].values
+
+test_obs_r2, test_permuted_r2 =\
+    computed_vs_obs_r2_order_2(num_car_array, cost_array, test_z_array)
+
+oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
+# -
+
+# ### Findings
+# Based on the "second-order" conditional independence tests, the only edges that are plausible to exclude is the edge between cost and number of automobiles per household.
+#
+# The probability of those variables being conditionally independent given travel distance and travel time is low, but let's go with it for the moment.
+#
+# The result of followig the PC Algorithm to its conclusion, assuming that the algorithms conclusions are met, is a "faithful indistinguishability class" where:
+# - `num_licensed_drivers` $\rightarrow$ `num_cars` $\leftarrow$ `total_travel_distance`
+# - `total_travel_distance` -- `total_travel_cost` -- `total_travel_time`
+# - `total_travel_distance` -- `total_travel_time`
+#
+# The directionality of relationships between time, cost, and distance are not given.
+#
+# Based on the computational data generating process though (i.e. the use of travel skims to construct the data and how the travel skims were constructed), we know that:
+# - `total_travel_distance` $\rightarrow$ `total_travel_cost`
+# - `total_travel_distance` $\rightarrow$ `total_travel_time`
+#
+# This leaves the final set of relations as
+# - `num_licensed_drivers` $\rightarrow$ `num_cars` $\leftarrow$ `total_travel_distance`
+# - `total_travel_time` $\leftarrow$ `total_travel_distance` $\rightarrow$ `total_travel_cost`
+# - `total_travel_cost` -- `total_travel_time`
