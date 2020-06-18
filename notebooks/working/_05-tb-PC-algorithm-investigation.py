@@ -429,19 +429,13 @@ oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 #
 # The probability of those variables being conditionally independent given travel distance and travel time is low, but let's go with it for the moment.
 #
-# The result of followig the PC Algorithm to its conclusion, assuming that the algorithms conclusions are met, is a "faithful indistinguishability class" where:
-# - `num_licensed_drivers` $\rightarrow$ `num_cars` $\leftarrow$ `total_travel_distance`
-# - `total_travel_distance` -- `total_travel_cost` -- `total_travel_time`
-# - `total_travel_distance` -- `total_travel_time`
-#
-# The directionality of relationships between time, cost, and distance are not given.
 
 # ## Step 7: Update working graph
 
 # +
 # Remove the edges given by the pairs of variables that
 # passed the 2nd order conditional independence tests.
-step_7_graph = graphviz.Digraph('step_7')
+step_7_graph = graphviz.Graph('step_7')
 
 # Add all nodes to the graph
 step_7_graph.node('T', TIME_COLUMN)
@@ -465,6 +459,13 @@ step_7_graph
 # > For each triple of vertices X, Y, Z such that the pair X, Y and the pair Y, Z are each adjacent in C but the pair X , Z are not adjacent in C, orient X - Y - Z as X -> Y <- Z if and only if Y is not in Sepset(X ,Z).
 #
 # Here, `total_travel_distance` and `num_licensed_drivers` are not adjacent in the graph AND they were deemed marginally independent (i.e. `num_cars` did not "separate" them--these two variables were already independent / separate). Accordingly, we should orient the graph such that both `total_travel_distance` and `num_licensed_drivers` have directed edges pointing to `num_cars`.
+#
+# The result of following the PC Algorithm to its conclusion, assuming that the algorithms assumptions are met, is a "faithful indistinguishability class" where:
+# - `num_licensed_drivers` $\rightarrow$ `num_cars` $\leftarrow$ `total_travel_distance`
+# - `total_travel_distance` -- `total_travel_cost` -- `total_travel_time`
+# - `total_travel_distance` -- `total_travel_time`
+#
+# The directionality of relationships between time, cost, and distance are not given.
 
 # +
 ####
@@ -496,6 +497,8 @@ step_8_graph
 # Based on the computational data generating process, i.e. through the use of travel skims to construct the data and how the travel skims were constructed, we know that:
 # - `total_travel_distance` $\rightarrow$ `total_travel_cost`
 # - `total_travel_distance` $\rightarrow$ `total_travel_time`
+#
+# See http://analytics.mtc.ca.gov/foswiki/bin/view/Main/SimpleSkims for more details.
 #
 # This leaves the final set of relations as
 # - `num_licensed_drivers` $\rightarrow$ `num_cars` $\leftarrow$ `total_travel_distance`
