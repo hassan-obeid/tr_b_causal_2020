@@ -13,15 +13,35 @@
 #     name: python3
 # ---
 
+# # Purpose
+# The purpose of this notebook is to manually execute the PC Algorithm (Section 5.4.2) of
+# > Spirtes, P., Glymour, C., & Scheines, R. (1993). Causation, prediction, and search.
+#
+# This algorithm was chosen as one of the earliest causal discovery algorithms and one of the easiest for me (Timothy Brathwaite) to understand upon first read.
+#
+# The algorithm is given as follows (p.117):
+# 1. Form the complete undirected graph C on the vertex set V.
+# 2. n = 0.  
+#    - repeat  
+#        - repeat  
+#           - Select an ordered pair of variables X and Y that are adjacent in C such that Adjacencies(C,X)\\{Y} has cardinality greater than or equal to n, and a subset S of Adjacencies(C,X)\\{Y} of cardinality n, and if X and Y are d-separated given S, delete edge X - Y from C and record S in Sepset(X,Y) and Sepset(Y,X);  
+#        - until all ordered pairs of adjacent variables X and Y such that Adjacencies(C,X)\\{Y} has cardinality greater than or equal to n and all subsets S of Adjacencies(C,X)\\{Y} of cardinality n have been tested for d-separation;  
+#    - n = n + 1;
+#    - until for each ordered pair of adjacent vertices X, Y, Adjacencies(C,X)\\{Y} is of cardinality less than n.
+# 3. For each triple of vertices X, Y, Z such that the pair X, Y and the pair Y, Z are each adjacent in C but the pair X , Z are not adjacent in C, orient X - Y - Z as X -> Y <- Z if and only if Y is not in Sepset(X ,Z).
+# 4. repeat
+#    - If A -> B, B and C are adjacent, A and C are not adjacent, and there is no arrowhead at B, then orient B - C as B -> C.
+#    - If there is a directed path from A to B, and an edge between A and B, then orient A - B as A -> B.
+#
+# until no more edges can be oriented.
+#
+# These steps will be informally and pragmatically carried out below.
+#
+
 # +
 # Declare paths to data
 DATA_PATH =\
     '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
-# Note that these files are based on using the PPCA model
-# of Wang and Blei (2018). W represents global factor
-# coefficients and Z represents latent factor loadings
-PATH_TO_W_PARAMS = '../../data/processed/W_inferred_PPCA.csv'
-PATH_TO_Z_PARAMS = '../../data/processed/Z_inferred_PPCA.csv'
 
 # Note the columns of interest for this notebook
 MODE_ID_COLUMN = 'mode_id'
@@ -58,18 +78,15 @@ import itertools
 from typing import Optional, Tuple
 
 # Third party modules
+import graphviz
 import numpy as np
 import pandas as pd
-import scipy.stats
 
 # Local modules
 sys.path.insert(0, '../../')
-import src.viz.sim_cdf as sim_cdf
 import src.testing.observable_independence as oi
-import src.testing.latent_independence as li
 
-from src.graphs.drive_alone_utility import (DRIVE_ALONE_UTILITY)
-from src.utils import sample_from_factor_model
+from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
 
 # +
 # Load the raw data
@@ -94,10 +111,29 @@ num_drive_alone_obs = drive_alone_df.shape[0]
 # -
 
 # # PC Algorithm
+#
+# Note that the numbering of steps below differs from the original numbering given above in the description of the PC algorithm.
+# Here, each step is a single action taken to either update the graph or test what edges should be removed from the graph.
 
 # ## Step 1: construct the fully connected graph
 
+# +
+step_1_graph = graphviz.Graph('step_1')
 
+# Add all nodes to the graph
+step_1_graph.node('T', TIME_COLUMN)
+step_1_graph.node('C', COST_COLUMN)
+step_1_graph.node('D', DISTANCE_COLUMN)
+step_1_graph.node('L', LICENSE_COLUMN)
+step_1_graph.node('A', NUM_AUTOS_COLUMN)
+
+# Create a fully connected, undirected graph
+node_aliases = ['T', 'C', 'D', 'L', 'A']
+step_1_graph.edges(list(itertools.combinations(node_aliases, 2)))
+
+# Display the graph
+step_1_graph
+# -
 
 # ## Step 2 : Test all "0-order interactions," i.e., marginal independencies
 
@@ -139,7 +175,26 @@ for col_1, col_2 in col_pairs:
 # ## Step 3: Update the working graph
 
 # +
-# Remove the edges given by the pairs of variables that passed the conditional independence tests.
+####
+# Remove the edges given by the pairs of variables
+# that passed the marginal independence tests.
+####
+step_3_graph = graphviz.Graph('step_3')
+
+# Add all nodes to the graph
+step_3_graph.node('T', TIME_COLUMN)
+step_3_graph.node('C', COST_COLUMN)
+step_3_graph.node('D', DISTANCE_COLUMN)
+step_3_graph.node('L', LICENSE_COLUMN)
+step_3_graph.node('A', NUM_AUTOS_COLUMN)
+
+# Create a fully connected, undirected graph
+node_aliases = ['T', 'C', 'D', 'A']
+step_3_graph.edges(list(itertools.combinations(node_aliases, 2)))
+step_3_graph.edge('L', 'A')
+
+# Display the graph
+step_3_graph
 # -
 
 # ## Step 4: Test for all "1st-order" interactions, i.e., conditional independences
@@ -178,7 +233,32 @@ for col_1, col_2, col_3 in triplets:
 
 # ## Step 5: Update working graph
 
+# +
+####
+# Remove the edges given by the pairs of variables that
+# passed the conditional independence tests.
+####
+step_5_graph = graphviz.Graph('step_5')
 
+# Add all nodes to the graph
+step_5_graph.node('T', TIME_COLUMN)
+step_5_graph.node('C', COST_COLUMN)
+step_5_graph.node('D', DISTANCE_COLUMN)
+step_5_graph.node('L', LICENSE_COLUMN)
+step_5_graph.node('A', NUM_AUTOS_COLUMN)
+
+# Create an undirected graph respecting the removed edges
+node_aliases = ['T', 'C', 'D', ]
+step_5_graph.edges(list(itertools.combinations(node_aliases, 2)))
+step_5_graph.edge('L', 'A')
+step_5_graph.edge('C', 'A')
+step_5_graph.edge('D', 'A')
+
+# Display the graph
+step_5_graph
+
+
+# -
 
 # ## Step 6: Test all "2nd-order" interactions.
 # In other look for conditional independencies once controlling for two variables.
@@ -355,8 +435,65 @@ oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 # - `total_travel_distance` -- `total_travel_time`
 #
 # The directionality of relationships between time, cost, and distance are not given.
+
+# ## Step 7: Update working graph
+
+# +
+# Remove the edges given by the pairs of variables that
+# passed the 2nd order conditional independence tests.
+step_7_graph = graphviz.Digraph('step_7')
+
+# Add all nodes to the graph
+step_7_graph.node('T', TIME_COLUMN)
+step_7_graph.node('C', COST_COLUMN)
+step_7_graph.node('D', DISTANCE_COLUMN)
+step_7_graph.node('L', LICENSE_COLUMN)
+step_7_graph.node('A', NUM_AUTOS_COLUMN)
+
+# Add edges to the graph
+node_aliases = ['T', 'C', 'D', ]
+step_7_graph.edges(list(itertools.combinations(node_aliases, 2)))
+step_7_graph.edge('L', 'A')
+step_7_graph.edge('D', 'A')
+
+# Display the graph
+step_7_graph
+# -
+
+# ## Step 8: Orient the edges that can be oriented
 #
-# Based on the computational data generating process though (i.e. the use of travel skims to construct the data and how the travel skims were constructed), we know that:
+# > For each triple of vertices X, Y, Z such that the pair X, Y and the pair Y, Z are each adjacent in C but the pair X , Z are not adjacent in C, orient X - Y - Z as X -> Y <- Z if and only if Y is not in Sepset(X ,Z).
+#
+# Here, `total_travel_distance` and `num_licensed_drivers` are not adjacent in the graph AND they were deemed marginally independent (i.e. `num_cars` did not "separate" them--these two variables were already independent / separate). Accordingly, we should orient the graph such that both `total_travel_distance` and `num_licensed_drivers` have directed edges pointing to `num_cars`.
+
+# +
+####
+# Remove the edges given by the pairs of variables that
+# passed the 2nd order conditional independence tests.
+####
+step_8_graph = graphviz.Digraph('step_8')
+
+# Add all nodes to the graph
+step_8_graph.node('T', TIME_COLUMN)
+step_8_graph.node('C', COST_COLUMN)
+step_8_graph.node('D', DISTANCE_COLUMN)
+step_8_graph.node('L', LICENSE_COLUMN)
+step_8_graph.node('A', NUM_AUTOS_COLUMN)
+
+# Add edges to the graph
+step_8_graph.edge('L', 'A')
+step_8_graph.edge('D', 'A')
+step_8_graph.edge('T', 'D', dir='none')
+step_8_graph.edge('C', 'D', dir='none')
+step_8_graph.edge('C', 'T', dir='none')
+
+# Display the graph
+step_8_graph
+# -
+
+# ## Step 9: Use domain knowledge to further orient the graph
+#
+# Based on the computational data generating process, i.e. through the use of travel skims to construct the data and how the travel skims were constructed, we know that:
 # - `total_travel_distance` $\rightarrow$ `total_travel_cost`
 # - `total_travel_distance` $\rightarrow$ `total_travel_time`
 #
@@ -364,3 +501,47 @@ oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 # - `num_licensed_drivers` $\rightarrow$ `num_cars` $\leftarrow$ `total_travel_distance`
 # - `total_travel_time` $\leftarrow$ `total_travel_distance` $\rightarrow$ `total_travel_cost`
 # - `total_travel_cost` -- `total_travel_time`
+
+# +
+# Remove the edges given by the pairs of variables that
+# passed the 2nd order conditional independence tests.
+step_9_graph = graphviz.Digraph('step_9')
+
+# Add all nodes to the graph
+step_9_graph.node('T', TIME_COLUMN)
+step_9_graph.node('C', COST_COLUMN)
+step_9_graph.node('D', DISTANCE_COLUMN)
+step_9_graph.node('L', LICENSE_COLUMN)
+step_9_graph.node('A', NUM_AUTOS_COLUMN)
+
+# Add edges to the graph
+step_9_graph.edge('L', 'A')
+step_9_graph.edge('D', 'A')
+step_9_graph.edge('D', 'T')
+step_9_graph.edge('D', 'C')
+step_9_graph.edge('C', 'T', dir='none')
+
+# Display the graph
+step_9_graph
+# -
+
+# # Conclusions
+# Of course, anything about the graph above and any comments below hinge on whether the tests used in the algorithm were any good. We have little certainty because we performed no model checks of the models being used in the independence tests.
+#
+# However, the final graph is very plausible.
+#
+# We are left with questions of whether:
+# - `total_travel_time` $\rightarrow$ `total_travel_cost` or
+# - `total_travel_cost` $\rightarrow$ `total_travel_time` or
+# - `total_travel_time` $\leftarrow$ `unobserved_confounder` $\rightarrow$ `total_travel_cost`
+#
+# One immediate confounder that is unobserved in this causal graph is whether one crosses the bay bridge.
+# If one commutes across the Bay Bridge, then one's travel time will likely be increased due traffic, and one's travel cost will be increased due to paying tolls.
+#
+# In the end, note that the graph above differs from the original graph that we conjectured, shown below.
+# Our original graph was created with some, but minimal, thought.
+# In particular, our original graph missed the edge `num_licensed_driver` $\rightarrow$ `num_cars` and the undirected edge `total_travel_time` -- `total_travel_cost`.
+
+original_graph = DRIVE_ALONE_UTILITY.draw()
+original_graph.graph_attr.update(size="10,6")
+original_graph
