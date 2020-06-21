@@ -9,8 +9,37 @@ import numpy as np
 import pandas as pd
 import scipy.stats
 
-# Write functions to replace functionality
-# in SimNodeNoParent
+
+def is_unique(var_values):
+    """
+    Checks whether a variable has one unique value.
+    """
+    return len(var_values.unique()) == 1
+
+
+def is_constant(var_type):  # to be rethought
+    """
+    Checks whether a variable has a constant
+    value.
+    """
+    return var_type == 'constant'
+
+
+def is_empirical(var_type):
+    """
+    Checks whether the variable type for the
+    variable of interest is to be taken
+    as a constant value or as numerical values.
+    """
+    return var_type == 'empirical'
+
+
+def is_categorical(var_type):
+    """
+    Checks whether the variable type for the
+    variable of interest is categorical.
+    """
+    return var_type == 'categorical'
 
 
 def sim_categorical(var_dist_params, size):
