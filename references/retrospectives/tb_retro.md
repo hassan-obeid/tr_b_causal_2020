@@ -133,3 +133,8 @@ This document should store one's weekly reflections on the project. In particula
     3. I finished my public notebook drafts too late to allow Hassan's review and my response before our weekly meeting.
     4. I should be sure to write some unit tests for the `src/testing` module.
     As a group, we should remember to create a reproducible workflow for ourselves and others after all the public notebooks exist.
+19. Week of June 21st, 2020
+    1. Learned a bit more about how the PC Algorithm works by trying it on our data!
+    2. I was really happy to finish this week's tasks of the public notebooks and PC Algorithm demonstration.
+    3. The project went alright from my end this week.
+    4. We should iron out a plan for when we will really be done.
