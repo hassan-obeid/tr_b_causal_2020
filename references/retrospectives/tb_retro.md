@@ -139,8 +139,8 @@ This document should store one's weekly reflections on the project. In particula
     3. The project went alright from my end this week.
     4. We should iron out a plan for when we will really be done.
 20. Week of June 28th, 2020
-   1. I realized that causal discovery can be understood as maximum a-posteriori architecture search for generative models with more than one output.
+    1. I realized that causal discovery can be understood as maximum a-posteriori architecture search for generative models with more than one output.
    There are some differences, such as the emphasis on marginal and conditional independence, but the two ideas are highly related.
-   2. It was good to fully review one of Hassan's public notebook's this week.
-   3. I didn't finish drafting the email to the parking policy paper author's far enough in advance of our weekly meeting for Amine and Hassan to review it.
-   4. We should agree on what the goalpost for v0.0 of our repository is.
+    2. It was good to fully review one of Hassan's public notebook's this week.
+    3. I didn't finish drafting the email to the parking policy paper author's far enough in advance of our weekly meeting for Amine and Hassan to review it.
+    4. We should agree on what the goalpost for v0.0 of our repository is.
