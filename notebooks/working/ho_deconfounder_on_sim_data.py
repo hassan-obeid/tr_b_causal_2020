@@ -13,25 +13,10 @@
 #     name: python3
 # ---
 
-# +
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-from causalgraphicalmodels import CausalGraphicalModel, StructuralCausalModel
-from collections import OrderedDict
-import pylogit as cm
-from functools import reduce
-from factor_models import *
+# # Purpose
+#
 
-
-import os
-os.listdir('.')
-
-
-# -
-
-# # Notebook narrative
-# In this notebook, we use a simulated mode choice data where travel time and travel cost are both linearly confounded with travel distance. We then mask the travel distance data and treat it as an unobserved variable. 
+# The purpose of this notebook is to investigate the effectiveness of the deconfounder algorithm (Blei et. al, 2018) in adjusting for unobserved confounding. We use a simulated mode choice data where travel distance linearly confounds both travel time and travel cost. We then mask the travel distance data and treat it as an unobserved variable. 
 #
 # We estimate three models:
 # - Model 1: A multinomial logit with the correct original specification, EXCEPT we ommit the travel distance variable in the specification without trying to adjust for it. 
@@ -39,8 +24,28 @@ os.listdir('.')
 # - Model 3: We use the deconfounder algorithm to try to recover the confounder (travel distance), but this time, we only use travel time and cost in the factor model, instead of all the variables in the utility specification of each mode. 
 #
 # We compare the estimates of the coefficients on travel time and cost to the true estimates used in the simulation. The main findings of this exercise are the following:
-# - Using the true variable believed to be confounded (i.e. method 3 where only travel time and cost are used to recover the confounder) leads to a better recovery of the true confounder. This suggests that it may be better to run the deconfounder algorithm based on a hypothesized causal graph, rather than just running it on all the observed covariates. 
-# - Similar to what we found in the investigating_decounfounder notebook, the effectiveness of the deconfounder algorithm is very sensitive to small deviations in the recovered confounder. Although method 3 returns a relatively good fit of the true confounder, the adjusted coefficients on travel time and cost do not improve, and the coefficients on the recovered confounder are highly insignificant. This raises questions about the usefulness of the deconfounder algorithm in practice.
+# - Using the true variables believed to be confounded (i.e. method 3 where only travel time and cost are used to recover the confounder) leads to a better recovery of the true confounder. This suggests that it may be better to run the deconfounder algorithm based on a hypothesized causal graph, rather than just running it on all the observed covariates. 
+# - Similar to what we found in the investigating_decounfounder notebook, the effectiveness of the deconfounder algorithm is very sensitive to small deviations in the recovered confounder. Although method 3 returns a relatively good fit of the true confounder, the adjusted coefficients on travel time and cost do not exhibit any reduction in the bias resulting from ommitting the true confounder, and the coefficients on the recovered confounder are highly insignificant. This raises questions about the usefulness of the deconfounder algorithm in practice.
+
+# # Import needed libraries
+
+# +
+# Built-in modules
+import os
+from collections import OrderedDict
+from functools import reduce
+
+# Third party modules
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from causalgraphicalmodels import CausalGraphicalModel, StructuralCausalModel
+import pylogit as cm
+
+# Local modules
+from factor_models import *
+
+# -
 
 # ## Useful function
 
@@ -189,11 +194,11 @@ mnl_specification["num_kids"] = [[2, 3]]
 mnl_names["num_kids"] = ["Number of Kids in Household (Shared Ride 2 & 3+)"]
 # -
 
-# # Deconfounder
+# # Recovering the confounder: The deconfounder algorithm
 
-# ## Method 1
+# ## First approach: using all the variables in the factor model
 #
-# In this method, we used all the variables in each mode's utility specification to recover its confounder, in line with Blei et al.'s approach in their paper.
+# Using this approach, we use all the variables in each mode's utility specification to recover the confounder, in line with Blei et al.'s approach in their paper.
 
 # +
 ## Return the variables of each utility specification
@@ -232,17 +237,20 @@ for i in data['mode_id'].unique():
     masks_df.append(holdoutmasks)
     rows_df.append(holdoutrow)
 
-# ## Method 2
-#
-# In this method, we only run the deconfounder's factor model on travel_time and travel_cost, which are the only variables confounded with travel_distance in our simulation
+# ## Second approach: using only the confounded variables in the factor model
+# Using this approach, we only run the deconfounder's factor model on travel_time and travel_cost, which are the only variables confounded with travel_distance in our simulation
 
 # +
-xs = ['total_travel_time', 'total_travel_cost']
-X_DA = (data[data['mode_id']==1][xs] - data[data['mode_id']==1][xs].mean())/data[data['mode_id']==1][xs].std()
+confounded_variables = ['total_travel_time', 'total_travel_cost']
+X_DA = (data[data['mode_id']==1][confounded_variables] - 
+        data[data['mode_id']==1][xs].mean())/data[data['mode_id']==1][xs].std()
 
-X_SR2 = (data[data['mode_id']==2][xs] - data[data['mode_id']==2][xs].mean())/data[data['mode_id']==2][xs].std()
-
-X_SR3 = (data[data['mode_id']==3][xs] - data[data['mode_id']==3][xs].mean())/data[data['mode_id']==3][xs].std()
+X_SR2 = ((data[data['mode_id']==2][confounded_variables] - 
+         data[data['mode_id']==2][confounded_variables].mean())
+         /data[data['mode_id']==2][confounded_variables].std())
+X_SR3 = ((data[data['mode_id']==3][confounded_variables] - 
+         data[data['mode_id']==3][confounded_variables].mean())
+         /data[data['mode_id']==3][confounded_variables].std())
 
 (confounders_DA, holdouts_DA, 
  holdoutmasks_DA, holdoutrow_DA)= confounder_ppca(holdout_portion=0.2, 
@@ -262,6 +270,21 @@ X_SR3 = (data[data['mode_id']==3][xs] - data[data['mode_id']==3][xs].mean())/dat
 # -
 
 # ## Adding confounders to original DF
+
+# +
+def add_confounders_to_df(data, confounder_vectors):
+    for i in data['mode_id'].unique():
+    
+#     print(len(data.loc[data['mode_id']==i, col_name]), len(confounder_vectors[int(i-1)][2]) )
+    
+        col_name = 'confounder_for_mode_' + str(int(i))
+        data.loc[data['mode_id']==i, col_name] = confounder_vectors[int(i-1)][2]
+        data[col_name] = data[col_name].fillna(0)
+
+    data['confounder_all'] = data[['confounder_for_mode_1','confounder_for_mode_2','confounder_for_mode_3',
+                                  'confounder_for_mode_4', 'confounder_for_mode_5', 'confounder_for_mode_6',
+                                  'confounder_for_mode_7', 'confounder_for_mode_8']].sum(axis=1)
+
 
 # +
 for i in data['mode_id'].unique():
@@ -316,12 +339,8 @@ mnl_model = cm.create_choice_model(data=data,
                                    names=mnl_names)
 
 num_vars = len(reduce(lambda x, y: x + y, mnl_names.values()))
-# Note newton-cg used to ensure convergence to a point where gradient 
-# is essentially zero for all dimensions. 
 mnl_model.fit_mle(np.zeros(num_vars),
                   method="BFGS")
-
-# Look at the estimation results
 mnl_model.get_statsmodels_summary()
 # -
 
@@ -360,24 +379,9 @@ mnl_names_noncausal["total_travel_cost"] = ['Travel Cost, units:$ (Drive Alone)'
                                   'Travel Cost, units:$ (SharedRide-3+)',
                                   'Travel Cost, units:$ (All Transit Modes)']
 
-# mnl_specification["cost_per_distance"] = [1, 2, 3]
-# mnl_names["cost_per_distance"] = ["Travel Cost per Distance, units:$/mi (Drive Alone)",
-#                                   "Travel Cost per Distance, units:$/mi (SharedRide-2)",
-#                                   "Travel Cost per Distance, units:$/mi (SharedRide-3+)"]
-
 mnl_specification_noncausal["cars_per_licensed_drivers"] = [[1, 2, 3]]
 mnl_names_noncausal["cars_per_licensed_drivers"] = ["Autos per licensed drivers (All Auto Modes)"]
 
-# mnl_specification["total_travel_distance"] = [1, 2, 3, 7, 8]
-# mnl_names["total_travel_distance"] = ['Travel Distance, units:mi (Drive Alone)',
-#                                       'Travel Distance, units:mi (SharedRide-2)',
-#                                       'Travel Distance, units:mi (SharedRide-3+)',
-#                                       'Travel Distance, units:mi (Walk)',
-#                                       'Travel Distance, units:mi (Bike)']
-
-# mnl_specification["cross_bay"] = [[2, 3], [4, 5, 6]]
-# mnl_names["cross_bay"] = ["Cross-Bay Tour (Shared Ride 2 & 3+)",
-#                           "Cross-Bay Tour (All Transit Modes)"]
 mnl_specification_noncausal["cross_bay"] = [[2, 3]]
 mnl_names_noncausal["cross_bay"] = ["Cross-Bay Tour (Shared Ride 2 & 3+)"]
 
@@ -398,8 +402,6 @@ mnl_model_noncausal = cm.create_choice_model(data=data,
                                    names=mnl_names_noncausal)
 
 num_vars_noncausal = len(reduce(lambda x, y: x + y, mnl_names_noncausal.values()))
-# Note newton-cg used to ensure convergence to a point where gradient 
-# is essentially zero for all dimensions. 
 mnl_model_noncausal.fit_mle(np.zeros(num_vars_noncausal),
                   method="BFGS")
 
@@ -429,8 +431,6 @@ mnl_model_causal_1 = cm.create_choice_model(data=data,
                                    names=mnl_names_causal_1)
 
 num_vars = len(reduce(lambda x, y: x + y, mnl_names_causal_1.values()))
-# Note newton-cg used to ensure convergence to a point where gradient 
-# is essentially zero for all dimensions. 
 mnl_model_causal_1.fit_mle(np.zeros(num_vars),
                   method="BFGS")
 
@@ -460,8 +460,6 @@ mnl_model_causal_2 = cm.create_choice_model(data=data,
                                    names=mnl_names_causal_2)
 
 num_vars = len(reduce(lambda x, y: x + y, mnl_names_causal_2.values()))
-# Note newton-cg used to ensure convergence to a point where gradient 
-# is essentially zero for all dimensions. 
 mnl_model_causal_2.fit_mle(np.zeros(num_vars),
                   method="BFGS")
 
@@ -502,6 +500,11 @@ results_comparison = results_as_html_true.loc[locs][cols].join(results_as_html_n
 
 results_comparison
 # -
+
+
+
+
+
 
 
 
