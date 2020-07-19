@@ -44,42 +44,11 @@ import pylogit as cm
 
 # Local modules
 from factor_models import *
+from util import *
 
 # -
 
 # ## Useful function
-
-def specifications(mnl_specification, num_modes):
-    newDict= dict()
-
-    for i in range(1,num_modes+1):
-        variables = []
-        # Iterate over all the items in dictionary and filter items which has even keys
-        for (key, value) in mnl_specification.items():
-           # Check if key is even then add pair to new dictionary
-    
-
-
-
-            if any(isinstance(sub, list) for sub in value):
-                for sub in value:
-                    if isinstance(sub, list):
-                        if (i in sub): 
-                            variables.append(key)
-                            
-                    else:
-                        if i == sub:
-                            variables.append(key)
-
-            else:
-                if i in value:
-        #             print(variables)
-
-                    variables.append(key)
-
-        newDict[i] = variables
-
-    return newDict
 
 # ## Analysis
 
@@ -166,10 +135,6 @@ mnl_names["total_travel_cost"] = ['Travel Cost, units:$ (Drive Alone)',
                                   'Travel Cost, units:$ (SharedRide-3+)',
                                   'Travel Cost, units:$ (All Transit Modes)']
 
-# mnl_specification["cost_per_distance"] = [1, 2, 3]
-# mnl_names["cost_per_distance"] = ["Travel Cost per Distance, units:$/mi (Drive Alone)",
-#                                   "Travel Cost per Distance, units:$/mi (SharedRide-2)",
-#                                   "Travel Cost per Distance, units:$/mi (SharedRide-3+)"]
 
 mnl_specification["cars_per_licensed_drivers"] = [[1, 2, 3]]
 mnl_names["cars_per_licensed_drivers"] = ["Autos per licensed drivers (All Auto Modes)"]
@@ -181,9 +146,6 @@ mnl_names["total_travel_distance"] = ['Travel Distance, units:mi (Drive Alone)',
                                       'Travel Distance, units:mi (Walk)',
                                       'Travel Distance, units:mi (Bike)']
 
-# mnl_specification["cross_bay"] = [[2, 3], [4, 5, 6]]
-# mnl_names["cross_bay"] = ["Cross-Bay Tour (Shared Ride 2 & 3+)",
-#                           "Cross-Bay Tour (All Transit Modes)"]
 mnl_specification["cross_bay"] = [[2, 3]]
 mnl_names["cross_bay"] = ["Cross-Bay Tour (Shared Ride 2 & 3+)"]
 
@@ -241,77 +203,43 @@ for i in data['mode_id'].unique():
 # Using this approach, we only run the deconfounder's factor model on travel_time and travel_cost, which are the only variables confounded with travel_distance in our simulation
 
 # +
+confounder_vectors_2 = []
+holdout_dfs_2 = []
+masks_df_2 = []
+rows_df_2 =[]
+latent_dim = 1
+
 confounded_variables = ['total_travel_time', 'total_travel_cost']
-X_DA = (data[data['mode_id']==1][confounded_variables] - 
-        data[data['mode_id']==1][xs].mean())/data[data['mode_id']==1][xs].std()
+for i in data['mode_id'].unique():
 
-X_SR2 = ((data[data['mode_id']==2][confounded_variables] - 
-         data[data['mode_id']==2][confounded_variables].mean())
-         /data[data['mode_id']==2][confounded_variables].std())
-X_SR3 = ((data[data['mode_id']==3][confounded_variables] - 
-         data[data['mode_id']==3][confounded_variables].mean())
-         /data[data['mode_id']==3][confounded_variables].std())
+    data_mode_i = data[data['mode_id']==i]
+    # standardize the data for PPCA
+    print("Analysis for mode: ", i)
+    print("-------------------------------------------------------------------------------------------")
+    
+    X = np.array((data_mode_i[confounded_variables] - data_mode_i[confounded_variables].mean())/
+                 data_mode_i[confounded_variables].std())
+    
+    confounders, holdouts, holdoutmasks, holdoutrow= confounder_ppca(holdout_portion=0.2, X=X, latent_dim=latent_dim)
 
-(confounders_DA, holdouts_DA, 
- holdoutmasks_DA, holdoutrow_DA)= confounder_ppca(holdout_portion=0.2, 
-                                       X=X_DA, latent_dim=latent_dim)
-
-(confounders_SR2, holdouts_SR2, 
- holdoutmasks_SR2, holdoutrow_SR2)= confounder_ppca(holdout_portion=0.2, 
-                                       X=X_SR2, latent_dim=latent_dim)
-
-(confounders_SR3, holdouts_SR3, 
- holdoutmasks_SR3, holdoutrow_SR3)= confounder_ppca(holdout_portion=0.2, 
-                                       X=X_SR3, latent_dim=latent_dim)
-
-
-
-
+    confounder_vectors_2.append(confounders)
+    holdout_dfs_2.append(holdouts)
+    masks_df_2.append(holdoutmasks)
+    rows_df_2.append(holdoutrow)
 # -
 
 # ## Adding confounders to original DF
 
 # +
-def add_confounders_to_df(data, confounder_vectors):
-    for i in data['mode_id'].unique():
-    
-#     print(len(data.loc[data['mode_id']==i, col_name]), len(confounder_vectors[int(i-1)][2]) )
-    
-        col_name = 'confounder_for_mode_' + str(int(i))
-        data.loc[data['mode_id']==i, col_name] = confounder_vectors[int(i-1)][2]
-        data[col_name] = data[col_name].fillna(0)
+data['recovered_confounder_model_2']=add_confounders_to_df(data, 
+                                                           confounder_vectors=confounder_vectors, 
+                                                           mode_ids = [1,2,3], 
+                                                           suffix = '_method_2')
 
-    data['confounder_all'] = data[['confounder_for_mode_1','confounder_for_mode_2','confounder_for_mode_3',
-                                  'confounder_for_mode_4', 'confounder_for_mode_5', 'confounder_for_mode_6',
-                                  'confounder_for_mode_7', 'confounder_for_mode_8']].sum(axis=1)
-
-
-# +
-for i in data['mode_id'].unique():
-    
-#     print(len(data.loc[data['mode_id']==i, col_name]), len(confounder_vectors[int(i-1)][2]) )
-    
-    col_name = 'confounder_for_mode_' + str(int(i))
-    data.loc[data['mode_id']==i, col_name] = confounder_vectors[int(i-1)][2]
-    data[col_name] = data[col_name].fillna(0)
-    
-data['confounder_all'] = data[['confounder_for_mode_1','confounder_for_mode_2','confounder_for_mode_3',
-                              'confounder_for_mode_4', 'confounder_for_mode_5', 'confounder_for_mode_6',
-                              'confounder_for_mode_7', 'confounder_for_mode_8']].sum(axis=1)
-
-
-data.loc[data['mode_id']==1, 'confounder_da'] = confounders_DA[2]
-data['confounder_da'] = data['confounder_da'].fillna(0)
-
-data.loc[data['mode_id']==2, 'confounder_sr2'] = confounders_SR2[2]
-data['confounder_sr2'] = data['confounder_sr2'].fillna(0)
-
-data.loc[data['mode_id']==3, 'confounder_sr3'] = confounders_SR3[2]
-data['confounder_sr3'] = data['confounder_sr3'].fillna(0)
-
-data['confounder_all_2'] = data[['confounder_da', 'confounder_sr2', 'confounder_sr3']].sum(axis=1)
-data.head()
-
+data['recovered_confounder_model_3']=add_confounders_to_df(data, 
+                                                           confounder_vectors=confounder_vectors_2, 
+                                                           mode_ids = [1,2,3], 
+                                                           suffix = '_method_3')
 # -
 
 # # Compare recovered confounder to actual confounder
@@ -321,9 +249,9 @@ data.head()
 # +
 data_da = data[data['mode_id']==1]
 
-data_da.plot.scatter('total_travel_distance', 'confounder_all')
+data_da.plot.scatter('total_travel_distance', 'recovered_confounder_model_2')
 
-data_da.plot.scatter('total_travel_distance', 'confounder_all_2')
+data_da.plot.scatter('total_travel_distance', 'recovered_confounder_model_3')
 # -
 
 # ## True Model
@@ -394,12 +322,12 @@ mnl_names_noncausal["num_kids"] = ["Number of Kids in Household (Shared Ride 2 &
 # +
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
 mnl_model_noncausal = cm.create_choice_model(data=data,
-                                   alt_id_col="mode_id",
-                                   obs_id_col="observation_id",
-                                   choice_col="sim_choice",
-                                   specification=mnl_specification_noncausal,
-                                   model_type="MNL",
-                                   names=mnl_names_noncausal)
+                                             alt_id_col="mode_id",
+                                             obs_id_col="observation_id",
+                                             choice_col="sim_choice",
+                                             specification=mnl_specification_noncausal,
+                                             model_type="MNL",
+                                             names=mnl_names_noncausal)
 
 num_vars_noncausal = len(reduce(lambda x, y: x + y, mnl_names_noncausal.values()))
 mnl_model_noncausal.fit_mle(np.zeros(num_vars_noncausal),
@@ -415,20 +343,20 @@ mnl_model_noncausal.get_statsmodels_summary()
 mnl_specification_causal_1 = mnl_specification_noncausal.copy()
 mnl_names_causal_1 = mnl_names_noncausal.copy()
 
-mnl_specification_causal_1["confounder_all"] = [1, 2, 3]
-mnl_names_causal_1["confounder_all"] = ["Confounder - Drive alone",
+mnl_specification_causal_1["recovered_confounder_model_2"] = [1, 2, 3]
+mnl_names_causal_1["recovered_confounder_model_2"] = ["Confounder - Drive alone",
                                      "Confounder - Shared ride 2", 
                                      "Confounder - Shared ride 3"]
 
 # +
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
 mnl_model_causal_1 = cm.create_choice_model(data=data,
-                                   alt_id_col="mode_id",
-                                   obs_id_col="observation_id",
-                                   choice_col="sim_choice",
-                                   specification=mnl_specification_causal_1,
-                                   model_type="MNL",
-                                   names=mnl_names_causal_1)
+                                            alt_id_col="mode_id",
+                                            obs_id_col="observation_id",
+                                            choice_col="sim_choice",
+                                            specification=mnl_specification_causal_1,
+                                            model_type="MNL",
+                                            names=mnl_names_causal_1)
 
 num_vars = len(reduce(lambda x, y: x + y, mnl_names_causal_1.values()))
 mnl_model_causal_1.fit_mle(np.zeros(num_vars),
@@ -444,20 +372,20 @@ mnl_model_causal_1.get_statsmodels_summary()
 mnl_specification_causal_2 = mnl_specification_noncausal.copy()
 mnl_names_causal_2 = mnl_names_noncausal.copy()
 
-mnl_specification_causal_2["confounder_all_2"] = [1, 2, 3]
-mnl_names_causal_2["confounder_all_2"] = ["Confounder - Drive alone",
+mnl_specification_causal_2["recovered_confounder_model_3"] = [1, 2, 3]
+mnl_names_causal_2["recovered_confounder_model_3"] = ["Confounder - Drive alone",
                                      "Confounder - Shared ride 2", 
                                      "Confounder - Shared ride 3"]
 
 # +
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
 mnl_model_causal_2 = cm.create_choice_model(data=data,
-                                   alt_id_col="mode_id",
-                                   obs_id_col="observation_id",
-                                   choice_col="sim_choice",
-                                   specification=mnl_specification_causal_2,
-                                   model_type="MNL",
-                                   names=mnl_names_causal_2)
+                                            alt_id_col="mode_id",
+                                            obs_id_col="observation_id",
+                                            choice_col="sim_choice",
+                                            specification=mnl_specification_causal_2,
+                                            model_type="MNL",
+                                            names=mnl_names_causal_2)
 
 num_vars = len(reduce(lambda x, y: x + y, mnl_names_causal_2.values()))
 mnl_model_causal_2.fit_mle(np.zeros(num_vars),
@@ -469,23 +397,11 @@ mnl_model_causal_2.get_statsmodels_summary()
 
 # ## Compare estimates on travel time and cost
 
-# +
-results_summary_true = mnl_model.get_statsmodels_summary()
-results_summary_non_causal = mnl_model_noncausal.get_statsmodels_summary()
-results_summary_method_1 = mnl_model_causal_1.get_statsmodels_summary()
-results_summary_method_2 = mnl_model_causal_2.get_statsmodels_summary()
+results_as_html_true = create_comparison_tables(mnl_model)
+results_as_html_noncausal = create_comparison_tables(mnl_model_noncausal)
+results_as_html_method_2 = create_comparison_tables(mnl_model_causal_1)
+results_as_html_method_3 = create_comparison_tables(mnl_model_causal_2)
 
-results_as_html_true = results_summary_true.tables[1].as_html()
-results_as_html_true = pd.read_html(results_as_html_true, header=0, index_col=0)[0]
-
-results_as_html_noncausal = results_summary_non_causal.tables[1].as_html()
-results_as_html_noncausal = pd.read_html(results_as_html_noncausal, header=0, index_col=0)[0]
-
-results_as_html_method_1 = results_summary_method_1.tables[1].as_html()
-results_as_html_method_1 = pd.read_html(results_as_html_method_1, header=0, index_col=0)[0]
-
-results_as_html_method_2 = results_summary_method_2.tables[1].as_html()
-results_as_html_method_2 = pd.read_html(results_as_html_method_2, header=0, index_col=0)[0]
 
 # +
 locs = ['Travel Time, units:min (Drive Alone)','Travel Time, units:min (SharedRide-2)',
@@ -494,22 +410,21 @@ locs = ['Travel Time, units:min (Drive Alone)','Travel Time, units:min (SharedRi
 cols = ['coef', 'std err']
 
 results_comparison = results_as_html_true.loc[locs][cols].join(results_as_html_noncausal.loc[locs][cols], 
-                                                               lsuffix = '_true', rsuffix = '_non_causal').join(
-    results_as_html_method_1.loc[locs][cols].join(results_as_html_method_2.loc[locs][cols],
-                                               lsuffix = '_method_1', rsuffix = '_method_2'))
+                                                               lsuffix = '_true', 
+                                                               rsuffix = '_non_causal'
+                                                              ).join(results_as_html_method_2.loc[locs][cols].join(
+                                                                     results_as_html_method_3.loc[locs][cols],
+                                                                     lsuffix = '_method_2', rsuffix = '_method_3'))
 
-results_comparison
+results_comparison['confounded variable'] = results_comparison.index
+# +
+fig, ax = plt.subplots(nrows=1,ncols=1, figsize=(16,9))
+
+results_comparison.plot.bar(x='confounded variable', 
+                            y=['coef_true','coef_non_causal','coef_method_2', 'coef_method_3'],
+                            yerr=results_comparison[['std err_true', 'std err_non_causal',
+                                                    'std err_method_2', 'std err_method_3']].T.values,
+                           ax = ax)
 # -
-
-
-
-
-
-
-
-
-
-
-
 
 
