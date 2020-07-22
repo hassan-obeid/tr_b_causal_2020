@@ -5,13 +5,13 @@ outcomes on the y-axis against predicted probabilities on the x-axis.
 """
 from __future__ import absolute_import
 
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sbn
-import matplotlib.pyplot as plt
 
-from .utils import progress
 from .plot_utils import _label_despine_save_and_show_plot
-from .smoothers import DiscreteSmoother, ContinuousSmoother, SmoothPlotter
+from .smoothers import ContinuousSmoother, DiscreteSmoother, SmoothPlotter
+from .utils import progress
 
 try:
     # in Python 3 range returns an iterator instead of list
@@ -21,7 +21,7 @@ except ImportError:
     pass
 
 # Set the plotting style
-sbn.set_style('darkgrid')
+sbn.set_style("darkgrid")
 
 
 def _check_reliability_args(probs, choices, partitions, sim_y):
@@ -31,27 +31,29 @@ def _check_reliability_args(probs, choices, partitions, sim_y):
     `probs` or None.
     """
     if not isinstance(probs, np.ndarray):
-        msg = '`probs` MUST be an ndarray.'
+        msg = "`probs` MUST be an ndarray."
         raise ValueError(msg)
     if probs.ndim not in [1, 2]:
-        msg = 'probs` MUST be a 1D or 2D ndarray.'
+        msg = "probs` MUST be a 1D or 2D ndarray."
         raise ValueError(msg)
     if not isinstance(choices, np.ndarray):
-        msg = '`choices` MUST be an ndarray.'
+        msg = "`choices` MUST be an ndarray."
         raise ValueError(msg)
     if choices.ndim != 1:
-        msg = '`choices` MUST be a 1D ndarray.'
+        msg = "`choices` MUST be a 1D ndarray."
         raise ValueError(msg)
     if not isinstance(partitions, int):
-        msg = '`partitions` MUST be an int.'
+        msg = "`partitions` MUST be an int."
         raise ValueError(msg)
     if not isinstance(sim_y, np.ndarray) and sim_y is not None:
-        msg = '`sim_y` MUST be an ndarray or None.'
+        msg = "`sim_y` MUST be an ndarray or None."
         raise ValueError(msg)
     sim_to_prob_conditions = probs.ndim != 1 and sim_y.shape != probs.shape
     if sim_y is not None and sim_to_prob_conditions:
-        msg = ('`sim_y` MUST have the same shape as `probs` if '
-               '`probs.shape[1] != 1`.')
+        msg = (
+            "`sim_y` MUST have the same shape as `probs` if "
+            "`probs.shape[1] != 1`."
+        )
         raise ValueError(msg)
     return None
 
@@ -77,36 +79,38 @@ def add_ref_line(ax, ref_label="Perfect Calibration"):
     # Determine the values to use to plot the reference line
     ref_vals = np.linspace(min_ref_val, max_ref_val, num=100)
     # Plot the reference line as a black dashed line
-    ax.plot(ref_vals, ref_vals, 'k--', label=ref_label)
+    ax.plot(ref_vals, ref_vals, "k--", label=ref_label)
     return None
 
 
-def plot_smoothed_reliability(probs,
-                              choices,
-                              discrete=True,
-                              partitions=10,
-                              n_estimators=50,
-                              min_samples_leaf=10,
-                              random_state=None,
-                              line_color='#1f78b4',
-                              line_label='Observed vs Predicted',
-                              alpha=None,
-                              sim_y=None,
-                              sim_line_color='#a6cee3',
-                              sim_label='Simulated vs Predicted',
-                              sim_alpha=0.5,
-                              x_label='Mean Predicted Probability',
-                              y_label='Binned\nEmpirical\nProbability',
-                              title=None,
-                              fontsize=12,
-                              ref_line=True,
-                              figsize=(5, 3),
-                              fig_and_ax=None,
-                              legend=True,
-                              progress_bar=True,
-                              show=True,
-                              output_file=None,
-                              dpi=500):
+def plot_smoothed_reliability(
+    probs,
+    choices,
+    discrete=True,
+    partitions=10,
+    n_estimators=50,
+    min_samples_leaf=10,
+    random_state=None,
+    line_color="#1f78b4",
+    line_label="Observed vs Predicted",
+    alpha=None,
+    sim_y=None,
+    sim_line_color="#a6cee3",
+    sim_label="Simulated vs Predicted",
+    sim_alpha=0.5,
+    x_label="Mean Predicted Probability",
+    y_label="Binned\nEmpirical\nProbability",
+    title=None,
+    fontsize=12,
+    ref_line=True,
+    figsize=(5, 3),
+    fig_and_ax=None,
+    legend=True,
+    progress_bar=True,
+    show=True,
+    output_file=None,
+    dpi=500,
+):
     """
     Creates a binned reliability plot based on the given probability
     predictions and the given observed outcomes.
@@ -229,12 +233,15 @@ def plot_smoothed_reliability(probs,
 
     # Create the desired smoother
     if discrete:
-        smoother =\
-            DiscreteSmoother(num_obs=probs.shape[0], partitions=partitions)
+        smoother = DiscreteSmoother(
+            num_obs=probs.shape[0], partitions=partitions
+        )
     else:
-        smoother = ContinuousSmoother(n_estimators=n_estimators,
-                                      min_samples_leaf=min_samples_leaf,
-                                      random_state=random_state)
+        smoother = ContinuousSmoother(
+            n_estimators=n_estimators,
+            min_samples_leaf=min_samples_leaf,
+            random_state=random_state,
+        )
 
     # Create the plotter that will plot single smooth curves
     plotter = SmoothPlotter(smoother=smoother, ax=ax)
@@ -251,12 +258,14 @@ def plot_smoothed_reliability(probs,
     if sim_y is not None:
         for i in sim_iterator:
             current_label = sim_label if i == 0 else None
-            plotter.plot(get_current_probs(i),
-                         sim_y[:, i],
-                         label=current_label,
-                         color=sim_line_color,
-                         alpha=sim_alpha,
-                         sort=True)
+            plotter.plot(
+                get_current_probs(i),
+                sim_y[:, i],
+                label=current_label,
+                color=sim_line_color,
+                alpha=sim_alpha,
+                sort=True,
+            )
 
     # Create the progressbar iterator if desired
     if progress_bar:
@@ -266,12 +275,14 @@ def plot_smoothed_reliability(probs,
 
     # Make the 'true' reliability plots
     for col in prob_iterator:
-        plotter.plot(get_current_probs(col),
-                     choices,
-                     label=line_label,
-                     color=line_color,
-                     alpha=alpha,
-                     sort=True)
+        plotter.plot(
+            get_current_probs(col),
+            choices,
+            label=line_label,
+            color=line_color,
+            alpha=alpha,
+            sort=True,
+        )
 
     # Create the reference line if desired
     if ref_line:
@@ -279,11 +290,19 @@ def plot_smoothed_reliability(probs,
 
     # Make the legend, if desired
     if legend:
-        ax.legend(loc='best', fontsize=fontsize)
+        ax.legend(loc="best", fontsize=fontsize)
 
     # Take care of boilerplate plotting necessities
     _label_despine_save_and_show_plot(
-        x_label=x_label, y_label=y_label, fig_and_ax=fig_and_ax,
-        fontsize=fontsize, y_rot=0, y_pad=40, title=title,
-        output_file=output_file, show=show, dpi=dpi)
+        x_label=x_label,
+        y_label=y_label,
+        fig_and_ax=fig_and_ax,
+        fontsize=fontsize,
+        y_rot=0,
+        y_pad=40,
+        title=title,
+        output_file=output_file,
+        show=show,
+        dpi=dpi,
+    )
     return None

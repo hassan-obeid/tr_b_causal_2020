@@ -4,32 +4,36 @@ Functions for plotting simulated vs observed, continuous scalars.
 """
 from __future__ import absolute_import
 
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sbn
-import matplotlib.pyplot as plt
 
-from .plot_utils import _label_despine_save_and_show_plot
-from .plot_utils import _plot_single_cdf_on_axis
+from .plot_utils import (  # noqa: E501
+    _label_despine_save_and_show_plot,
+    _plot_single_cdf_on_axis,
+)
 
 # Set the plotting style
-sbn.set_style('darkgrid')
+sbn.set_style("darkgrid")
 
 
-def plot_continous_scalars(sim_scalars,
-                           obs_scalar,
-                           kde=True,
-                           fig_and_ax=None,
-                           figsize=(10, 6),
-                           sim_color='#a6bddb',
-                           sim_label='Simulated',
-                           obs_label='Observed',
-                           x_label='Log-Likelihood',
-                           y_label='Density',
-                           fontsize=12,
-                           title=None,
-                           output_file=None,
-                           dpi=500,
-                           show=True):
+def plot_continous_scalars(
+    sim_scalars,
+    obs_scalar,
+    kde=True,
+    fig_and_ax=None,
+    figsize=(10, 6),
+    sim_color="#a6bddb",
+    sim_label="Simulated",
+    obs_label="Observed",
+    x_label="Log-Likelihood",
+    y_label="Density",
+    fontsize=12,
+    title=None,
+    output_file=None,
+    dpi=500,
+    show=True,
+):
     """
     For a given continuous scalar, this function plots the distribution of
     predicted scalars versus the observed scalars.
@@ -94,28 +98,47 @@ def plot_continous_scalars(sim_scalars,
             raise ValueError(msg)
         sbn.kdeplot(sim_scalars, ax=axis, label=sim_label)
     else:
-        _plot_single_cdf_on_axis(sim_scalars, axis,
-                                 color=sim_color, linestyle='-',
-                                 label=sim_label, alpha=1.0)
+        _plot_single_cdf_on_axis(
+            sim_scalars,
+            axis,
+            color=sim_color,
+            linestyle="-",
+            label=sim_label,
+            alpha=1.0,
+        )
 
     # Figure out the axis boundaries
     min_y, max_y = axis.get_ylim()
 
     # Calculate the percentile corresponding to the observed scalar
-    simulated_frac_below_observed =\
-        (sim_scalars < obs_scalar).sum() / float(sim_scalars.size)
+    simulated_frac_below_observed = (sim_scalars < obs_scalar).sum() / float(
+        sim_scalars.size
+    )
 
     # Create the vertical line to show the observed scalar
-    line_label = obs_label + '\nP(samples < observed) = {:.0%}'
-    axis.vlines(obs_scalar, min_y, max_y, linestyle='dashed',
-                label=line_label.format(simulated_frac_below_observed))
+    line_label = obs_label + "\nP(samples < observed) = {:.0%}"
+    axis.vlines(
+        obs_scalar,
+        min_y,
+        max_y,
+        linestyle="dashed",
+        label=line_label.format(simulated_frac_below_observed),
+    )
 
     # Create the plot legend
-    axis.legend(loc='best', fontsize=fontsize)
+    axis.legend(loc="best", fontsize=fontsize)
 
     # Take care of boilerplate plotting necessities
     _label_despine_save_and_show_plot(
-        x_label=x_label, y_label=y_label, fig_and_ax=fig_and_ax,
-        fontsize=fontsize, y_rot=0, y_pad=40, title=title,
-        output_file=output_file, show=show, dpi=dpi)
+        x_label=x_label,
+        y_label=y_label,
+        fig_and_ax=fig_and_ax,
+        fontsize=fontsize,
+        y_rot=0,
+        y_pad=40,
+        title=title,
+        output_file=output_file,
+        show=show,
+        dpi=dpi,
+    )
     return None

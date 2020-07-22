@@ -5,13 +5,13 @@ outcomes on the y-axis against a continuous variable on the x-axis.
 """
 from __future__ import absolute_import
 
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sbn
-import matplotlib.pyplot as plt
 
-from .utils import progress
 from .plot_utils import _label_despine_save_and_show_plot
-from .smoothers import DiscreteSmoother, ContinuousSmoother, SmoothPlotter
+from .smoothers import ContinuousSmoother, DiscreteSmoother, SmoothPlotter
+from .utils import progress
 
 try:
     # in Python 3 range returns an iterator instead of list
@@ -21,7 +21,7 @@ except ImportError:
     pass
 
 # Set the plotting style
-sbn.set_style('darkgrid')
+sbn.set_style("darkgrid")
 
 
 def _check_marginal_args(probs, choices, partitions, sim_y):
@@ -30,25 +30,25 @@ def _check_marginal_args(probs, choices, partitions, sim_y):
     `partitions` is an int, and that `sim_y` is a 2D ndarray.
     """
     if not isinstance(probs, np.ndarray) and probs is not None:
-        msg = '`probs` MUST be an ndarray or None.'
+        msg = "`probs` MUST be an ndarray or None."
         raise ValueError(msg)
     if isinstance(probs, np.ndarray) and probs.ndim not in [1, 2]:
-        msg = 'probs` MUST be a 1D or 2D ndarray.'
+        msg = "probs` MUST be a 1D or 2D ndarray."
         raise ValueError(msg)
     if not isinstance(choices, np.ndarray):
-        msg = '`choices` MUST be an ndarray.'
+        msg = "`choices` MUST be an ndarray."
         raise ValueError(msg)
     if choices.ndim != 1:
-        msg = '`choices` MUST be a 1D ndarray.'
+        msg = "`choices` MUST be a 1D ndarray."
         raise ValueError(msg)
     if not isinstance(partitions, int):
-        msg = '`partitions` MUST be an int.'
+        msg = "`partitions` MUST be an int."
         raise ValueError(msg)
     if not isinstance(sim_y, np.ndarray) and sim_y is not None:
-        msg = '`sim_y` MUST be an ndarray or None.'
+        msg = "`sim_y` MUST be an ndarray or None."
         raise ValueError(msg)
     if isinstance(sim_y, np.ndarray) and sim_y.ndim != 2:
-        msg = ('`sim_y` MUST be a 2D ndarray')
+        msg = "`sim_y` MUST be a 2D ndarray"
         raise ValueError(msg)
     return None
 
@@ -68,33 +68,35 @@ def _check_mmplot_ref_vals(probs, ref_vals):
     return None
 
 
-def plot_smoothed_marginal(sim_y,
-                           choices,
-                           ref_vals,
-                           probs=None,
-                           discrete=True,
-                           partitions=10,
-                           n_estimators=50,
-                           min_samples_leaf=10,
-                           random_state=None,
-                           y_color='#1f78b4',
-                           prob_color='#a6cee3',
-                           sim_color='#fb9a99',
-                           y_label='Observed',
-                           prob_label='Predicted',
-                           sim_label='Simulated',
-                           y_axis_label='Binned,\nMean\nProbability',
-                           x_label='Binned, Mean Reference Values',
-                           alpha=None,
-                           title=None,
-                           fontsize=12,
-                           figsize=(5, 3),
-                           fig_and_ax=None,
-                           legend=True,
-                           progress_bar=True,
-                           show=True,
-                           output_file=None,
-                           dpi=500):
+def plot_smoothed_marginal(
+    sim_y,
+    choices,
+    ref_vals,
+    probs=None,
+    discrete=True,
+    partitions=10,
+    n_estimators=50,
+    min_samples_leaf=10,
+    random_state=None,
+    y_color="#1f78b4",
+    prob_color="#a6cee3",
+    sim_color="#fb9a99",
+    y_label="Observed",
+    prob_label="Predicted",
+    sim_label="Simulated",
+    y_axis_label="Binned,\nMean\nProbability",
+    x_label="Binned, Mean Reference Values",
+    alpha=None,
+    title=None,
+    fontsize=12,
+    figsize=(5, 3),
+    fig_and_ax=None,
+    legend=True,
+    progress_bar=True,
+    show=True,
+    output_file=None,
+    dpi=500,
+):
     """
     Creates a smoothed marginal model plot based on simulated outcomes,
     observed outcomes, refernce values, and optionally, one's predicted
@@ -196,8 +198,11 @@ def plot_smoothed_marginal(sim_y,
 
     # Sort the arguments, if necesssary
     sort_order = np.argsort(ref_vals)
-    ref_vals, sim_y, choices =\
-        ref_vals[sort_order], sim_y[sort_order, :], choices[sort_order]
+    ref_vals, sim_y, choices = (
+        ref_vals[sort_order],
+        sim_y[sort_order, :],
+        choices[sort_order],
+    )
 
     # Create the figure and axes if need be
     if fig_and_ax is None:
@@ -208,19 +213,23 @@ def plot_smoothed_marginal(sim_y,
 
     # Create the progressbar iterator if desired
     if progress_bar:
-        sim_iterator =\
-            progress(range(sim_y.shape[1]), desc="Plotting Simulations")
+        sim_iterator = progress(
+            range(sim_y.shape[1]), desc="Plotting Simulations"
+        )
     else:
         sim_iterator = range(sim_y.shape[1])
 
     # Create the desired smoother
     if discrete:
-        smoother =\
-            DiscreteSmoother(num_obs=ref_vals.shape[0], partitions=partitions)
+        smoother = DiscreteSmoother(
+            num_obs=ref_vals.shape[0], partitions=partitions
+        )
     else:
-        smoother = ContinuousSmoother(n_estimators=n_estimators,
-                                      min_samples_leaf=min_samples_leaf,
-                                      random_state=random_state)
+        smoother = ContinuousSmoother(
+            n_estimators=n_estimators,
+            min_samples_leaf=min_samples_leaf,
+            random_state=random_state,
+        )
 
     # Create the plotter that will plot single smooth curves
     plotter = SmoothPlotter(smoother=smoother, ax=ax)
@@ -228,11 +237,13 @@ def plot_smoothed_marginal(sim_y,
     # Plot the simulated choices vs reference vals
     for i in sim_iterator:
         current_label = sim_label if i == 0 else None
-        plotter.plot(ref_vals,
-                     sim_y[:, i],
-                     label=current_label,
-                     color=sim_color,
-                     alpha=alpha)
+        plotter.plot(
+            ref_vals,
+            sim_y[:, i],
+            label=current_label,
+            color=sim_color,
+            alpha=alpha,
+        )
 
     # Plot the probabilities versus the ref values.
     if probs is not None:
@@ -250,27 +261,38 @@ def plot_smoothed_marginal(sim_y,
             # Get the current line label and probabilities
             current_label = prob_label if col == 0 else None
             current_probs = probs[:, col]
-            plotter.plot(ref_vals,
-                         current_probs,
-                         label=current_label,
-                         color=prob_color,
-                         alpha=alpha)
+            plotter.plot(
+                ref_vals,
+                current_probs,
+                label=current_label,
+                color=prob_color,
+                alpha=alpha,
+            )
 
     #####
     # Plot observed choices versus ref_vals
     #####
     # Make sure the 'true' relationship is not transparent
     observed_alpha = 1.0
-    plotter.plot(ref_vals,
-                 choices, label=y_label, color=y_color, alpha=observed_alpha)
+    plotter.plot(
+        ref_vals, choices, label=y_label, color=y_color, alpha=observed_alpha
+    )
 
     # Make the legend, if desired
     if legend:
-        ax.legend(loc='best', fontsize=fontsize)
+        ax.legend(loc="best", fontsize=fontsize)
 
     # Take care of boilerplate plotting necessities
     _label_despine_save_and_show_plot(
-        x_label=x_label, y_label=y_axis_label, fig_and_ax=fig_and_ax,
-        fontsize=fontsize, y_rot=0, y_pad=40, title=title,
-        output_file=output_file, show=show, dpi=dpi)
+        x_label=x_label,
+        y_label=y_axis_label,
+        fig_and_ax=fig_and_ax,
+        fontsize=fontsize,
+        y_rot=0,
+        y_pad=40,
+        title=title,
+        output_file=output_file,
+        show=show,
+        dpi=dpi,
+    )
     return None

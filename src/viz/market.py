@@ -4,21 +4,18 @@ Functions for plotting simulated vs observed market shares of each alternative.
 """
 from __future__ import absolute_import
 
-import seaborn as sbn
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sbn
 
-from .utils import progress
 from .plot_utils import _label_despine_save_and_show_plot
+from .utils import progress
 
 
-def _get_objects_for_market_share_plot(x,
-                                       sim_y,
-                                       obs_y,
-                                       x_label,
-                                       y_label,
-                                       display_dict=None):
+def _get_objects_for_market_share_plot(
+    x, sim_y, obs_y, x_label, y_label, display_dict=None
+):
     """
     Creates dataframes needed for the market share plot.
 
@@ -64,11 +61,10 @@ def _get_objects_for_market_share_plot(x,
     obs_df = pd.DataFrame({x_label: _val_names, y_label: _val_counts})
 
     # Initialize an array of the simulated number of observations per value
-    num_per_value_per_sim =\
-        np.empty((unique_vals.size, sim_y.shape[1]))
+    num_per_value_per_sim = np.empty((unique_vals.size, sim_y.shape[1]))
 
     # Create the iterable for populating `num_per_value_per_sim`
-    iterator = progress(unique_vals, desc='Unique x-values')
+    iterator = progress(unique_vals, desc="Unique x-values")
 
     # Populate the created array
     for pos, val in enumerate(iterator):
@@ -99,24 +95,26 @@ def _get_objects_for_market_share_plot(x,
     return boxplot_df, obs_df
 
 
-def plot_simulated_market_shares(x,
-                                 sim_y,
-                                 obs_y,
-                                 x_label='X',
-                                 y_label='Counts',
-                                 display_dict=None,
-                                 fig_and_ax=None,
-                                 figsize=(10, 6),
-                                 fontsize=12,
-                                 title=None,
-                                 box_color='white',
-                                 obs_color='#045a8d',
-                                 obs_marker='*',
-                                 obs_size=12,
-                                 obs_label='Observed',
-                                 output_file=None,
-                                 dpi=500,
-                                 show=True):
+def plot_simulated_market_shares(
+    x,
+    sim_y,
+    obs_y,
+    x_label="X",
+    y_label="Counts",
+    display_dict=None,
+    fig_and_ax=None,
+    figsize=(10, 6),
+    fontsize=12,
+    title=None,
+    box_color="white",
+    obs_color="#045a8d",
+    obs_marker="*",
+    obs_size=12,
+    obs_label="Observed",
+    output_file=None,
+    dpi=500,
+    show=True,
+):
     """
     Makes a 'market share' boxplot of the simulated distributions of a discrete
     random variable versus the observed values of that variable. In particular,
@@ -186,9 +184,9 @@ def plot_simulated_market_shares(x,
         safe_display = None
 
     # Get the data needed for the plot
-    boxplot_df, obs_df =\
-        _get_objects_for_market_share_plot(
-            x, sim_y, obs_y, x_label, y_label, display_dict=safe_display)
+    boxplot_df, obs_df = _get_objects_for_market_share_plot(
+        x, sim_y, obs_y, x_label, y_label, display_dict=safe_display
+    )
 
     # Create or access the figure and axis on which the plot is to be drawn.
     if fig_and_ax is None:
@@ -203,19 +201,35 @@ def plot_simulated_market_shares(x,
     plot_labels = [v.get_text() for v in ax.get_xticklabels()]
     obs_df = obs_df.loc[plot_labels]
     # Add the observed values on top the boxplot
-    sbn.stripplot(x=x_label, y=y_label, data=obs_df, ax=ax, color=obs_color,
-                  s=obs_size, marker=obs_marker, label=obs_label)
+    sbn.stripplot(
+        x=x_label,
+        y=y_label,
+        data=obs_df,
+        ax=ax,
+        color=obs_color,
+        s=obs_size,
+        marker=obs_marker,
+        label=obs_label,
+    )
 
     # Ensure that the xticklabels are of the correct fontsize
     ax.set_xticklabels(ax.get_xticklabels(), fontsize=fontsize)
 
     # Draw the legend, ensuring that we only have one entry.
     handles, labels = ax.get_legend_handles_labels()
-    ax.legend(handles[:1], labels[:1], loc='best', fontsize=fontsize)
+    ax.legend(handles[:1], labels[:1], loc="best", fontsize=fontsize)
 
     # Take care of boilerplate plotting necessities
     _label_despine_save_and_show_plot(
-        x_label=x_label, y_label=y_label, fig_and_ax=fig_and_ax,
-        fontsize=fontsize, y_rot=0, y_pad=40, title=title,
-        output_file=output_file, show=show, dpi=dpi)
+        x_label=x_label,
+        y_label=y_label,
+        fig_and_ax=fig_and_ax,
+        fontsize=fontsize,
+        y_rot=0,
+        y_pad=40,
+        title=title,
+        output_file=output_file,
+        show=show,
+        dpi=dpi,
+    )
     return None
