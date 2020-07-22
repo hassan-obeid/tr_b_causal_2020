@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.4.0
+#       jupytext_version: 1.4.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -30,30 +30,30 @@
 
 # +
 # Declare paths to data
-DATA_PATH =\
-    '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
+DATA_PATH = "../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
 # Note that these files are based on using the PPCA model
 # of Wang and Blei (2018). W represents global factor
 # coefficients and Z represents latent factor loadings
-PATH_TO_W_PARAMS = '../../data/processed/W_inferred_PPCA.csv'
-PATH_TO_Z_PARAMS = '../../data/processed/Z_inferred_PPCA.csv'
+PATH_TO_W_PARAMS = "../../data/processed/W_inferred_PPCA.csv"
+PATH_TO_Z_PARAMS = "../../data/processed/Z_inferred_PPCA.csv"
 
 # Note the columns of interest for this notebook
-MODE_ID_COLUMN = 'mode_id'
-OBS_ID_COLUMN = 'observation_id'
+MODE_ID_COLUMN = "mode_id"
+OBS_ID_COLUMN = "observation_id"
 
-TIME_COLUMN = 'total_travel_time'
-COST_COLUMN = 'total_travel_cost'
-DISTANCE_COLUMN = 'total_travel_distance'
-LICENSE_COLUMN = 'num_licensed_drivers'
-NUM_AUTOS_COLUMN = 'num_cars'
+TIME_COLUMN = "total_travel_time"
+COST_COLUMN = "total_travel_cost"
+DISTANCE_COLUMN = "total_travel_distance"
+LICENSE_COLUMN = "num_licensed_drivers"
+NUM_AUTOS_COLUMN = "num_cars"
 
-UTILITY_COLUMNS =\
-    [TIME_COLUMN,
-     COST_COLUMN,
-     DISTANCE_COLUMN,
-     LICENSE_COLUMN,
-     NUM_AUTOS_COLUMN]
+UTILITY_COLUMNS = [
+    TIME_COLUMN,
+    COST_COLUMN,
+    DISTANCE_COLUMN,
+    LICENSE_COLUMN,
+    NUM_AUTOS_COLUMN,
+]
 
 # Note the travel mode of intersest for this notebook
 DRIVE_ALONE_ID = 1
@@ -64,29 +64,32 @@ NUM_PERMUTATIONS = 100
 
 # Choose a color to represent reference /
 # permutation-based test statistics
-PERMUTED_COLOR = '#a6bddb'
+PERMUTED_COLOR = "#a6bddb"
 # -
 
 # ## Import needed libraries
 
 # +
 # Built-in modules
-import sys
+import sys  # noqa: E402
 
 # Third party modules
-import numpy as np
-import pandas as pd
-import scipy.stats
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import scipy.stats  # noqa: E402
 
 # Local modules
-sys.path.insert(0, '../../')
-import src.viz.sim_cdf as sim_cdf
-import src.testing.observable_independence as oi
-import src.testing.latent_independence as li
+sys.path.insert(0, "../../")
+import src.testing.latent_independence as li  # noqa: E402 isort:skip
+import src.testing.observable_independence as oi  # noqa: E402 isort:skip
+import src.viz.sim_cdf as sim_cdf  # noqa: E402 isort:skip
+from src.graphs.drive_alone_utility import (  # noqa: E402 isort:skip
+    DRIVE_ALONE_UTILITY,
+    LATENT_DRIVE_ALONE_UTILITY,
+)
+from src.utils import sample_from_factor_model  # noqa: E402 isort:skip
 
-from src.graphs.drive_alone_utility import (DRIVE_ALONE_UTILITY,
-                                            LATENT_DRIVE_ALONE_UTILITY)
-from src.utils import sample_from_factor_model
+
 # -
 
 # ## Load and describe needed data
@@ -96,16 +99,17 @@ from src.utils import sample_from_factor_model
 df = pd.read_csv(DATA_PATH)
 
 # Look at the data being used in this notebook
-print(df.loc[df[MODE_ID_COLUMN] == DRIVE_ALONE_ID,
-             UTILITY_COLUMNS + [OBS_ID_COLUMN]]
-        .head(5)
-        .T)
+print(
+    df.loc[
+        df[MODE_ID_COLUMN] == DRIVE_ALONE_ID, UTILITY_COLUMNS + [OBS_ID_COLUMN]
+    ]
+    .head(5)
+    .T
+)
 
 # Create a dataframe with the variables posited
 # to make up the drive-alone utility
-drive_alone_df =\
-    df.loc[df[MODE_ID_COLUMN] == DRIVE_ALONE_ID,
-           UTILITY_COLUMNS]
+drive_alone_df = df.loc[df[MODE_ID_COLUMN] == DRIVE_ALONE_ID, UTILITY_COLUMNS]
 
 # Figure out how many observations we have with
 # the drive alone mode being available
@@ -155,7 +159,8 @@ oi.visual_permutation_test(
     z_array=None,
     seed=1038,
     num_permutations=NUM_PERMUTATIONS,
-    permutation_color=PERMUTED_COLOR)
+    permutation_color=PERMUTED_COLOR,
+)
 # -
 
 # ### Caveats and pitfalls
@@ -204,7 +209,8 @@ oi.visual_permutation_test(
     cost_array,
     z_array=distance_array,
     num_permutations=NUM_PERMUTATIONS,
-    permutation_color=PERMUTED_COLOR)
+    permutation_color=PERMUTED_COLOR,
+)
 # -
 
 # ### Caveats and pitfalls
@@ -272,10 +278,10 @@ latent_causal_graph
 # +
 # Get the means and standard deviations of those variables
 drive_alone_means = drive_alone_df.mean()
-drive_alone_means.name = 'mean'
+drive_alone_means.name = "mean"
 
 drive_alone_stds = drive_alone_df.std()
-drive_alone_stds.name = 'std'
+drive_alone_stds.name = "std"
 
 # Look at the computed means and standard deviations
 print(pd.DataFrame([drive_alone_means, drive_alone_stds]).T)
@@ -290,22 +296,20 @@ w_dist_prior = scipy.stats.norm(loc=0, scale=1)
 z_dist_prior = scipy.stats.norm(loc=0, scale=1)
 
 sigma_prior = 0.1
-epsilon_dist_prior =\
-    scipy.stats.norm(loc=0, scale=sigma_prior)
+epsilon_dist_prior = scipy.stats.norm(loc=0, scale=sigma_prior)
 
 # Get samples of x from the prior distribution factor model
-x_samples_prior, z_samples_prior =\
-    sample_from_factor_model(
-        loadings_dist=z_dist_prior,
-        coef_dist=w_dist_prior,
-        noise_dist=epsilon_dist_prior,
-        standard_deviations=drive_alone_stds.values,
-        means=drive_alone_means.values,
-        num_obs=num_drive_alone_obs,
-        num_samples=NUM_PERMUTATIONS,
-        num_factors=1,
-        seed=721
-        )
+x_samples_prior, z_samples_prior = sample_from_factor_model(
+    loadings_dist=z_dist_prior,
+    coef_dist=w_dist_prior,
+    noise_dist=epsilon_dist_prior,
+    standard_deviations=drive_alone_stds.values,
+    means=drive_alone_means.values,
+    num_obs=num_drive_alone_obs,
+    num_samples=NUM_PERMUTATIONS,
+    num_factors=1,
+    seed=721,
+)
 
 # Look at the dimensions of the prior predictive samples
 print(x_samples_prior.shape)
@@ -313,23 +317,20 @@ print(x_samples_prior.shape)
 # +
 # Collect the columns being used in the test and info about them.
 columns_for_test = [NUM_AUTOS_COLUMN, LICENSE_COLUMN]
-col_idxs_for_test =\
-    [UTILITY_COLUMNS.index(col) for col in columns_for_test]
+col_idxs_for_test = [UTILITY_COLUMNS.index(col) for col in columns_for_test]
 
 # Get the observed values to be used for testing
 obs_sample = drive_alone_df.loc[:, columns_for_test].values
 
 # Get the prior predictive values for testing
-prior_samples_triplet =\
-    np.concatenate((x_samples_prior[:, col_idxs_for_test, :],
-                    z_samples_prior),
-                   axis=1)
+prior_samples_triplet = np.concatenate(
+    (x_samples_prior[:, col_idxs_for_test, :], z_samples_prior), axis=1
+)
 
 # Use the predictive, conditional independence test
-pval, sampled_pvals, obs_pvals =\
-    li.perform_visual_predictive_cit_test(
-        prior_samples_triplet,
-        obs_sample)
+pval, sampled_pvals, obs_pvals = li.perform_visual_predictive_cit_test(
+    prior_samples_triplet, obs_sample
+)
 # -
 
 # #### Posterior distribution based test
@@ -343,49 +344,50 @@ z_post_params = pd.read_csv(PATH_TO_Z_PARAMS, index_col=0)
 # Create the posterior distribution of coefficients
 # Note we need the arguments to have shape that can,
 # be broadcast to (num_factors, num_predictors, num_samples)
-w_dist_post =\
-    scipy.stats.norm(
-        loc=w_post_params['w_mean_inferred'].values[None, : , None],
-        scale=w_post_params['w_std_inferred'].values[None :, None])
+w_dist_post = scipy.stats.norm(
+    loc=w_post_params["w_mean_inferred"].values[None, :, None],
+    scale=w_post_params["w_std_inferred"].values[None:, None],
+)
 
 # Create the posterior distribution of loadings
 # Note we need the arguments to have shape that can,
 # be broadcast to (num_obs, num_factors, num_samples)
-z_dist_post =\
-    scipy.stats.norm(
-        loc=z_post_params['z_mean_inferred'].values[:, None, None],
-        scale=z_post_params['z_std_inferred'].values[:, None, None])
+z_dist_post = scipy.stats.norm(
+    loc=z_post_params["z_mean_inferred"].values[:, None, None],
+    scale=z_post_params["z_std_inferred"].values[:, None, None],
+)
 
 # Get posterior samples of X_standardized
-x_samples_post, z_samples_post =\
-    sample_from_factor_model(
-        loadings_dist=z_dist_post,
-        coef_dist=w_dist_post,
-        noise_dist=epsilon_dist_prior,
-        standard_deviations=drive_alone_stds.values,
-        means=drive_alone_means.values,
-        num_obs=num_drive_alone_obs,
-        num_samples=NUM_PERMUTATIONS,
-        num_factors=1,
-        post=False,
-        seed=852
-        )
+x_samples_post, z_samples_post = sample_from_factor_model(
+    loadings_dist=z_dist_post,
+    coef_dist=w_dist_post,
+    noise_dist=epsilon_dist_prior,
+    standard_deviations=drive_alone_stds.values,
+    means=drive_alone_means.values,
+    num_obs=num_drive_alone_obs,
+    num_samples=NUM_PERMUTATIONS,
+    num_factors=1,
+    post=False,
+    seed=852,
+)
 
 # Look at the dimensions of the prior predictive samples
 print(x_samples_post.shape)
 
 # +
 # Get the posterior predictive values for the test
-posterior_samples_triplet =\
-    np.concatenate((x_samples_post[:, col_idxs_for_test, :],
-                    z_samples_post),
-                   axis=1)
+posterior_samples_triplet = np.concatenate(
+    (x_samples_post[:, col_idxs_for_test, :], z_samples_post), axis=1
+)
 
 # Test out the predictive conditional independence test
-post_pval, post_sampled_pvals, post_obs_pvals =\
-    li.perform_visual_predictive_cit_test(
-        posterior_samples_triplet,
-        obs_sample)
+(
+    post_pval,
+    post_sampled_pvals,
+    post_obs_pvals,
+) = li.perform_visual_predictive_cit_test(
+    posterior_samples_triplet, obs_sample
+)
 # -
 
 # ### Caveats and pitfalls
@@ -396,21 +398,19 @@ post_pval, post_sampled_pvals, post_obs_pvals =\
 current_col = TIME_COLUMN
 current_col_idx = UTILITY_COLUMNS.index(TIME_COLUMN)
 
-print('Prior')
-prior_sim_cdf =\
-    li.plot_simulated_vs_observed_cdf(
-        drive_alone_df.iloc[:, current_col_idx].values,
-        x_samples_prior[:, current_col_idx, :],
-        x_label=current_col
-        )
+print("Prior")
+prior_sim_cdf = li.plot_simulated_vs_observed_cdf(
+    drive_alone_df.iloc[:, current_col_idx].values,
+    x_samples_prior[:, current_col_idx, :],
+    x_label=current_col,
+)
 
-print('Posterior')
-posterior_sim_cdf =\
-    li.plot_simulated_vs_observed_cdf(
-        drive_alone_df.iloc[:, current_col_idx].values,
-        x_samples_post[:, current_col_idx, :],
-        x_label=current_col
-        )
+print("Posterior")
+posterior_sim_cdf = li.plot_simulated_vs_observed_cdf(
+    drive_alone_df.iloc[:, current_col_idx].values,
+    x_samples_post[:, current_col_idx, :],
+    x_label=current_col,
+)
 # -
 
 # Overall, the caveats and pitfalls only increase as one moves from marginal to conditional to latent, conditional independence tests.
