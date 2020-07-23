@@ -6,13 +6,12 @@ travel distance.
 """
 from causalgraphicalmodels import CausalGraphicalModel
 
-TRAVEL_TIME = 'Travel Time'
-TRAVEL_COST = 'Travel Cost'
-TRAVEL_DISTANCE = 'Travel Distance'
+TRAVEL_TIME = "Travel Time"
+TRAVEL_COST = "Travel Cost"
+TRAVEL_DISTANCE = "Travel Distance"
 
 
-EXAMPLE_GRAPH =\
-    CausalGraphicalModel(
-        nodes=[TRAVEL_TIME, TRAVEL_COST, TRAVEL_DISTANCE],
-        edges=[(TRAVEL_DISTANCE, TRAVEL_TIME), (TRAVEL_DISTANCE, TRAVEL_COST)]
-    )
+EXAMPLE_GRAPH = CausalGraphicalModel(
+    nodes=[TRAVEL_TIME, TRAVEL_COST, TRAVEL_DISTANCE],
+    edges=[(TRAVEL_DISTANCE, TRAVEL_TIME), (TRAVEL_DISTANCE, TRAVEL_COST)],
+)
