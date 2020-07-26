@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.4.0
+#       jupytext_version: 1.4.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -26,10 +26,13 @@
 #
 
 # +
+import os
 import sys
 
-sys.path.insert(0, '../../src/')
-from graphs import parking
+# Local modules
+sys.path.insert(0, "../../src")
+from graphs import parking  # noqa: E402 isort:skip
+
 # -
 
 causal_graph = parking.PARKING_CAUSAL_MODEL.draw()
@@ -87,7 +90,7 @@ causal_graph
 # To be explicit, by assuming that parking arrivals in the previous hour is an instrumental variable, Chiara et al. assume that
 # 1. parking arrivals in the previous hour is not caused by the same unobserved confounders that cause parking congestion in the current hour,
 # 2. parking arrivals in the previous hour cause (or are associated with) parking congestion in the current hour,
-# 3. the utility of parking at a given location is independent of parking arrivals in the previous hour, conditional on parking congestion 
+# 3. the utility of parking at a given location is independent of parking arrivals in the previous hour, conditional on parking congestion
 #
 # However, the assumption that parking arrivals in the previous hour is not caused by the same unobserved confounders that cause parking congestion in the current hour is a-priori suspect.
 # Chiara et al. hypothesize that the unobserved confounders include "factors such as a temporary closure of a road lane or the passage of a police car" (p. 14).

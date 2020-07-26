@@ -3,30 +3,28 @@
 Functions for performing permutation-based, falsification tests of observable,
 marginal and conditional independence assumptions.
 """
-import numpy as np
+from typing import Optional, Sequence, Tuple
 
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sbn
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
-
-import seaborn as sbn
-import matplotlib.pyplot as plt
-
 from tqdm import tqdm
 
-from typing import Tuple, Sequence, Optional
 
-
-def _check_array_lengths(array_1: np.ndarray,
-                         array_2: np.ndarray,
-                         array_3: np.ndarray=None) -> None:
+def _check_array_lengths(
+    array_1: np.ndarray, array_2: np.ndarray, array_3: np.ndarray = None
+) -> None:
     """
     Ensures that all arrays have equal size.
     """
-    size_condition_1 = (array_1.size != array_2.size)
-    size_condition_2 =\
+    size_condition_1 = array_1.size != array_2.size
+    size_condition_2 = (
         False if array_3 is None else (array_1.size != array_3.size)
+    )
     if size_condition_1 or size_condition_2:
-        msg = 'All arrays MUST be of the same size.'
+        msg = "All arrays MUST be of the same size."
         raise ValueError(msg)
     return
 
@@ -36,7 +34,7 @@ def _ensure_is_array(array_arg: np.ndarray, name: str) -> None:
     Ensures that `array_arg` is a numpy array array.
     """
     if not isinstance(array_arg, np.ndarray):
-        msg = '{} MUST be an instance of np.ndarray.'.format(name)
+        msg = "{} MUST be an instance of np.ndarray.".format(name)
         raise TypeError(msg)
     return
 
@@ -47,8 +45,9 @@ def _create_predictors(array_iterable: Sequence[np.ndarray]) -> np.ndarray:
     `array_iterable` is assumed to be 1D.
     """
     if len(array_iterable) > 1:
-        combined_predictors =\
-            np.concatenate(tuple(x[:, None] for x in array_iterable), axis=1)
+        combined_predictors = np.concatenate(
+            tuple(x[:, None] for x in array_iterable), axis=1
+        )
     else:
         combined_predictors = array_iterable[0][:, None]
     return combined_predictors
@@ -68,12 +67,14 @@ def _make_regressor(x_2d: np.ndarray, y: np.ndarray) -> LinearRegression:
     return regressor
 
 
-def computed_vs_obs_r2(x1_array: np.ndarray,
-                       x2_array: np.ndarray,
-                       z_array: Optional[np.ndarray]=None,
-                       seed: Optional[int]=None,
-                       num_permutations: int=100,
-                       progress: bool=True) -> Tuple[float, np.ndarray]:
+def computed_vs_obs_r2(
+    x1_array: np.ndarray,
+    x2_array: np.ndarray,
+    z_array: Optional[np.ndarray] = None,
+    seed: Optional[int] = None,
+    num_permutations: int = 100,
+    progress: bool = True,
+) -> Tuple[float, np.ndarray]:
     """
     Using sklearn's default LinearRegression regressor to predict `x1_array`
     given `x2_array` (and optionally, `z_array`), this function computes
@@ -110,10 +111,10 @@ def computed_vs_obs_r2(x1_array: np.ndarray,
         given `z_array` if it was not None.
     """
     # Validate argument type and lengths
-    _ensure_is_array(x1_array, 'x1_array')
-    _ensure_is_array(x2_array, 'x2_array')
+    _ensure_is_array(x1_array, "x1_array")
+    _ensure_is_array(x2_array, "x2_array")
     if z_array is not None:
-        _ensure_is_array(z_array, 'z_array')
+        _ensure_is_array(z_array, "z_array")
     _check_array_lengths(x1_array, x2_array, array_3=z_array)
 
     # Set a random seed for reproducibility
@@ -160,21 +161,23 @@ def computed_vs_obs_r2(x1_array: np.ndarray,
         # Get the current combined predictors
         current_predictors = create_predictors(current_x2)
         # Fit a new model and store the current expectation
-        current_regressor =\
-            _make_regressor(current_predictors, x1_array)
-        permuted_expectations[:, i] =\
-            current_regressor.predict(current_predictors)
+        current_regressor = _make_regressor(current_predictors, x1_array)
+        permuted_expectations[:, i] = current_regressor.predict(
+            current_predictors
+        )
         permuted_r2[i] = r2_score(x1_array, permuted_expectations[:, i])
     return obs_r2, permuted_r2
 
 
-def visualize_permutation_results(obs_r2: float,
-                                  permuted_r2: np.ndarray,
-                                  verbose: bool=True,
-                                  permutation_color: str='#a6bddb',
-                                  output_path: Optional[str]=None,
-                                  show: bool=True,
-                                  close: bool=False) -> float:
+def visualize_permutation_results(
+    obs_r2: float,
+    permuted_r2: np.ndarray,
+    verbose: bool = True,
+    permutation_color: str = "#a6bddb",
+    output_path: Optional[str] = None,
+    show: bool = True,
+    close: bool = False,
+) -> float:
     """
     Parameters
     ----------
@@ -214,28 +217,32 @@ def visualize_permutation_results(obs_r2: float,
     p_value = (obs_r2 < permuted_r2).mean()
 
     if verbose:
-        msg =\
-            'The p-value of the permutation independence test is {:.2f}.'
+        msg = "The p-value of the permutation independence test is {:.2f}."
         print(msg.format(p_value))
 
-    sbn.kdeplot(
-        permuted_r2, ax=ax, color=permutation_color, label='Simulated')
-    ax.vlines(obs_r2,
-              ax.get_ylim()[0],
-              ax.get_ylim()[1],
-              linestyle='dashed',
-              color='black',
-              label='Observed\np-val: {:0.3f}'.format(p_value,
-                                                      precision=1))
+    sbn.kdeplot(permuted_r2, ax=ax, color=permutation_color, label="Simulated")
 
-    ax.set_xlabel(r'$r^2$', fontsize=13)
+    v_line_label = "Observed\np-val: {:0.3f}".format(  # noqa: F522
+        p_value, precision=1
+    )
+    ax.vlines(
+        obs_r2,
+        ax.get_ylim()[0],
+        ax.get_ylim()[1],
+        linestyle="dashed",
+        color="black",
+        label=v_line_label,
+    )
+
+    ax.set_xlabel(r"$r^2$", fontsize=13)
     ax.set_ylabel(
-        'Density', fontdict={'fontsize': 13, 'rotation': 0}, labelpad=40)
-    ax.legend(loc='best')
+        "Density", fontdict={"fontsize": 13, "rotation": 0}, labelpad=40
+    )
+    ax.legend(loc="best")
     sbn.despine()
 
     if output_path is not None:
-        fig.savefig(output_path, dpi=500, bbox_inches='tight')
+        fig.savefig(output_path, dpi=500, bbox_inches="tight")
     if show:
         plt.show()
     if close:
@@ -243,17 +250,19 @@ def visualize_permutation_results(obs_r2: float,
     return p_value
 
 
-def visual_permutation_test(x1_array: np.ndarray,
-                            x2_array: np.ndarray,
-                            z_array: Optional[np.ndarray]=None,
-                            num_permutations: int=100,
-                            seed: int=1038,
-                            progress: bool=True,
-                            verbose: bool=True,
-                            permutation_color: str='#a6bddb',
-                            output_path: Optional[str]=None,
-                            show: bool=True,
-                            close: bool=False) -> float:
+def visual_permutation_test(
+    x1_array: np.ndarray,
+    x2_array: np.ndarray,
+    z_array: Optional[np.ndarray] = None,
+    num_permutations: int = 100,
+    seed: int = 1038,
+    progress: bool = True,
+    verbose: bool = True,
+    permutation_color: str = "#a6bddb",
+    output_path: Optional[str] = None,
+    show: bool = True,
+    close: bool = False,
+) -> float:
     """
     Performs a visual permutation test of the hypothesis that the expected
     value of `x1_array`, given `x2_array` and (optionally) `z_array`, is equal
@@ -305,19 +314,23 @@ def visual_permutation_test(x1_array: np.ndarray,
         the observed `x2_array`.
     """
     # Compute the observed r2 and the permuted r2's
-    obs_r2, permuted_r2 =\
-        computed_vs_obs_r2(
-            x1_array, x2_array, z_array=z_array,
-            seed=seed, num_permutations=num_permutations, progress=progress)
+    obs_r2, permuted_r2 = computed_vs_obs_r2(
+        x1_array,
+        x2_array,
+        z_array=z_array,
+        seed=seed,
+        num_permutations=num_permutations,
+        progress=progress,
+    )
 
     # Visualize the results of the permutation test
-    p_value =\
-        visualize_permutation_results(
-            obs_r2,
-            permuted_r2,
-            verbose=verbose,
-            permutation_color=permutation_color,
-            output_path=output_path,
-            show=show,
-            close=close)
+    p_value = visualize_permutation_results(
+        obs_r2,
+        permuted_r2,
+        verbose=verbose,
+        permutation_color=permutation_color,
+        output_path=output_path,
+        show=show,
+        close=close,
+    )
     return p_value

@@ -14,26 +14,30 @@ import click
 import pandas as pd
 
 # Local modules
+import src.testing.observable_independence as oi
 from src import utils
 from src.graphs.conditional_independence_example import EXAMPLE_GRAPH
-import src.testing.observable_independence as oi
 
 # Declare paths to data
-DATA_PATH =\
-    (utils.PROJECT_ROOT / 'data' / 'raw' /
-     'spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv')
+DATA_PATH = (
+    utils.PROJECT_ROOT
+    / "data"
+    / "raw"
+    / "spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+)
 
 # Note the columns of interest in the dataset
-MODE_ID_COL = 'mode_id'
-TIME_COL = 'total_travel_time'
-COST_COL = 'total_travel_cost'
-DISTANCE_COL = 'total_travel_distance'
+MODE_ID_COL = "mode_id"
+TIME_COL = "total_travel_time"
+COST_COL = "total_travel_cost"
+DISTANCE_COL = "total_travel_distance"
+
 
 def create_conditional_independence_testing_results(
     output_path: str,
-    num_permutations: int=100,
-    permuted_color: str='#a6bddb'
-    ) -> None:
+    num_permutations: int = 100,
+    permuted_color: str = "#a6bddb",
+) -> None:
     """
     Computes and stores the results of permutation testing the implication
     of conditional mean independence between travel time  and travel cost,
@@ -66,51 +70,60 @@ def create_conditional_independence_testing_results(
 
     # Perform the permutation and save the resulting visualization of the test
     oi.visual_permutation_test(
-        time_array, cost_array, distance_array,
+        time_array,
+        cost_array,
+        distance_array,
         num_permutations=num_permutations,
         permutation_color=permuted_color,
         output_path=output_path,
         show=False,
-        close=True)
+        close=True,
+    )
     return None
 
 
 @click.command()
-@click.option('--num_permutations',
-              default=100,
-              type=int,
-              help='Number of permutations.',
-              show_default=True)
-@click.option('--color',
-              default='#a6bddb',
-              type=str,
-              help='Hex string color for the test-statistic density.',
-              show_default=True)
-@click.option('--output_name',
-              default='cit--time_vs_cost_given_distance.png',
-              type=str,
-              help='Filename for results of visual CIT.',
-              show_default=True)
-def main(num_permutations,
-         color,
-         output_name) -> None:
+@click.option(
+    "--num_permutations",
+    default=100,
+    type=int,
+    help="Number of permutations.",
+    show_default=True,
+)
+@click.option(
+    "--color",
+    default="#a6bddb",
+    type=str,
+    help="Hex string color for the test-statistic density.",
+    show_default=True,
+)
+@click.option(
+    "--output_name",
+    default="cit--time_vs_cost_given_distance.png",
+    type=str,
+    help="Filename for results of visual CIT.",
+    show_default=True,
+)
+def main(num_permutations, color, output_name) -> None:
     # Write the image of the conditional independence example to file
     utils.create_graph_image(
-        graph=EXAMPLE_GRAPH,
-        output_name='conditional_independence_subgraph')
+        graph=EXAMPLE_GRAPH, output_name="conditional_independence_subgraph"
+    )
 
     # Note the path for the output image of the permutation test.
-    PERMUTATION_OUTPUT_PATH_STR =\
-        str(utils.FIGURES_DIRECTORY_PATH / output_name)
+    PERMUTATION_OUTPUT_PATH_STR = str(
+        utils.FIGURES_DIRECTORY_PATH / output_name
+    )
 
     # Create and store the results of permutation testing the implication
     # of conditional mean independence
     create_conditional_independence_testing_results(
         output_path=PERMUTATION_OUTPUT_PATH_STR,
         num_permutations=num_permutations,
-        permuted_color=color
+        permuted_color=color,
     )
     return None
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

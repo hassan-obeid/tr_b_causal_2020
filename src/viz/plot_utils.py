@@ -1,19 +1,19 @@
 """
 Helper functions for plotting.
 """
-import sys
 import gc
-import numpy as np
+import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
+import statsmodels.distributions as sm_dist
 
 # Use statsmodels for empirical cdf function
-import statsmodels.tools as sm_tools
-import statsmodels.distributions as sm_dist
+import statsmodels.tools as sm_tools  # isort:skip
 
 # Alias the empirical cdf function. The if-statement is used for compatibility
 # with various statsmodels versions.
-ECDF = sm_tools.tools.ECDF if hasattr(sm_tools.tools, 'ECDF') else sm_dist.ECDF
+ECDF = sm_tools.tools.ECDF if hasattr(sm_tools.tools, "ECDF") else sm_dist.ECDF
 
 # Allow for python 2 and python 3 compatibility
 try:
@@ -22,16 +22,18 @@ except NameError:
     basestring = str
 
 
-def _label_despine_save_and_show_plot(x_label,
-                                      y_label,
-                                      fig_and_ax,
-                                      fontsize=12,
-                                      y_rot=0,
-                                      y_pad=40,
-                                      title=None,
-                                      output_file=None,
-                                      show=True,
-                                      dpi=500):
+def _label_despine_save_and_show_plot(
+    x_label,
+    y_label,
+    fig_and_ax,
+    fontsize=12,
+    y_rot=0,
+    y_pad=40,
+    title=None,
+    output_file=None,
+    show=True,
+    dpi=500,
+):
     """
     Adds the x-label, y-label, and title to the matplotlib Axes object. Also
     despines the figure, saves it (if desired), and shows it (if desired).
@@ -64,7 +66,7 @@ def _label_despine_save_and_show_plot(x_label,
         be used if `output_file is not None`. Default == 500.
     """
     # Ensure seaborn is imported
-    if 'sbn' not in globals():
+    if "sbn" not in globals():
         import seaborn as sbn
 
     # Get the figure and axis as separate objects
@@ -76,7 +78,7 @@ def _label_despine_save_and_show_plot(x_label,
     axis.set_xlabel(x_label, fontsize=fontsize)
     axis.set_ylabel(y_label, fontsize=fontsize, rotation=y_rot, labelpad=y_pad)
     # Create the title
-    if title is not None and title != '':
+    if title is not None and title != "":
         if not isinstance(title, basestring):
             msg = "`title` MUST be a string."
             raise TypeError(msg)
@@ -85,17 +87,19 @@ def _label_despine_save_and_show_plot(x_label,
     # Save the plot if desired
     if output_file is not None:
         fig.tight_layout()
-        fig.savefig(output_file, dpi=dpi, bbox_inches='tight')
+        fig.savefig(output_file, dpi=dpi, bbox_inches="tight")
 
     if show:
         fig.show()
 
     # Explicitly close the figure
-    notebook_env = bool(any([x in sys.modules for x in ['ipykernel', 'IPython']]))
+    notebook_env = bool(
+        any([x in sys.modules for x in ["ipykernel", "IPython"]])
+    )
     if not notebook_env:
         plt.cla()
         plt.close(fig)
-        plt.close('all')
+        plt.close("all")
         gc.collect()
     return None
 
@@ -118,7 +122,7 @@ def _choice_evaluator(choice_array, choice_condition):
     if choice_condition in [0.0, 1.0]:
         return choice_array == choice_condition
     else:
-        msg = 'choice_condition MUST be either a 0 or a 1'
+        msg = "choice_condition MUST be either a 0 or a 1"
         raise ValueError(msg)
 
 
@@ -143,19 +147,15 @@ def _thin_rows(sim_y, thin_pct):
     # Determine the number of rows to select
     num_selected_rows = int(thin_pct * sim_y.shape[0])
     # Randomly choose rows to retain.
-    selected_rows =\
-        np.random.choice(sim_y.shape[0],
-                         size=num_selected_rows,
-                         replace=False)
+    selected_rows = np.random.choice(
+        sim_y.shape[0], size=num_selected_rows, replace=False
+    )
     return selected_rows
 
 
-def _plot_single_cdf_on_axis(x_vals,
-                             axis,
-                             color='#a6bddb',
-                             linestyle='-',
-                             label=None,
-                             alpha=0.1):
+def _plot_single_cdf_on_axis(
+    x_vals, axis, color="#a6bddb", linestyle="-", label=None, alpha=0.1
+):
     """
     Plots a CDF of `x_vals` on `axis` with the desired color, linestyle, label,
     and transparency (alpha) level.
@@ -170,11 +170,13 @@ def _plot_single_cdf_on_axis(x_vals,
     # Get the CDF values for each of the sorted values
     cdf_values = cdf_func(sorted_samples)
     # Plot the sorted, unique values versus their CDF values
-    axis.plot(sorted_samples,
-              cdf_values,
-              c=color,
-              ls=linestyle,
-              alpha=alpha,
-              label=label,
-              drawstyle='steps-post')
+    axis.plot(
+        sorted_samples,
+        cdf_values,
+        c=color,
+        ls=linestyle,
+        alpha=alpha,
+        label=label,
+        drawstyle="steps-post",
+    )
     return None

@@ -4,27 +4,27 @@ Generic utilities that helpful across project-submodules.
 """
 # Built-in modules
 from pathlib import Path
+from typing import Tuple, Union
 
 # Third-party modules
 import numpy as np
-from scipy.stats.distributions import rv_continuous, rv_discrete
 from causalgraphicalmodels import CausalGraphicalModel
-
-from typing import Union, Tuple
+from scipy.stats.distributions import rv_continuous, rv_discrete
 
 DISTRIBUTION_TYPE = Union[rv_continuous, rv_discrete]
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
-FIGURES_DIRECTORY_PATH = PROJECT_ROOT / 'reports' / 'figures'
+FIGURES_DIRECTORY_PATH = PROJECT_ROOT / "reports" / "figures"
 
 
 def create_graph_image(
     graph: CausalGraphicalModel,
-    img_size: str="5,3",
-    output_name: str='graph',
-    output_dir: Path=FIGURES_DIRECTORY_PATH,
-    output_type: str='png') -> None:
+    img_size: str = "5,3",
+    output_name: str = "graph",
+    output_dir: Path = FIGURES_DIRECTORY_PATH,
+    output_type: str = "png",
+) -> None:
     """
     Creates the png file that draws the given CausalGraphicalModel.
 
@@ -56,23 +56,23 @@ def create_graph_image(
     causal_graph.graph_attr.update(size=img_size)
     # Write an image of the graph to file
     causal_graph.render(
-        filename=output_name,
-        directory=str(output_dir),
-        format=output_type
+        filename=output_name, directory=str(output_dir), format=output_type
     )
     return None
 
 
-def sample_from_factor_model(loadings_dist: DISTRIBUTION_TYPE,
-                             coef_dist: DISTRIBUTION_TYPE,
-                             noise_dist: DISTRIBUTION_TYPE,
-                             standard_deviations: np.ndarray,
-                             means: np.ndarray,
-                             num_obs: int,
-                             num_samples: int,
-                             num_factors: int=1,
-                             post: bool=False,
-                             seed: int=728) -> Tuple[np.ndarray, np.ndarray]:
+def sample_from_factor_model(
+    loadings_dist: DISTRIBUTION_TYPE,
+    coef_dist: DISTRIBUTION_TYPE,
+    noise_dist: DISTRIBUTION_TYPE,
+    standard_deviations: np.ndarray,
+    means: np.ndarray,
+    num_obs: int,
+    num_samples: int,
+    num_factors: int = 1,
+    post: bool = False,
+    seed: int = 728,
+) -> Tuple[np.ndarray, np.ndarray]:
     """
     Draws samples from a factor model of the form:
     `(loadings * coeffcients + noise) * standard_deviations + means`.
@@ -119,15 +119,15 @@ def sample_from_factor_model(loadings_dist: DISTRIBUTION_TYPE,
     """
     # Basic argument checking
     msg = None
-    ndarray_condition =\
-        any((not isinstance(x, np.ndarray) for x in
-            (means, standard_deviations)))
+    ndarray_condition = any(
+        (not isinstance(x, np.ndarray) for x in (means, standard_deviations))
+    )
     if ndarray_condition:
-        msg = '`means` and `standard_deviations` MUST be ndarrays.'
+        msg = "`means` and `standard_deviations` MUST be ndarrays."
     if means.ndim != 1 or standard_deviations.ndim != 1:
-        msg = '`means` and `standard_deviations` MUST be 1D.'
+        msg = "`means` and `standard_deviations` MUST be 1D."
     if means.size != standard_deviations.size:
-        msg = '`means` and `standard_deviations` MUST have equal lengths.'
+        msg = "`means` and `standard_deviations` MUST have equal lengths."
     if msg is not None:
         raise ValueError(msg)
 
@@ -136,19 +136,17 @@ def sample_from_factor_model(loadings_dist: DISTRIBUTION_TYPE,
     # Set the seed for reproducibility
     np.random.seed(seed)
     # Get samples of loadings, coefficients, and noise terms.
-    loadings_samples =\
-        loadings_dist.rvs((num_obs, num_factors, num_samples))
-    coef_samples =\
-        coef_dist.rvs((num_factors, num_predictors, num_samples))
-    noise_samples =\
-        noise_dist.rvs(size=(num_obs, num_predictors, num_samples))
+    loadings_samples = loadings_dist.rvs((num_obs, num_factors, num_samples))
+    coef_samples = coef_dist.rvs((num_factors, num_predictors, num_samples))
+    noise_samples = noise_dist.rvs(size=(num_obs, num_predictors, num_samples))
     # Combine the samples according to the probabilistic factor model
-    x_standardized_samples =\
-        (np.einsum('mnr,ndr->mdr', loadings_samples, coef_samples) +
-         noise_samples)
+    x_standardized_samples = (
+        np.einsum("mnr,ndr->mdr", loadings_samples, coef_samples)
+        + noise_samples
+    )
     # Get samples of X on the original scale of each variable
-    x_samples =\
-        (x_standardized_samples *
-         standard_deviations[None, :, None] +
-         means[None, :, None])
+    x_samples = (
+        x_standardized_samples * standard_deviations[None, :, None]
+        + means[None, :, None]
+    )
     return x_samples, loadings_samples

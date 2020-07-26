@@ -7,15 +7,15 @@ from __future__ import absolute_import
 from copy import deepcopy
 from numbers import Number
 
-import scipy.stats
-import numpy as np
-import seaborn as sbn
 import matplotlib.pyplot as plt
+import numpy as np
+import scipy.stats
+import seaborn as sbn
 
 from .plot_utils import _label_despine_save_and_show_plot
 
 # Set the plotting style
-sbn.set_style('darkgrid')
+sbn.set_style("darkgrid")
 
 
 def _calc_num_simulated_obs_meeting_a_condition(simulated_y, condition):
@@ -36,7 +36,7 @@ def _calc_num_simulated_obs_meeting_a_condition(simulated_y, condition):
         The number observations with `simulated_y == 1 and condition == True`.
     """
     if simulated_y.shape[0] != condition.shape[0]:
-        msg = 'simulated_y.shape[0] MUST EQUAL condition.shape[0]'
+        msg = "simulated_y.shape[0] MUST EQUAL condition.shape[0]"
         raise ValueError(msg)
     return simulated_y.T.dot(condition)
 
@@ -75,11 +75,7 @@ def _get_value_counts_categorical(df, column, alt_filter, ascending=False):
     return value_counts
 
 
-def _plot_predictive_counts(predictions,
-                            color,
-                            label,
-                            axis,
-                            alpha=0.5):
+def _plot_predictive_counts(predictions, color, label, axis, alpha=0.5):
     """
     Plot a histogram of the number of observations having a given range of
     predictions. If we have less than 100 unique predictions, use 1 bar for
@@ -127,32 +123,41 @@ def _plot_predictive_counts(predictions,
         bin_widths = 1
 
     # Plot the counts directly.
-    axis.bar(pred_edges, pred_counts, width=bin_widths, align='edge',
-             color=color, alpha=alpha, label=label)
+    axis.bar(
+        pred_edges,
+        pred_counts,
+        width=bin_widths,
+        align="edge",
+        color=color,
+        alpha=alpha,
+        label=label,
+    )
     return None
 
 
-def plot_discrete_scalars(df,
-                          prior_sim_y,
-                          post_sim_y,
-                          column,
-                          alt_filter,
-                          orig_choices,
-                          top_n=None,
-                          min_obs=None,
-                          prior_color=None,
-                          post_color=None,
-                          prior_label='Prior',
-                          post_label='Posterior',
-                          legend_loc='best',
-                          x_label='',
-                          filter_name='',
-                          title='',
-                          show=True,
-                          figsize=(5, 3),
-                          fontsize=12,
-                          output_file='',
-                          dpi=500):
+def plot_discrete_scalars(
+    df,
+    prior_sim_y,
+    post_sim_y,
+    column,
+    alt_filter,
+    orig_choices,
+    top_n=None,
+    min_obs=None,
+    prior_color=None,
+    post_color=None,
+    prior_label="Prior",
+    post_label="Posterior",
+    legend_loc="best",
+    x_label="",
+    filter_name="",
+    title="",
+    show=True,
+    figsize=(5, 3),
+    fontsize=12,
+    output_file="",
+    dpi=500,
+):
     """
     Plots the observed value versus the predictive distribution of the number
     of observations meeting some criteria (`alt_filter`), having `y == 1`, and
@@ -242,9 +247,6 @@ def plot_discrete_scalars(df,
         prior_color = sbn.color_palette()[0]
     if post_color is None:
         post_color = sbn.color_palette()[1]
-        
-    orig_output_file =\
-        deepcopy(output_file) if output_file is not None else None
 
     for num in np.sort(value_counts.index):
         num_condition = (df[column] == num).values
@@ -261,9 +263,9 @@ def plot_discrete_scalars(df,
 
         # Plot the prior predictions
         if prior_sim_y is not None:
-            prior_sim_values =\
-                _calc_num_simulated_obs_meeting_a_condition(
-                    prior_sim_y, current_condition)
+            prior_sim_values = _calc_num_simulated_obs_meeting_a_condition(
+                prior_sim_y, current_condition
+            )
 
             # Determine the fraction of samples <= observed
             prior_frac_below_obs = (prior_sim_values < obs_value).mean()
@@ -271,35 +273,38 @@ def plot_discrete_scalars(df,
 
             # Create handle for the plot
             prior_handle_1 = prior_label
-            prior_handle_2 = 'P({} samples < actual) = {:.2f}'
-            prior_handle_3 = 'P({} samples == actual) = {:.2f}'
-            prior_handle_list =\
-                [prior_handle_1,
-                 prior_handle_2.format(prior_label, prior_frac_below_obs),
-                 prior_handle_3.format(prior_label, prior_frac_equal_obs)]
-            prior_handle = '\n'.join(prior_handle_list)
+            prior_handle_2 = "P({} samples < actual) = {:.2f}"
+            prior_handle_3 = "P({} samples == actual) = {:.2f}"
+            prior_handle_list = [
+                prior_handle_1,
+                prior_handle_2.format(prior_label, prior_frac_below_obs),
+                prior_handle_3.format(prior_label, prior_frac_equal_obs),
+            ]
+            prior_handle = "\n".join(prior_handle_list)
 
             # Plot the prior predicted counts
             _plot_predictive_counts(
-                prior_sim_values, prior_color, prior_handle, ax)
+                prior_sim_values, prior_color, prior_handle, ax
+            )
 
         # Get and plot the posterior predictions.
-        post_sim_values =\
-            _calc_num_simulated_obs_meeting_a_condition(
-                post_sim_y, current_condition)
+        post_sim_values = _calc_num_simulated_obs_meeting_a_condition(
+            post_sim_y, current_condition
+        )
 
         post_frac_below_obs = (post_sim_values < obs_value).mean()
         post_frac_equal_obs = (post_sim_values == obs_value).mean()
 
         # Create the handle for the posterior samples
         post_handle_1 = post_label
-        post_handle_2 = 'P({} samples < actual) = {:.0%}'
-        post_handle_3 = 'P({} samples == actual) = {:.0%}'
-        post_handle_list =\
-            [post_handle_1,
-             post_handle_2.format(post_label, post_frac_below_obs),
-             post_handle_3.format(post_label, post_frac_equal_obs)]
-        post_handle = '\n'.join(post_handle_list)
+        post_handle_2 = "P({} samples < actual) = {:.0%}"
+        post_handle_3 = "P({} samples == actual) = {:.0%}"
+        post_handle_list = [
+            post_handle_1,
+            post_handle_2.format(post_label, post_frac_below_obs),
+            post_handle_3.format(post_label, post_frac_equal_obs),
+        ]
+        post_handle = "\n".join(post_handle_list)
 
         # Plot the posterior predicted counts
         _plot_predictive_counts(post_sim_values, post_color, post_handle, ax)
@@ -307,31 +312,48 @@ def plot_discrete_scalars(df,
         # Plot the observed count
         min_y, max_y = ax.get_ylim()
 
-        line_label = ('Observed = {:,.0f}')
-        ax.vlines(obs_value, min_y, max_y,
-                  linestyle='dashed', label=line_label.format(obs_value))
+        line_label = "Observed = {:,.0f}"
+        ax.vlines(
+            obs_value,
+            min_y,
+            max_y,
+            linestyle="dashed",
+            label=line_label.format(obs_value),
+        )
 
         # Create the legend
         ax.legend(loc=legend_loc, fontsize=fontsize)
 
         # Create an x-label.
-        if x_label == '':
-            value_label =\
-                ' == {:.2f}.' if isinstance(num, Number) else ' == {}.'
+        if x_label == "":
+            value_label = (
+                " == {:.2f}." if isinstance(num, Number) else " == {}."
+            )
             value_label = value_label.format(num)
-            current_x_label =\
-                ('Number of ' + filter_name + ' with ' + column + value_label)
+            current_x_label = (
+                "Number of " + filter_name + " with " + column + value_label
+            )
         else:
             current_x_label = deepcopy(x_label)
 
         # Take care of boilerplate plotting necessities
         title = title.format(num) if title is not None else title
         current_output_file = deepcopy(output_file)
-        current_output_file =\
-            (current_output_file.format(num) if output_file is not None
-             else output_file)
+        current_output_file = (
+            current_output_file.format(num)
+            if output_file is not None
+            else output_file
+        )
         _label_despine_save_and_show_plot(
-            x_label=current_x_label, y_label='Count', fig_and_ax=fig_and_ax,
-            fontsize=fontsize, y_rot=0, y_pad=40, title=title,
-            output_file=current_output_file, show=show, dpi=dpi)
+            x_label=current_x_label,
+            y_label="Count",
+            fig_and_ax=fig_and_ax,
+            fontsize=fontsize,
+            y_rot=0,
+            y_pad=40,
+            title=title,
+            output_file=current_output_file,
+            show=show,
+            dpi=dpi,
+        )
     return None

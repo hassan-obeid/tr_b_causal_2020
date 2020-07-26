@@ -11,7 +11,6 @@ import sys
 
 import numpy as np
 from scipy.stats import itemfreq
-
 from tqdm import tqdm, tqdm_notebook
 
 
@@ -25,7 +24,7 @@ def _is_kernel():
     in_kernel : bool
         True if one's code is in an ipython environment. False otherwise.
     """
-    return bool(any([x in sys.modules for x in ['ipykernel', 'IPython']]))
+    return bool(any([x in sys.modules for x in ["ipykernel", "IPython"]]))
 
 
 def progress(*args, **kwargs):
@@ -43,7 +42,7 @@ def progress(*args, **kwargs):
     if _is_kernel():
         try:
             return tqdm_notebook(*args, **kwargs)
-        except:
+        except:  # noqa: E722
             return tqdm(*args, **kwargs)
     return tqdm(*args, **kwargs)
 
@@ -58,11 +57,13 @@ def _prep_categorical_return(truth, description, verbose):
     return truth
 
 
-def is_categorical(vector,
-                   solo_threshold=0.1,
-                   group_threshold=0.5,
-                   group_num=10,
-                   verbose=False):
+def is_categorical(
+    vector,
+    solo_threshold=0.1,
+    group_threshold=0.5,
+    group_num=10,
+    verbose=False,
+):
     """
     Determines if a given vector of variables is categorical (or mixed
     categorical and continuous) or not.
@@ -123,8 +124,9 @@ def is_categorical(vector,
     # Get the count of each unique value in `vector`
     item_frequencies = itemfreq(vector)
     # Sort the item frequencies by the second column
-    item_frequencies =\
-        item_frequencies[np.argsort(item_frequencies[:, 1])[::-1], :]
+    item_frequencies = item_frequencies[
+        np.argsort(item_frequencies[:, 1])[::-1], :
+    ]
     # Get the percentage of `vector` made up by each unique value
     individual_percents = item_frequencies[:, 1] / num_observations
     # Get the cumulative density function of `vector`.
@@ -132,13 +134,13 @@ def is_categorical(vector,
     # Check for 'categorical' nature of `vector`
     if item_frequencies.shape[0] <= group_num:
         truth = True
-        description = 'categorical'
+        description = "categorical"
     elif cumulative_percents[group_num] >= group_threshold:
         truth = True
-        description = 'group'
+        description = "group"
     elif (individual_percents > solo_threshold).any():
         truth = True
-        description = 'solo'
+        description = "solo"
     else:
         truth = False
         description = None
@@ -160,17 +162,14 @@ def _simulate_wide_binary_choices(predictions, rseed=None):
         np.random.seed(rseed)
 
     # Generate uniform random variates
-    uniform_draws =\
-        np.random.uniform(size=predictions.shape)
+    uniform_draws = np.random.uniform(size=predictions.shape)
 
     # Determine which predictions led to 'successful' observations
     choice_vec[np.where(uniform_draws <= predictions)] = 1
     return choice_vec
 
 
-def _simulate_choices_for_1obs(obs_id,
-                               rows_per_obs,
-                               predicted_probs):
+def _simulate_choices_for_1obs(obs_id, rows_per_obs, predicted_probs):
     """
     Generates the chosen rows for each simulated choice situation for the given
     decision maker.
@@ -212,9 +211,9 @@ def _simulate_choices_for_1obs(obs_id,
 
     # Determine which alternative's 'bucket' the random value
     # might have fallen into.
-    possible_alts =\
-        (np.arange(1, obs_rows.size + 1)[:, None] *
-         (current_cdf >= uniform_draws[None, :]))
+    possible_alts = np.arange(1, obs_rows.size + 1)[:, None] * (
+        current_cdf >= uniform_draws[None, :]
+    )
     # Give a 'big' value to alternatives that are not chosen
     possible_alts[np.where(possible_alts == 0)] = obs_rows.size + 10
     # Figure out the exact rows/alternatives that were chosen
@@ -222,10 +221,9 @@ def _simulate_choices_for_1obs(obs_id,
     return chosen_rows
 
 
-def simulate_choice_vector(predicted_probs,
-                           observation_ids,
-                           wide_binary=False,
-                           rseed=None):
+def simulate_choice_vector(
+    predicted_probs, observation_ids, wide_binary=False, rseed=None
+):
     """
     Simulates choice outcomes based on the predicted probabilities of each
     alternative for each observation.
@@ -263,7 +261,7 @@ def simulate_choice_vector(predicted_probs,
     if predicted_probs.ndim == 1:
         predicted_probs = predicted_probs[:, None]
     elif predicted_probs.ndim > 2:
-        msg = 'predicted_probs should have 1 or 2 dimensions.'
+        msg = "predicted_probs should have 1 or 2 dimensions."
         raise ValueError(msg)
 
     # Make the wide-format binary simulations if necessary
@@ -288,10 +286,11 @@ def simulate_choice_vector(predicted_probs,
         np.random.seed(rseed)
 
     # Populate the array
-    for obs_id in progress(unique_obs.tolist(), desc='Simulating Choices'):
+    for obs_id in progress(unique_obs.tolist(), desc="Simulating Choices"):
         # Determine the exact rows/alternatives chosen in each situation
-        chosen_rows =\
-            _simulate_choices_for_1obs(obs_id, rows_per_obs, predicted_probs)
+        chosen_rows = _simulate_choices_for_1obs(
+            obs_id, rows_per_obs, predicted_probs
+        )
 
         # Store the simulated choice
         choice_vec[chosen_rows, col_idx] = 1
@@ -349,7 +348,7 @@ def compute_predictive_mse(simulated_y, probs):
         `simulated_y`. Will have one element for each column in `simulated_y`.
     """
     # Calculate the errors
-    square_errors = (simulated_y - probs[:, None])**2
+    square_errors = (simulated_y - probs[:, None]) ** 2
     # Calculate the mean square errors for those rows where simulated_y == 1
     num_y_eq_1 = simulated_y.sum(axis=0)
     mean_square_errors = (simulated_y * square_errors).sum(axis=0) / num_y_eq_1

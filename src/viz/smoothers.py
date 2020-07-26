@@ -7,8 +7,10 @@ continuous variable.
 import numpy as np
 
 # Use ExtRaTrees for continuously smoothed marginal model plots
-from sklearn.ensemble import (ExtraTreesClassifier,
-                              ExtraTreesRegressor)
+from sklearn.ensemble import (  # isort:skip
+    ExtraTreesClassifier,
+    ExtraTreesRegressor,
+)
 
 try:
     # in Python 3 range returns an iterator instead of list
@@ -39,17 +41,19 @@ def _determine_bin_obs(total, partitions):
     partitions_float = float(partitions)
     naive = int(total / partitions_float) * np.ones(partitions)
     correction = np.ones(partitions)
-    correction[total % partitions:] = 0
+    correction[total % partitions :] = 0
     return (naive + correction).astype(int)
 
 
-def _populate_bin_means_for_plots(x_vals,
-                                  y_vals,
-                                  obs_per_bin,
-                                  mean_x,
-                                  mean_y,
-                                  auxillary_y=None,
-                                  auxillary_mean=None):
+def _populate_bin_means_for_plots(
+    x_vals,
+    y_vals,
+    obs_per_bin,
+    mean_x,
+    mean_y,
+    auxillary_y=None,
+    auxillary_mean=None,
+):
     """
     Populate the mean per bin of predicted probabilities, observed outcomes,
     and simulated outcomes.
@@ -112,10 +116,9 @@ def _populate_bin_means_for_plots(x_vals,
     return mean_x, mean_y, auxillary_mean
 
 
-def _get_extra_smooth_xy(x, y,
-                         n_estimators=50,
-                         min_samples_leaf=10,
-                         random_state=None):
+def _get_extra_smooth_xy(
+    x, y, n_estimators=50, min_samples_leaf=10, random_state=None
+):
     """
     Creates an ensemble of extremely randomized trees that predict y given x,
     and returns the smoothed (i.e. predicted) y and original x.
@@ -145,24 +148,28 @@ def _get_extra_smooth_xy(x, y,
         the ensemble of extremely randomized trees.
     """
     if not isinstance(x, np.ndarray) or len(x.shape) != 1:
-        msg = 'x MUST be a 1D ndarray'
+        msg = "x MUST be a 1D ndarray"
         raise ValueError(msg)
     if not isinstance(y, np.ndarray) or len(y.shape) != 1:
-        msg = 'y MUST be a 1D ndarray'
+        msg = "y MUST be a 1D ndarray"
         raise ValueError(msg)
     # The if condition checks if we are dealing with continuous y vs discrete y
     if ((y < 1.0) & (y > 0)).any():
-        smoother = ExtraTreesRegressor(n_estimators=n_estimators,
-                                       min_samples_leaf=min_samples_leaf,
-                                       max_features=1,
-                                       random_state=random_state)
+        smoother = ExtraTreesRegressor(
+            n_estimators=n_estimators,
+            min_samples_leaf=min_samples_leaf,
+            max_features=1,
+            random_state=random_state,
+        )
         smoother.fit(x[:, None], y)
         smoothed_y = smoother.predict(x[:, None])
     else:
-        smoother = ExtraTreesClassifier(n_estimators=n_estimators,
-                                        min_samples_leaf=min_samples_leaf,
-                                        max_features=1,
-                                        random_state=random_state)
+        smoother = ExtraTreesClassifier(
+            n_estimators=n_estimators,
+            min_samples_leaf=min_samples_leaf,
+            max_features=1,
+            random_state=random_state,
+        )
         smoother.fit(x[:, None], y)
         # Note we use [:, 1] to get the predicted probabilities of y = 1
         smoothed_y = smoother.predict_proba(x[:, None])[:, 1]
@@ -176,6 +183,7 @@ class Smoother(object):
     output new x and y values that can be plotted to show the smoothed
     conditional expectation function, E[y | x].
     """
+
     def __init__(self):
         return None
 
@@ -238,9 +246,8 @@ class DiscreteSmoother(Smoother):
         Denotes the number of partitions to split one's data into for binning.
         Default == 10.
     """
-    def __init__(self,
-                 num_obs,
-                 partitions=10):
+
+    def __init__(self, num_obs, partitions=10):
         super(DiscreteSmoother, self).__init__()
         self.num_obs = num_obs
         self.partitions = partitions
@@ -272,11 +279,13 @@ class DiscreteSmoother(Smoother):
             Contains the smoothed values to be plotted, respectively, on the
             x-axis and y-axis to show the smoothed E[y | x].
         """
-        return _populate_bin_means_for_plots(X,
-                                             Y,
-                                             self.obs_per_partition,
-                                             self.mean_x_per_group,
-                                             self.mean_y_per_group)[:2]
+        return _populate_bin_means_for_plots(
+            X,
+            Y,
+            self.obs_per_partition,
+            self.mean_x_per_group,
+            self.mean_y_per_group,
+        )[:2]
 
 
 class ContinuousSmoother(Smoother):
@@ -301,10 +310,10 @@ class ContinuousSmoother(Smoother):
         Denotes the random seed to be used when constructing the ensemble of
         Extremely Randomized Trees. Default is None.
     """
-    def __init__(self,
-                 n_estimators=50,
-                 min_samples_leaf=10,
-                 random_state=None):
+
+    def __init__(
+        self, n_estimators=50, min_samples_leaf=10, random_state=None
+    ):
         super(ContinuousSmoother, self).__init__()
         self.n_estimators = n_estimators
         self.min_samples_leaf = min_samples_leaf
@@ -330,10 +339,13 @@ class ContinuousSmoother(Smoother):
             Contains the smoothed values to be plotted, respectively, on the
             x-axis and y-axis to show the smoothed E[y | x].
         """
-        return _get_extra_smooth_xy(X, Y,
-                                    n_estimators=self.n_estimators,
-                                    min_samples_leaf=self.min_samples_leaf,
-                                    random_state=self.random_state)
+        return _get_extra_smooth_xy(
+            X,
+            Y,
+            n_estimators=self.n_estimators,
+            min_samples_leaf=self.min_samples_leaf,
+            random_state=self.random_state,
+        )
 
 
 class SmoothPlotter(object):
@@ -348,12 +360,13 @@ class SmoothPlotter(object):
     ax : an instance of matplotlib.Axes.
         The axi on which the smooth is plotted.
     """
+
     def __init__(self, smoother, ax):
         self.ax = ax
         self.smoother = smoother
         return None
 
-    def plot(self, X, Y, label=None, color='#a6cee3', alpha=0.5, sort=False):
+    def plot(self, X, Y, label=None, color="#a6cee3", alpha=0.5, sort=False):
         """
         Plots a smooth estimate of the conditional expectation function E[y|x].
 

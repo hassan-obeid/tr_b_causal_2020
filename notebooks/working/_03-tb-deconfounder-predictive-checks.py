@@ -6,13 +6,12 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.4.0
+#       jupytext_version: 1.4.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
-
 # # Purpose
 #
 # The purpose of this notebook is to demonstrate prior and predictive checks of one's causal graphical model.
@@ -33,51 +32,49 @@
 #    2. Store the simulated and observed test statistics.
 # 3. Visualize the distribution of the simulated and observed test statistics.
 # 4. Produce a scalar summary of the distribution of simulated test statistics if desired.
-
 # ## Declare notebook parameters
-
 # +
 # Declare hyperparameters for testing
 NUM_PRIOR_SAMPLES = 100
 
 # Declare the columns to be used for testing
-x1_col = 'num_cars'
-x2_col = 'num_licensed_drivers'
-mode_id_col = 'mode_id'
+x1_col = "num_cars"
+x2_col = "num_licensed_drivers"
+mode_id_col = "mode_id"
 
 # Declare paths to data
-DATA_PATH =\
-    '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
+DATA_PATH = "../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
 # Note that these files are based on using the `confounder`
 # function from `Causal_Graph_Tim_Data.ipynb`, where the
 # confounder function replicates the PPCA model of Wang
 # and Blei (2018)
-PATH_TO_W_PARAMS = '../../data/processed/W_inferred_PPCA.csv'
-PATH_TO_Z_PARAMS = '../../data/processed/Z_inferred_PPCA.csv'
+PATH_TO_W_PARAMS = "../../data/processed/W_inferred_PPCA.csv"
+PATH_TO_Z_PARAMS = "../../data/processed/Z_inferred_PPCA.csv"
 # -
 
 # ## Execute needed imports
 
 # +
 # Built-in modules
-import sys
+import sys  # noqa: E402
 
 # Third-party modules
-import numpy as np
-import pandas as pd
-from scipy.stats import norm
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import seaborn as sbn  # noqa: E402
+from scipy.stats import norm  # noqa: E402
 
-import seaborn as sbn
-import matplotlib.pyplot as plt
 # %matplotlib inline
 
 # Local modules
-sys.path.insert(0, '../../')
-import src.viz.sim_cdf as sim_cdf
-import src.testing.observable_independence as oi
-import src.testing.latent_independence as li
-from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
-from src.utils import sample_from_factor_model
+sys.path.insert(0, "../../")
+import src.testing.latent_independence as li  # noqa: E402
+import src.testing.observable_independence as oi  # noqa: E402
+import src.viz.sim_cdf as sim_cdf  # noqa: E402
+from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY  # noqa: E402
+from src.utils import sample_from_factor_model  # noqa: E402
+
 # -
 
 # ## Show the motivating causal graph
@@ -94,24 +91,23 @@ causal_graph
 df = pd.read_csv(DATA_PATH)
 
 # Create a list of the variables in the drive alone utility
-drive_alone_variables =\
-    ['total_travel_distance',
-     'total_travel_cost',
-     'total_travel_time',
-     'num_cars',
-     'num_licensed_drivers'
-    ]
+drive_alone_variables = [
+    "total_travel_distance",
+    "total_travel_cost",
+    "total_travel_time",
+    "num_cars",
+    "num_licensed_drivers",
+]
 
 # Create a sub-dataframe with those variables
-drive_alone_df =\
-    df.loc[df['mode_id'] == 1, drive_alone_variables]
+drive_alone_df = df.loc[df["mode_id"] == 1, drive_alone_variables]
 
 # Get the means and standard deviations of those variables
 drive_alone_means = drive_alone_df.mean()
-drive_alone_means.name = 'mean'
+drive_alone_means.name = "mean"
 
 drive_alone_stds = drive_alone_df.std()
-drive_alone_stds.name = 'std'
+drive_alone_stds.name = "std"
 
 # Look at the computed means and standard deviations
 print(pd.DataFrame([drive_alone_means, drive_alone_stds]).T)
@@ -158,18 +154,17 @@ epsilon_dist_prior = norm(loc=0, scale=sigma_prior)
 num_drive_alone_obs = drive_alone_df.shape[0]
 
 # Get samples of x from the prior distribution factor model
-x_samples_prior, z_samples_prior =\
-    sample_from_factor_model(
-        loadings_dist=z_dist_prior,
-        coef_dist=w_dist_prior,
-        noise_dist=epsilon_dist_prior,
-        standard_deviations=drive_alone_stds.values,
-        means=drive_alone_means.values,
-        num_obs=num_drive_alone_obs,
-        num_samples=NUM_PRIOR_SAMPLES,
-        num_factors=1,
-        seed=721
-        )
+x_samples_prior, z_samples_prior = sample_from_factor_model(
+    loadings_dist=z_dist_prior,
+    coef_dist=w_dist_prior,
+    noise_dist=epsilon_dist_prior,
+    standard_deviations=drive_alone_stds.values,
+    means=drive_alone_means.values,
+    num_obs=num_drive_alone_obs,
+    num_samples=NUM_PRIOR_SAMPLES,
+    num_factors=1,
+    seed=721,
+)
 
 # Look at the dimensions of the prior predictive samples
 print(x_samples_prior.shape)
@@ -181,12 +176,11 @@ print(x_samples_prior.shape)
 # Choose a column of data to compare
 current_col = 0
 
-prior_sim_cdf =\
-    li.plot_simulated_vs_observed_cdf(
-        drive_alone_df.iloc[:, current_col].values,
-        x_samples_prior[:, current_col, :],
-        x_label=drive_alone_variables[current_col]
-        )
+prior_sim_cdf = li.plot_simulated_vs_observed_cdf(
+    drive_alone_df.iloc[:, current_col].values,
+    x_samples_prior[:, current_col, :],
+    x_label=drive_alone_variables[current_col],
+)
 # -
 
 # Based on the plot above, it's clear that the currently chosen prior is quite poor.
@@ -200,23 +194,22 @@ prior_sim_cdf =\
 # +
 # Collect the columns being used in the test and info about them.
 columns_for_test = [x1_col, x2_col]
-col_idxs_for_test =\
-    [drive_alone_variables.index(col) for col in columns_for_test]
+col_idxs_for_test = [
+    drive_alone_variables.index(col) for col in columns_for_test
+]
 
 # Get the observed values to be used for testing
 obs_sample = drive_alone_df.loc[:, columns_for_test].values
 
 # Get the prior predictive values for testing
-prior_samples_triplet =\
-    np.concatenate((x_samples_prior[:, col_idxs_for_test, :],
-                    z_samples_prior),
-                   axis=1)
+prior_samples_triplet = np.concatenate(
+    (x_samples_prior[:, col_idxs_for_test, :], z_samples_prior), axis=1
+)
 
 # Use the predictive, conditional independence test
-pval, sampled_pvals, obs_pvals =\
-    li.perform_visual_predictive_cit_test(
-        prior_samples_triplet,
-        obs_sample)
+pval, sampled_pvals, obs_pvals = li.perform_visual_predictive_cit_test(
+    prior_samples_triplet, obs_sample
+)
 # -
 
 print(obs_pvals)
@@ -231,12 +224,12 @@ print(obs_pvals)
 
 # ### Specify the posterior distribution
 
-# Load the parameters of the variational approximation to 
+# Load the parameters of the variational approximation to
 # the posterior distribution over W and Z
 w_post_params = pd.read_csv(PATH_TO_W_PARAMS, index_col=0)
 z_post_params = pd.read_csv(PATH_TO_Z_PARAMS, index_col=0)
 
-w_post_params['w_var_inferred'] = w_post_params['w_std_inferred']**2
+w_post_params["w_var_inferred"] = w_post_params["w_std_inferred"] ** 2
 w_post_params
 
 # ### Generate posterior predictive samples
@@ -245,31 +238,32 @@ w_post_params
 # Create the posterior distribution of coefficients
 # Note we need the arguments to have shape that can,
 # be broadcast to (num_factors, num_predictors, num_samples)
-w_dist_post =\
-    norm(loc=w_post_params['w_mean_inferred'].values[None, : , None],
-         scale=w_post_params['w_std_inferred'].values[None :, None])
+w_dist_post = norm(
+    loc=w_post_params["w_mean_inferred"].values[None, :, None],
+    scale=w_post_params["w_std_inferred"].values[None:, None],
+)
 
 # Create the posterior distribution of loadings
 # Note we need the arguments to have shape that can,
 # be broadcast to (num_obs, num_factors, num_samples)
-z_dist_post =\
-    norm(loc=z_post_params['z_mean_inferred'].values[:, None, None],
-         scale=z_post_params['z_std_inferred'].values[:, None, None])
+z_dist_post = norm(
+    loc=z_post_params["z_mean_inferred"].values[:, None, None],
+    scale=z_post_params["z_std_inferred"].values[:, None, None],
+)
 
 # Get posterior samples of X_standardized
-x_samples_post, z_samples_post =\
-    sample_from_factor_model(
-        loadings_dist=z_dist_post,
-        coef_dist=w_dist_post,
-        noise_dist=epsilon_dist_prior,
-        standard_deviations=drive_alone_stds.values,
-        means=drive_alone_means.values,
-        num_obs=num_drive_alone_obs,
-        num_samples=NUM_PRIOR_SAMPLES,
-        num_factors=1,
-        post=False,
-        seed=852
-        )
+x_samples_post, z_samples_post = sample_from_factor_model(
+    loadings_dist=z_dist_post,
+    coef_dist=w_dist_post,
+    noise_dist=epsilon_dist_prior,
+    standard_deviations=drive_alone_stds.values,
+    means=drive_alone_means.values,
+    num_obs=num_drive_alone_obs,
+    num_samples=NUM_PRIOR_SAMPLES,
+    num_factors=1,
+    post=False,
+    seed=852,
+)
 
 # Look at the dimensions of the prior predictive samples
 print(x_samples_post.shape)
@@ -281,23 +275,24 @@ print(x_samples_post.shape)
 # Choose a column of data to compare
 current_col = 0
 
-posterior_sim_cdf =\
-    li.plot_simulated_vs_observed_cdf(
-        drive_alone_df.iloc[:, current_col].values,
-        x_samples_post[:, current_col, :],
-        x_label=drive_alone_variables[current_col]
-        )
+posterior_sim_cdf = li.plot_simulated_vs_observed_cdf(
+    drive_alone_df.iloc[:, current_col].values,
+    x_samples_post[:, current_col, :],
+    x_label=drive_alone_variables[current_col],
+)
 
 # +
 # Compare the observed data with means from
 # the prior and posterior distributions.
-total_travel_dist_samples =\
-    pd.DataFrame({'total_travel_distance_prior':
-                      x_samples_prior[:, 0, :].mean(axis=1),
-                  'total_travel_distance_post':
-                      x_samples_post[:, 0, :].mean(axis=1),
-                  'total_travel_distance_obs':
-                      drive_alone_df['total_travel_distance'].values})
+total_travel_dist_samples = pd.DataFrame(
+    {
+        "total_travel_distance_prior": x_samples_prior[:, 0, :].mean(axis=1),
+        "total_travel_distance_post": x_samples_post[:, 0, :].mean(axis=1),
+        "total_travel_distance_obs": drive_alone_df[
+            "total_travel_distance"
+        ].values,
+    }
+)
 
 total_travel_dist_samples.describe()
 # -
@@ -311,16 +306,18 @@ total_travel_dist_samples.describe()
 
 # +
 # Get the posterior predictive values for the test
-posterior_samples_triplet =\
-    np.concatenate((x_samples_post[:, col_idxs_for_test, :],
-                    z_samples_post),
-                   axis=1)
+posterior_samples_triplet = np.concatenate(
+    (x_samples_post[:, col_idxs_for_test, :], z_samples_post), axis=1
+)
 
 # Test out the predictive conditional independence test
-post_pval, post_sampled_pvals, post_obs_pvals =\
-    li.perform_visual_predictive_cit_test(
-        posterior_samples_triplet,
-        obs_sample)
+(
+    post_pval,
+    post_sampled_pvals,
+    post_obs_pvals,
+) = li.perform_visual_predictive_cit_test(
+    posterior_samples_triplet, obs_sample
+)
 # -
 
 print(post_obs_pvals)
@@ -333,10 +330,13 @@ chosen_sim_idx = 50
 
 # Test the predictive C.I.T with a prior sample
 prior_sim_sample = x_samples_prior[:, col_idxs_for_test, chosen_sim_idx]
-prior_pval_sim, prior_sampled_pvals_sim, prior_obs_pvals_sim =\
-    li.perform_visual_predictive_cit_test(
-        prior_samples_triplet,
-        prior_sim_sample)
+(
+    prior_pval_sim,
+    prior_sampled_pvals_sim,
+    prior_obs_pvals_sim,
+) = li.perform_visual_predictive_cit_test(
+    prior_samples_triplet, prior_sim_sample
+)
 # -
 
 prior_sampled_pvals_sim
@@ -345,10 +345,13 @@ prior_obs_pvals_sim
 
 # Test the predictive C.I.T with a posterior sample
 post_sim_sample = x_samples_post[:, col_idxs_for_test, chosen_sim_idx]
-post_pval_sim, post_sampled_pvals_sim, post_obs_pvals_sim =\
-    li.perform_visual_predictive_cit_test(
-        posterior_samples_triplet,
-        post_sim_sample)
+(
+    post_pval_sim,
+    post_sampled_pvals_sim,
+    post_obs_pvals_sim,
+) = li.perform_visual_predictive_cit_test(
+    posterior_samples_triplet, post_sim_sample
+)
 
 post_sampled_pvals_sim
 
