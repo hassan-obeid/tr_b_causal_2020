@@ -6,13 +6,13 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.4.0
+#       jupytext_version: 1.4.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
-
+# +
 # # Purpose
 # The purpose of this notebook is to manually execute the PC Algorithm (Section 5.4.2) of
 # > Spirtes, P., Glymour, C., & Scheines, R. (1993). Causation, prediction, and search.
@@ -21,11 +21,11 @@
 #
 # The algorithm is given as follows (p.117):
 # 1. Form the complete undirected graph C on the vertex set V.
-# 2. n = 0.  
-#    - repeat  
-#        - repeat  
-#           - Select an ordered pair of variables X and Y that are adjacent in C such that Adjacencies(C,X)\\{Y} has cardinality greater than or equal to n, and a subset S of Adjacencies(C,X)\\{Y} of cardinality n, and if X and Y are d-separated given S, delete edge X - Y from C and record S in Sepset(X,Y) and Sepset(Y,X);  
-#        - until all ordered pairs of adjacent variables X and Y such that Adjacencies(C,X)\\{Y} has cardinality greater than or equal to n and all subsets S of Adjacencies(C,X)\\{Y} of cardinality n have been tested for d-separation;  
+# 2. n = 0.
+#    - repeat
+#        - repeat
+#           - Select an ordered pair of variables X and Y that are adjacent in C such that Adjacencies(C,X)\\{Y} has cardinality greater than or equal to n, and a subset S of Adjacencies(C,X)\\{Y} of cardinality n, and if X and Y are d-separated given S, delete edge X - Y from C and record S in Sepset(X,Y) and Sepset(Y,X);
+#        - until all ordered pairs of adjacent variables X and Y such that Adjacencies(C,X)\\{Y} has cardinality greater than or equal to n and all subsets S of Adjacencies(C,X)\\{Y} of cardinality n have been tested for d-separation;
 #    - n = n + 1;
 #    - until for each ordered pair of adjacent vertices X, Y, Adjacencies(C,X)\\{Y} is of cardinality less than n.
 # 3. For each triple of vertices X, Y, Z such that the pair X, Y and the pair Y, Z are each adjacent in C but the pair X , Z are not adjacent in C, orient X - Y - Z as X -> Y <- Z if and only if Y is not in Sepset(X ,Z).
@@ -37,28 +37,27 @@
 #
 # These steps will be informally and pragmatically carried out below.
 #
-
 # +
 # Declare paths to data
-DATA_PATH =\
-    '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
+DATA_PATH = "../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
 
 # Note the columns of interest for this notebook
-MODE_ID_COLUMN = 'mode_id'
-OBS_ID_COLUMN = 'observation_id'
+MODE_ID_COLUMN = "mode_id"
+OBS_ID_COLUMN = "observation_id"
 
-TIME_COLUMN = 'total_travel_time'
-COST_COLUMN = 'total_travel_cost'
-DISTANCE_COLUMN = 'total_travel_distance'
-LICENSE_COLUMN = 'num_licensed_drivers'
-NUM_AUTOS_COLUMN = 'num_cars'
+TIME_COLUMN = "total_travel_time"
+COST_COLUMN = "total_travel_cost"
+DISTANCE_COLUMN = "total_travel_distance"
+LICENSE_COLUMN = "num_licensed_drivers"
+NUM_AUTOS_COLUMN = "num_cars"
 
-UTILITY_COLUMNS =\
-    [TIME_COLUMN,
-     COST_COLUMN,
-     DISTANCE_COLUMN,
-     LICENSE_COLUMN,
-     NUM_AUTOS_COLUMN]
+UTILITY_COLUMNS = [
+    TIME_COLUMN,
+    COST_COLUMN,
+    DISTANCE_COLUMN,
+    LICENSE_COLUMN,
+    NUM_AUTOS_COLUMN,
+]
 
 # Note the travel mode of intersest for this notebook
 DRIVE_ALONE_ID = 1
@@ -69,40 +68,42 @@ NUM_PERMUTATIONS = 100
 
 # Choose a color to represent reference /
 # permutation-based test statistics
-PERMUTED_COLOR = '#a6bddb'
+PERMUTED_COLOR = "#a6bddb"
 
 # +
 # Built-in modules
-import sys
-import itertools
-from typing import Optional, Tuple
+import itertools  # noqa: E402 isort:skip
+import sys  # noqa: E402 isort:skip
+from typing import Optional, Tuple  # noqa: E402 isort:skip
 
 # Third party modules
-import graphviz
-import numpy as np
-import pandas as pd
+import graphviz  # noqa: E402 isort:skip
+import numpy as np  # noqa: E402 isort:skip
+import pandas as pd  # noqa: E402 isort:skip
 
 # Local modules
-sys.path.insert(0, '../../')
-import src.testing.observable_independence as oi
+# noreorder
+sys.path.insert(0, "../../")
+import src.testing.observable_independence as oi  # noqa: E402
+from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY  # noqa: E402
 
-from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
 
 # +
 # Load the raw data
 df = pd.read_csv(DATA_PATH)
 
 # Look at the data being used in this notebook
-print(df.loc[df[MODE_ID_COLUMN] == DRIVE_ALONE_ID,
-             UTILITY_COLUMNS + [OBS_ID_COLUMN]]
-        .head(5)
-        .T)
+print(
+    df.loc[
+        df[MODE_ID_COLUMN] == DRIVE_ALONE_ID, UTILITY_COLUMNS + [OBS_ID_COLUMN]
+    ]
+    .head(5)
+    .T
+)
 
 # Create a dataframe with the variables posited
 # to make up the drive-alone utility
-drive_alone_df =\
-    df.loc[df[MODE_ID_COLUMN] == DRIVE_ALONE_ID,
-           UTILITY_COLUMNS]
+drive_alone_df = df.loc[df[MODE_ID_COLUMN] == DRIVE_ALONE_ID, UTILITY_COLUMNS]
 
 # Figure out how many observations we have with
 # the drive alone mode being available
@@ -118,17 +119,17 @@ num_drive_alone_obs = drive_alone_df.shape[0]
 # ## Step 1: construct the fully connected graph
 
 # +
-step_1_graph = graphviz.Graph('step_1')
+step_1_graph = graphviz.Graph("step_1")
 
 # Add all nodes to the graph
-step_1_graph.node('T', TIME_COLUMN)
-step_1_graph.node('C', COST_COLUMN)
-step_1_graph.node('D', DISTANCE_COLUMN)
-step_1_graph.node('L', LICENSE_COLUMN)
-step_1_graph.node('A', NUM_AUTOS_COLUMN)
+step_1_graph.node("T", TIME_COLUMN)
+step_1_graph.node("C", COST_COLUMN)
+step_1_graph.node("D", DISTANCE_COLUMN)
+step_1_graph.node("L", LICENSE_COLUMN)
+step_1_graph.node("A", NUM_AUTOS_COLUMN)
 
 # Create a fully connected, undirected graph
-node_aliases = ['T', 'C', 'D', 'L', 'A']
+node_aliases = ["T", "C", "D", "L", "A"]
 step_1_graph.edges(list(itertools.combinations(node_aliases, 2)))
 
 # Display the graph
@@ -148,14 +149,15 @@ np.random.seed(938)
 for col_1, col_2 in col_pairs:
     col_1_array = drive_alone_df[col_1].values
     col_2_array = drive_alone_df[col_2].values
-    
-    print('{} vs {}:'.format(col_1, col_2))
+
+    print("{} vs {}:".format(col_1, col_2))
     oi.visual_permutation_test(
         col_1_array,
         col_2_array,
         z_array=None,
         num_permutations=NUM_PERMUTATIONS,
-        permutation_color=PERMUTED_COLOR)
+        permutation_color=PERMUTED_COLOR,
+    )
 # -
 
 # From the results above, the joint distributions of the following variable pairs merit further investigation for marginal independence:
@@ -179,19 +181,19 @@ for col_1, col_2 in col_pairs:
 # Remove the edges given by the pairs of variables
 # that passed the marginal independence tests.
 ####
-step_3_graph = graphviz.Graph('step_3')
+step_3_graph = graphviz.Graph("step_3")
 
 # Add all nodes to the graph
-step_3_graph.node('T', TIME_COLUMN)
-step_3_graph.node('C', COST_COLUMN)
-step_3_graph.node('D', DISTANCE_COLUMN)
-step_3_graph.node('L', LICENSE_COLUMN)
-step_3_graph.node('A', NUM_AUTOS_COLUMN)
+step_3_graph.node("T", TIME_COLUMN)
+step_3_graph.node("C", COST_COLUMN)
+step_3_graph.node("D", DISTANCE_COLUMN)
+step_3_graph.node("L", LICENSE_COLUMN)
+step_3_graph.node("A", NUM_AUTOS_COLUMN)
 
 # Create a fully connected, undirected graph
-node_aliases = ['T', 'C', 'D', 'A']
+node_aliases = ["T", "C", "D", "A"]
 step_3_graph.edges(list(itertools.combinations(node_aliases, 2)))
-step_3_graph.edge('L', 'A')
+step_3_graph.edge("L", "A")
 
 # Display the graph
 step_3_graph
@@ -207,14 +209,15 @@ for col_1, col_2, col_3 in triplets:
     col_1_array = drive_alone_df[col_1].values
     col_2_array = drive_alone_df[col_2].values
     col_3_array = drive_alone_df[col_3].values
-    
-    print('{} indep {} given {}:'.format(col_1, col_2, col_3))
+
+    print("{} indep {} given {}:".format(col_1, col_2, col_3))
     oi.visual_permutation_test(
         col_1_array,
         col_2_array,
         z_array=col_3_array,
         num_permutations=NUM_PERMUTATIONS,
-        permutation_color=PERMUTED_COLOR)
+        permutation_color=PERMUTED_COLOR,
+    )
 
 # ## Findings
 # Based on the conditional independence tests, I should investigate the joint distributions between:
@@ -238,21 +241,25 @@ for col_1, col_2, col_3 in triplets:
 # Remove the edges given by the pairs of variables that
 # passed the conditional independence tests.
 ####
-step_5_graph = graphviz.Graph('step_5')
+step_5_graph = graphviz.Graph("step_5")
 
 # Add all nodes to the graph
-step_5_graph.node('T', TIME_COLUMN)
-step_5_graph.node('C', COST_COLUMN)
-step_5_graph.node('D', DISTANCE_COLUMN)
-step_5_graph.node('L', LICENSE_COLUMN)
-step_5_graph.node('A', NUM_AUTOS_COLUMN)
+step_5_graph.node("T", TIME_COLUMN)
+step_5_graph.node("C", COST_COLUMN)
+step_5_graph.node("D", DISTANCE_COLUMN)
+step_5_graph.node("L", LICENSE_COLUMN)
+step_5_graph.node("A", NUM_AUTOS_COLUMN)
 
 # Create an undirected graph respecting the removed edges
-node_aliases = ['T', 'C', 'D', ]
+node_aliases = [
+    "T",
+    "C",
+    "D",
+]
 step_5_graph.edges(list(itertools.combinations(node_aliases, 2)))
-step_5_graph.edge('L', 'A')
-step_5_graph.edge('C', 'A')
-step_5_graph.edge('D', 'A')
+step_5_graph.edge("L", "A")
+step_5_graph.edge("C", "A")
+step_5_graph.edge("D", "A")
 
 # Display the graph
 step_5_graph
@@ -263,13 +270,15 @@ step_5_graph
 # ## Step 6: Test all "2nd-order" interactions.
 # In other look for conditional independencies once controlling for two variables.
 
+
 def computed_vs_obs_r2_order_2(
     x1_array: np.ndarray,
     x2_array: np.ndarray,
-    z_array: Optional[np.ndarray]=None,
-    seed: Optional[int]=None,
-    num_permutations: int=100,
-    progress: bool=True) -> Tuple[float, np.ndarray]:
+    z_array: Optional[np.ndarray] = None,
+    seed: Optional[int] = None,
+    num_permutations: int = 100,
+    progress: bool = True,
+) -> Tuple[float, np.ndarray]:
     """
     Using sklearn's default LinearRegression regressor to predict `x1_array`
     given `x2_array` (and optionally, `z_array`), this function computes
@@ -349,10 +358,10 @@ def computed_vs_obs_r2_order_2(
         # Get the current combined predictors
         current_predictors = create_predictors(current_x2)
         # Fit a new model and store the current expectation
-        current_regressor =\
-            oi._make_regressor(current_predictors, x1_array)
-        permuted_expectations[:, i] =\
-            current_regressor.predict(current_predictors)
+        current_regressor = oi._make_regressor(current_predictors, x1_array)
+        permuted_expectations[:, i] = current_regressor.predict(
+            current_predictors
+        )
         permuted_r2[i] = oi.r2_score(x1_array, permuted_expectations[:, i])
     return obs_r2, permuted_r2
 
@@ -363,8 +372,9 @@ cost_array = drive_alone_df[COST_COLUMN].values
 num_car_array = drive_alone_df[NUM_AUTOS_COLUMN].values
 test_z_array = drive_alone_df[[TIME_COLUMN, DISTANCE_COLUMN]].values
 
-test_obs_r2, test_permuted_r2 =\
-    computed_vs_obs_r2_order_2(cost_array, num_car_array, test_z_array)
+test_obs_r2, test_permuted_r2 = computed_vs_obs_r2_order_2(
+    cost_array, num_car_array, test_z_array
+)
 
 oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 
@@ -374,8 +384,9 @@ cost_array = drive_alone_df[COST_COLUMN].values
 time_array = drive_alone_df[TIME_COLUMN].values
 test_z_array = drive_alone_df[[NUM_AUTOS_COLUMN, DISTANCE_COLUMN]].values
 
-test_obs_r2, test_permuted_r2 =\
-    computed_vs_obs_r2_order_2(cost_array, time_array, test_z_array)
+test_obs_r2, test_permuted_r2 = computed_vs_obs_r2_order_2(
+    cost_array, time_array, test_z_array
+)
 
 oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 
@@ -385,8 +396,9 @@ cost_array = drive_alone_df[COST_COLUMN].values
 distance_array = drive_alone_df[DISTANCE_COLUMN].values
 test_z_array = drive_alone_df[[NUM_AUTOS_COLUMN, TIME_COLUMN]].values
 
-test_obs_r2, test_permuted_r2 =\
-    computed_vs_obs_r2_order_2(cost_array, distance_array, test_z_array)
+test_obs_r2, test_permuted_r2 = computed_vs_obs_r2_order_2(
+    cost_array, distance_array, test_z_array
+)
 
 oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 
@@ -396,8 +408,9 @@ distance_array = drive_alone_df[DISTANCE_COLUMN].values
 num_cars_array = drive_alone_df[NUM_AUTOS_COLUMN].values
 test_z_array = drive_alone_df[[TIME_COLUMN, COST_COLUMN]].values
 
-test_obs_r2, test_permuted_r2 =\
-    computed_vs_obs_r2_order_2(distance_array, num_cars_array, test_z_array)
+test_obs_r2, test_permuted_r2 = computed_vs_obs_r2_order_2(
+    distance_array, num_cars_array, test_z_array
+)
 
 oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 
@@ -407,8 +420,9 @@ distance_array = drive_alone_df[DISTANCE_COLUMN].values
 time_array = drive_alone_df[TIME_COLUMN].values
 test_z_array = drive_alone_df[[NUM_AUTOS_COLUMN, COST_COLUMN]].values
 
-test_obs_r2, test_permuted_r2 =\
-    computed_vs_obs_r2_order_2(distance_array, time_array, test_z_array)
+test_obs_r2, test_permuted_r2 = computed_vs_obs_r2_order_2(
+    distance_array, time_array, test_z_array
+)
 
 oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 
@@ -418,8 +432,9 @@ cost_array = drive_alone_df[COST_COLUMN].values
 num_car_array = drive_alone_df[NUM_AUTOS_COLUMN].values
 test_z_array = drive_alone_df[[TIME_COLUMN, DISTANCE_COLUMN]].values
 
-test_obs_r2, test_permuted_r2 =\
-    computed_vs_obs_r2_order_2(num_car_array, cost_array, test_z_array)
+test_obs_r2, test_permuted_r2 = computed_vs_obs_r2_order_2(
+    num_car_array, cost_array, test_z_array
+)
 
 oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 # -
@@ -435,20 +450,24 @@ oi.visualize_permutation_results(test_obs_r2, test_permuted_r2)
 # +
 # Remove the edges given by the pairs of variables that
 # passed the 2nd order conditional independence tests.
-step_7_graph = graphviz.Graph('step_7')
+step_7_graph = graphviz.Graph("step_7")
 
 # Add all nodes to the graph
-step_7_graph.node('T', TIME_COLUMN)
-step_7_graph.node('C', COST_COLUMN)
-step_7_graph.node('D', DISTANCE_COLUMN)
-step_7_graph.node('L', LICENSE_COLUMN)
-step_7_graph.node('A', NUM_AUTOS_COLUMN)
+step_7_graph.node("T", TIME_COLUMN)
+step_7_graph.node("C", COST_COLUMN)
+step_7_graph.node("D", DISTANCE_COLUMN)
+step_7_graph.node("L", LICENSE_COLUMN)
+step_7_graph.node("A", NUM_AUTOS_COLUMN)
 
 # Add edges to the graph
-node_aliases = ['T', 'C', 'D', ]
+node_aliases = [
+    "T",
+    "C",
+    "D",
+]
 step_7_graph.edges(list(itertools.combinations(node_aliases, 2)))
-step_7_graph.edge('L', 'A')
-step_7_graph.edge('D', 'A')
+step_7_graph.edge("L", "A")
+step_7_graph.edge("D", "A")
 
 # Display the graph
 step_7_graph
@@ -472,21 +491,21 @@ step_7_graph
 # Remove the edges given by the pairs of variables that
 # passed the 2nd order conditional independence tests.
 ####
-step_8_graph = graphviz.Digraph('step_8')
+step_8_graph = graphviz.Digraph("step_8")
 
 # Add all nodes to the graph
-step_8_graph.node('T', TIME_COLUMN)
-step_8_graph.node('C', COST_COLUMN)
-step_8_graph.node('D', DISTANCE_COLUMN)
-step_8_graph.node('L', LICENSE_COLUMN)
-step_8_graph.node('A', NUM_AUTOS_COLUMN)
+step_8_graph.node("T", TIME_COLUMN)
+step_8_graph.node("C", COST_COLUMN)
+step_8_graph.node("D", DISTANCE_COLUMN)
+step_8_graph.node("L", LICENSE_COLUMN)
+step_8_graph.node("A", NUM_AUTOS_COLUMN)
 
 # Add edges to the graph
-step_8_graph.edge('L', 'A')
-step_8_graph.edge('D', 'A')
-step_8_graph.edge('T', 'D', dir='none')
-step_8_graph.edge('C', 'D', dir='none')
-step_8_graph.edge('C', 'T', dir='none')
+step_8_graph.edge("L", "A")
+step_8_graph.edge("D", "A")
+step_8_graph.edge("T", "D", dir="none")
+step_8_graph.edge("C", "D", dir="none")
+step_8_graph.edge("C", "T", dir="none")
 
 # Display the graph
 step_8_graph
@@ -508,21 +527,21 @@ step_8_graph
 # +
 # Remove the edges given by the pairs of variables that
 # passed the 2nd order conditional independence tests.
-step_9_graph = graphviz.Digraph('step_9')
+step_9_graph = graphviz.Digraph("step_9")
 
 # Add all nodes to the graph
-step_9_graph.node('T', TIME_COLUMN)
-step_9_graph.node('C', COST_COLUMN)
-step_9_graph.node('D', DISTANCE_COLUMN)
-step_9_graph.node('L', LICENSE_COLUMN)
-step_9_graph.node('A', NUM_AUTOS_COLUMN)
+step_9_graph.node("T", TIME_COLUMN)
+step_9_graph.node("C", COST_COLUMN)
+step_9_graph.node("D", DISTANCE_COLUMN)
+step_9_graph.node("L", LICENSE_COLUMN)
+step_9_graph.node("A", NUM_AUTOS_COLUMN)
 
 # Add edges to the graph
-step_9_graph.edge('L', 'A')
-step_9_graph.edge('D', 'A')
-step_9_graph.edge('D', 'T')
-step_9_graph.edge('D', 'C')
-step_9_graph.edge('C', 'T', dir='none')
+step_9_graph.edge("L", "A")
+step_9_graph.edge("D", "A")
+step_9_graph.edge("D", "T")
+step_9_graph.edge("D", "C")
+step_9_graph.edge("C", "T", dir="none")
 
 # Display the graph
 step_9_graph
