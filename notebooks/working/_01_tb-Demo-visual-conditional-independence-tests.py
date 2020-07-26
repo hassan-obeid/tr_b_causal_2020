@@ -6,13 +6,13 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.4.0
+#       jupytext_version: 1.4.2
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
-
+# +
 # # Purpose
 # The point of this notebook is to demonstrate how to perform permutation-based, visual, conditional independence tests.
 #
@@ -30,47 +30,45 @@
 #
 # In other words, one's ability predict to predict $X_1$ should not depend on whether one uses the original $X_2$ or the permuted $X_2$, as long as one conditions on $Z$ when predicting $X_1$.
 # This invariance will be tested by using a simple predictive model, linear regression, and comparing $r^2$ as a measure of predictive ability when using $Z$ and the original $X_2$ versus $r^2$ when using $Z$ and the permuted $X_2$.
-
 # +
 # Declare hyperparameters for testing
 MIN_SAMPLES_LEAF = 40
 NUM_PERMUTATIONS = 100
 
 # Declare the columns to be used for testing
-x1_col = 'total_travel_time'
-x2_col = 'total_travel_cost'
-z_col = 'total_travel_distance'
-mode_id_col = 'mode_id'
+x1_col = "total_travel_time"
+x2_col = "total_travel_cost"
+z_col = "total_travel_distance"
+mode_id_col = "mode_id"
 
 # Set the colors for plotting
-permuted_color = '#a6bddb'
+permuted_color = "#a6bddb"
 
 # Declare paths to data
-DATA_PATH =\
-    '../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv'
+DATA_PATH = "../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
 
 # +
-import sys
+import sys  # noqa: E402
 
-import numpy as np
-import pandas as pd
-from scipy.stats import multinomial
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import seaborn as sbn  # noqa: E402
+from scipy.stats import multinomial  # noqa: E402
+from tqdm.notebook import tqdm  # noqa: E402
 
-import seaborn as sbn
-import matplotlib.pyplot as plt
 # %matplotlib inline
 
-from tqdm.notebook import tqdm
+sys.path.insert(0, "../../src/")
+import testing.observable_independence as oi  # noqa: E402
 
-sys.path.insert(0, '../../src/')
-import testing.observable_independence as oi
 # -
 
 # Load the raw data
 df = pd.read_csv(DATA_PATH)
 
 # +
-title_str = '{} vs {}, \nconditional on {}\n'
+title_str = "{} vs {}, \nconditional on {}\n"
 print(title_str.format(x1_col, x2_col, z_col))
 
 drive_alone_filter = df[mode_id_col] == 1
@@ -79,13 +77,16 @@ cost_array = df.loc[drive_alone_filter, x2_col].values
 distance_array = df.loc[drive_alone_filter, z_col].values
 
 oi.visual_permutation_test(
-    time_array, cost_array, distance_array,
+    time_array,
+    cost_array,
+    distance_array,
     num_permutations=NUM_PERMUTATIONS,
-    permutation_color=permuted_color)
+    permutation_color=permuted_color,
+)
 
 # +
-new_x1_col = 'total_travel_cost'
-new_x2_col = 'cross_bay'
+new_x1_col = "total_travel_cost"
+new_x2_col = "cross_bay"
 
 drive_alone_filter = df[mode_id_col] == 1
 cost_array = df.loc[drive_alone_filter, new_x1_col].values
@@ -93,13 +94,16 @@ cross_bay_array = df.loc[drive_alone_filter, new_x2_col].values
 distance_array = df.loc[drive_alone_filter, z_col].values
 
 
-title_str = '{} vs {}, \nconditional on {}\n'
+title_str = "{} vs {}, \nconditional on {}\n"
 print(title_str.format(new_x1_col, new_x2_col, z_col))
 
 oi.visual_permutation_test(
-    cost_array, cross_bay_array, distance_array,
+    cost_array,
+    cross_bay_array,
+    distance_array,
     num_permutations=NUM_PERMUTATIONS,
-    permutation_color=permuted_color)
+    permutation_color=permuted_color,
+)
 # -
 
 # ## Test `visual_permutation_test`
@@ -131,18 +135,18 @@ for i in tqdm(range(NUM_TEST_SIM)):
     current_close = True if i != 0 else False
 
     # Carry out the permutation test
-    current_p =\
-        oi.visual_permutation_test(
-             sim_x1,
-             sim_x2,
-             sim_z,
-             num_permutations=NUM_PERMUTATIONS,
-             seed=None,
-             progress=False,
-             verbose=False,
-             permutation_color=permuted_color,
-             show=False,
-             close=current_close)
+    current_p = oi.visual_permutation_test(
+        sim_x1,
+        sim_x2,
+        sim_z,
+        num_permutations=NUM_PERMUTATIONS,
+        seed=None,
+        progress=False,
+        verbose=False,
+        permutation_color=permuted_color,
+        show=False,
+        close=current_close,
+    )
     # Store the resulting p-values
     test_p_vals[i] = current_p
 # -
@@ -163,37 +167,41 @@ null_hist_lower_bound = np.percentile(null_hist_samples, 5, axis=0)
 fig, ax = plt.subplots(figsize=(10, 6))
 
 plot_categories = [0.05 + 0.1 * x for x in range(10)]
-ax.fill_between(plot_categories,
-                null_hist_upper_bound,
-                null_hist_lower_bound,
-                color=permuted_color,
-                label='Null 95% Distribution',
-                alpha=0.5,
-                zorder=2)
+ax.fill_between(
+    plot_categories,
+    null_hist_upper_bound,
+    null_hist_lower_bound,
+    color=permuted_color,
+    label="Null 95% Distribution",
+    alpha=0.5,
+    zorder=2,
+)
 
-ax.hlines(null_hist_mean, 0, 1, label='Null Mean')
+ax.hlines(null_hist_mean, 0, 1, label="Null Mean")
 
-ax.hist(test_p_vals, bins=10, label='Observed', zorder=0)
+ax.hist(test_p_vals, bins=10, label="Observed", zorder=0)
 
 ax.scatter(
     plot_categories,
     null_hist_upper_bound,
-    label='Null 95% Upper Bound',
+    label="Null 95% Upper Bound",
     color=permuted_color,
-    marker='+',
-    zorder=1)
+    marker="+",
+    zorder=1,
+)
 
 ax.scatter(
     plot_categories,
     null_hist_lower_bound,
-    label='Null 5% Lower Bound',
+    label="Null 5% Lower Bound",
     color=permuted_color,
-    marker='*',
-    zorder=1)
+    marker="*",
+    zorder=1,
+)
 
 ax.legend(loc=(1.05, 0.75))
-ax.set_xlabel('p-values', fontsize=13)
-ax.set_ylabel('Num Observations', rotation=0, labelpad=70, fontsize=13)
+ax.set_xlabel("p-values", fontsize=13)
+ax.set_ylabel("Num Observations", rotation=0, labelpad=70, fontsize=13)
 
 sbn.despine()
 fig.show()
@@ -204,12 +212,12 @@ fig.show()
 # +
 # Figure out the number of p-values per bin
 bin_edges = [0.1 * x for x in range(11)]
-test_p_values_per_bin =\
-    np.histogram(test_p_vals, bins=bin_edges)[0]
+test_p_values_per_bin = np.histogram(test_p_vals, bins=bin_edges)[0]
 
-num_p_vals_outside_expectation =\
-    ((test_p_values_per_bin > null_hist_upper_bound) +
-     (test_p_values_per_bin < null_hist_lower_bound)).sum()
+num_p_vals_outside_expectation = (
+    (test_p_values_per_bin > null_hist_upper_bound)
+    + (test_p_values_per_bin < null_hist_lower_bound)
+).sum()
 
 # Given 10 bins, each representing a 95% chance of containing the
 # observed number of test_p_vals under the null distribution,
