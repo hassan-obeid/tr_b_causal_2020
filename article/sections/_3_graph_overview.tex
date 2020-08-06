@@ -18,4 +18,21 @@ Such intra-covariate relationships are important for estimating the causal effec
 Another area of relation with prior choice modelling literature is in Integrated Choice and Latent Variable (ICLV) models.
 These models make inference on one or more latent variables, alongside the other parameters in one's model.
 An example of such ICLV models is in Figure \ref{}, based on Figure \_bla\_ of Walker and Ben-Akiva \cite.
-As with the causal diagrams for the RUM models, these causal diagrams are another set of graphical models that depict a certain set of structural modeling assumptions, a set of assumptions about the data generating process.
+As with the causal graphs of RUM models, ICLV causal graphs depict a particular set of structural modeling assumptions about the data generating process.
+
+In both RUM and the ICLV diagrams, the main distinction between the causal graphs of Pearl \citet{article_name} and the causal diagrams in econometrics are two two-fold.
+First, RUM and the ICLV causal graphs ignore relations between the explanatory variables.
+Typically, choice modelling causal graphs depict all explanatory variables together as if they are in independently generated groups that then affect one's utilities and choices.
+In the language used by a large group of causal inference scholars, econometric causal diagrams ignore the treatment assignment mechanism.
+
+Secondly, causal graphs in choice modelling papers are purely didactic.
+They convey how choice modellers perceive the world and the choice generation process.
+However, they are seldom treated as a fully fledged model that has empirical implications that merit verification.
+In this sense, choice modellers ignore the efforts from causal inference researchers in computer science.
+There, researchers spend much effort testing their causal graphs to see if the data supports their graphs implications.
+
+In conclusion, choice modellers have long made use of causal graphs in select contexts to convey causal assumptions about choice processes.
+Thus far, however, we have underutilized these tools.
+We rarely use causal graphs to encode assumptions about how our explanatory variables came to be in choice situations, and we do not routinely test causal graphs against empirical choice data.
+These two issues represent opportunities for the field of choice modelling to gain from the insights and work of those who study causal inference.
+The rest of the chapter will focus on how we can construct causal diagrams that pay attention to both explanatory and outcome variables, how we can test a given graph against one's data, and how one can deal with "real-world" graphs which frequently contain some sort of unobserved confounding.
