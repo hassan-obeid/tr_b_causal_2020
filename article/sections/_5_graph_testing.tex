@@ -1,3 +1,16 @@
 \section{Testing of Causal Graphs}
 
-\blindtext[2]
+In the last section, we reviewed a process for creating an initial causal graph using expert opinion.
+Critically, after drafting one's causal graph, we should immediately test the graph against empirical data.
+If our graph captures inaccurate assumptions about the data generating process, then we have no reason to think that our conclusions from using the graph will be accurate.
+
+To test our causal graphs against data, we will test the implications of our graph.
+Specifically, we noted in Section \ref{sec:graph-overview} that causal graphs express two basic implications: marginal independence and conditional independence.
+In both cases, direct testing of marginal or conditional independence amongst nodes in the causal graph may be difficult.
+Indeed, there are no direct tests of conditional independence that can detect all types of dependence \citep{shah_2020_hardness}.
+
+Instead, we will take an easier but less decisive route.
+If a pair of variables have conditionally or marginally independent distributions, then their statistical moments will also be independent.
+So instead of testing for independence in distribution, we will perform a more tractable test for independence in means.
+If the variables in question are not conditionally or marginally independent in their means, then we know they are not independent in their distributions.
+Conversely, even if a set of variables appear to marginally or conditionally independent in their means, this \textbf{does not} imply that the variables are independent in distribution.
