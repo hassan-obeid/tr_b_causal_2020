@@ -47,7 +47,7 @@ We should add explicit nodes to our graph, subscripted or denoted by time, to sh
 At this point, we have added all the outcome, explanatory, effect modifying, mediating, confounding, and time-indexed variables that we can think of to our causal graph.
 They are all disconnected nodes, singletons, in the graph.
 We now focus on pruning nodes from this graph, before drawing our final hypothesized connections.
-In particular, we focus on pruning "post-outcome" variables that are not part of the causal graph for future time periods or other observations.
+In particular, we focus on pruning ``post-outcome'' variables that are not part of the causal graph for future time periods or other observations.
 The reason for this is that conditioning on such post-outcome variables biases one's causal effect estimates.
 
 To remove the problematic variables, we iterate through each of the non-outcome variables in our graph, and we assess whether the variable is actually a result of the outcome (perhaps in combination with other variables in our graph).
@@ -85,5 +85,5 @@ Can you think of any inverted causal relationships in this sub-population?
 (I.e., for a given sub-population $B \rightarrow A$ instead of $A \rightarrow B$?)
 Consider adding these sub-population indices to one's initial causal graph, or if this is not clear enough, draw amended causal graphs for each sub-population.
 Now, one can actually relax.
-This concludes the "purely mental" drafting of one's causal graph.
+This concludes the ``purely mental'' drafting of one's causal graph.
 In the next section, we'll look at testing this graph against data, and making any edits deemed empirically necessary.
