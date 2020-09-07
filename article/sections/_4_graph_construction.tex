@@ -71,19 +71,19 @@ Finally, we need to connect the variables in our graph.
    \item Draw arrows from the confounders to the explanatory variables and mediators that they may cause.
    \item Draw arrows from the variables in time $t$ to the variables in time $t+1$ that they cause.
 \end{enumerate}
-After drawing all of these arrows, we should now have a fully connected causal graph.
+After drawing in all arrows, we should now have a fully connected causal graph.
 Take a moment to look over the graph to ensure there are no remaining singletons and that we have not drawn any spurious connections.
 Also, take a moment to celebrate.
 Drawing one's first causal graph is hard work!
 
 After celebrating, take a moment to pursue the following graph editing exercises.
 First, think about how the graph might differ across sub-populations.
-What sub-populations can you think of in your population of interest?
+What sub-populations exist in your population of interest?
 Are there any causal relationships that should not exist for a given sub-population?
-For instance, do the outcomes for some sub-populations not depend on a given explanatory variable?
-Are any relationships inverted in this sub-population?
+For instance, are the outcomes in some sub-populations independent of a given explanatory variable?
+Can you think of any inverted causal relationships in this sub-population?
 (I.e., for a given sub-population $B \rightarrow A$ instead of $A \rightarrow B$?)
 Consider adding these sub-population indices to one's initial causal graph, or if this is not clear enough, draw amended causal graphs for each sub-population.
 Now, one can actually relax.
-This concludes the "mental only" construction of a causal graph.
+This concludes the "purely mental" drafting of one's causal graph.
 In the next section, we'll look at testing this graph against data, and making any edits deemed empirically necessary.
