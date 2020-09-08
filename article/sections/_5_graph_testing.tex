@@ -7,10 +7,29 @@ If our graph captures inaccurate assumptions about the data generating process, 
 To test our causal graphs against data, we will test the implications of our graph.
 Specifically, we noted in Section \ref{sec:graph-overview} that causal graphs express two basic implications: marginal independence and conditional independence.
 In both cases, direct testing of marginal or conditional independence amongst nodes in the causal graph may be difficult.
-Indeed, there are no direct tests of conditional independence that can detect all types of dependence \citep{shah_2020_hardness}.
+Indeed, there are no direct tests of conditional independence that can detect all types of dependence, especially for continuous variables \citep{bergsma_2004_testing, shah_2020_hardness}.
 
-Instead, we will take an easier but less decisive route.
-If a pair of variables have conditionally or marginally independent distributions, then their statistical moments will also be independent.
-So instead of testing for independence in distribution, we will perform a more tractable test for independence in means.
+As a result of this hardness, there are a myriad of research efforts aimed at testing conditional independence of two variables $X$ and $Y$, given a third variable $Z$ and any number of assumptions about the variables or the test statistic itself.
+Some researchers proceed under the assumption that one has access to an approximation of the conditional distribution of $X \mid Z$ \citep{candes_2018_panning, berrett_2019_conditional}.
+Other researchers designed conditional independence tests for general cases, assuming smoothness of the underlying data distributions and assuming accurate estimation of the distribution of the test statistic under the null hypothesis of conditional independence (e.g. \citet{zhang_2012_kernel, strobl_2019_approximate}).
+
+Different from (but not excluding) these approaches, we will take an easier and less decisive route.
+If a pair of variables have conditionally or marginally independent distributions, then their statistical moments will also be conditionally or marginally independent.
+Instead of testing for marginal or conditional independence in distribution, we will perform a more tractable test for marginal or conditional independence in means.
 If the variables in question are not conditionally or marginally independent in their means, then we know they are not independent in their distributions.
 Conversely, even if a set of variables appear to marginally or conditionally independent in their means, this \textbf{does not} imply that the variables are independent in distribution.
+
+This approach of assessing conditional independence by way of testing mean independence instead of directly testing for distributional independence is not new.
+The following papers have all proposed and implemented such an idea: \citet{burkart_2017_predictive, chalupka_2018_fast, inacio_2019_conditional}.
+The crux of the approach is to predict $Y$ based on $X, Z$, then compare against a prediction of $Y$ based on a permuted value of $X$ and the original $Z$.
+If $Y$ is mean-independent of $X$ given $Z$, i.e. $E \left[ Y \mid X, Z \right] = E\left[ Y \mid Z \right]$, then the predictive power of a model with permuted $X$ should resemble the predictive power of a model with the original $X$.
+
+Note that as with the case of testing distributional independence, testing mean independence still requires researchers must make choices.
+We have to select models for $E \left[ Y \mid X, Z \right]$ and $E\left[ Y \mid Z \right]$.
+We also have to choose the performance statistic (e.g. $R^2$, log-likelihood, etc.) to compare these models.
+Lastly, we also have to select a permutation method.
+In particular, how (if at all) will our permutation strategy account for the relationship between $X$ and $Z$?
+
+% State the choices made in this work.
+
+% Provide some discussion of the alternatives and the effects of different choices.
