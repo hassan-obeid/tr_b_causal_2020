@@ -1,12 +1,13 @@
-\section{Testing of Causal Graphs}
+\section{(Observable) Testing of Causal Graphs}
 
 \subsection{Description}
 In the last section, we reviewed a process for creating an initial causal graph using expert opinion.
 Critically, after drafting one's causal graph, we should immediately test the graph against empirical data.
 If our graph captures inaccurate assumptions about the data generating process, then we have no reason to think that our conclusions from using the graph will be accurate.
 
-To test our causal graphs against data, we will test the implications of our graph.
-Specifically, we noted in Section \ref{sec:graph-overview} that causal graphs express two basic implications: marginal independence and conditional independence.
+To test our causal graphs against data, we will first test the implications of our graph that involve observable variables only.
+We will defer the task of testing implications that involve unobserved / latent variables to Section \ref{sec:latent-confounding}.
+For now, recall our discussion in Section \ref{sec:graph-overview} about the two basic implications of causal graphs: marginal independence and conditional independence.
 In both cases, direct testing of marginal or conditional independence amongst nodes in the causal graph may be difficult.
 Indeed, there are no direct tests of conditional independence that can detect all types of dependence, especially for continuous variables \citep{bergsma_2004_testing, shah_2020_hardness}.
 
