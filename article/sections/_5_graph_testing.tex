@@ -17,19 +17,46 @@ Different from (but not excluding) these approaches, we will take an easier and 
 If a pair of variables have conditionally or marginally independent distributions, then their statistical moments will also be conditionally or marginally independent.
 Instead of testing for marginal or conditional independence in distribution, we will perform a more tractable test for marginal or conditional independence in means.
 If the variables in question are not conditionally or marginally independent in their means, then we know they are not independent in their distributions.
-Conversely, even if a set of variables appear to marginally or conditionally independent in their means, this \textbf{does not} imply that the variables are independent in distribution.
+Conversely, even if a set of variables are marginally or conditionally independent in their means, this \textbf{does not} imply that the variables are independent in distribution.
 
-This approach of assessing conditional independence by way of testing mean independence instead of directly testing for distributional independence is not new.
+This approach of indirectly assessing distributional independence by testing mean independence is not new.
 The following papers have all proposed and implemented such an idea: \citet{burkart_2017_predictive, chalupka_2018_fast, inacio_2019_conditional}.
-The crux of the approach is to predict $Y$ based on $X, Z$, then compare against a prediction of $Y$ based on a permuted value of $X$ and the original $Z$.
-If $Y$ is mean-independent of $X$ given $Z$, i.e. $E \left[ Y \mid X, Z \right] = E\left[ Y \mid Z \right]$, then the predictive power of a model with permuted $X$ should resemble the predictive power of a model with the original $X$.
+For conditional independences, the crux of the approach is to predict $Y$ based on $X$ and $Z$, then compare against a prediction of $Y$ based on a resampled value of $X$ and the original $Z$.
+If $Y$ is mean-independent of $X$ given $Z$, i.e. $E \left[ Y \mid X, Z \right] = E\left[ Y \mid Z \right]$, then the predictive power of a model with resampled $X$ should resemble the predictive power of a model with the original $X$.
+After all, in both cases, the conditional expectation of $Y$ is independent of one's $X$ values (real or resampled).
+When assessing marginal independencies, one removes $Z$ from the models for the expectation of $Y$ and proceeds as described.
 
-Note that as with the case of testing distributional independence, testing mean independence still requires researchers must make choices.
-We have to select models for $E \left[ Y \mid X, Z \right]$ and $E\left[ Y \mid Z \right]$.
+Note that as with the case of testing distributional independence, testing mean independence still requires researchers to make choices.
+We have to select models for $E \left[ Y \mid X, Z \right]$ and $E\left[ Y \mid Z \right]$, respectively, for testing conditional and marginal mean-independence.
 We also have to choose the performance statistic (e.g. $R^2$, log-likelihood, etc.) to compare these models.
-Lastly, we also have to select a permutation method.
-In particular, how (if at all) will our permutation strategy account for the relationship between $X$ and $Z$?
+Lastly, we also have to select a resampling method.
+In particular, how (if at all) will our resampling strategy account for the possible dependence between $X$ and $Z$?
 
 % State the choices made in this work.
 
 % Provide some discussion of the alternatives and the effects of different choices.
+For our demonstration, we made the following choices.
+First, we used linear regressions to model $E \left[Y \mid X, Z \right]$ and $E \left[ Y \mid Z \right]$.
+Secondly, we chose to use $R^2$ as our test statistic for judging the predictive performance.
+Finally, we have chosen to resample the $X$ vectors without replacement, keeping the length of the resampled vector equal to the length of the original vector.
+In other words, we permute $X$.
+
+Our rationale for these choices are as follows.
+In our dataset, most of our explanatory variables were continuous (at least in theory).
+Accordingly, $R^2$ seemed a sensible performance metric for a model of the conditional expectation of a continuous random variable.
+
+In contrast to our choice of performance metric, our choices of conditional expectation models and resampling methods were based in empirical testing.
+In particular, we created simulations to assess our mean-independence testing procedure.
+We assessed the performance of our mean-independence testing procedures using simulations where $Y \leftarrow Z \rightarrow X$ and $X$ either did or did not cause $Y$.
+
+Of particular importance were our simulations under the null hypothesis where $X$ was conditionally independent of $Y$.
+Our initial simulations used random forests as our conditional expectation models and permutations as resampling methods.
+Random forests are a non-parametric method that would allow us to have less fear of model misspecification, and permutations are easy to implement.
+However, under the null hypothesis, we discovered that the tests based on the random forest models did not result in p-values that were uniformly distributed.
+Given that we planned to use these procedures in a manner akin to hypothesis-testing, we hoped that our test statistics would be U-statistics.
+When we switched from the combination of random forests and permutations to linear regressions and permutations, our p-values were indeed empirically, uniformly distributed.
+Moreover, we still retained high power.
+
+We do not claim that these choices for assessing mean independence will always be appropriate.
+Indeed, one should assess one's tests on simulated data that resembles one's real data.
+For our illustrative purposes though, the combination of linear regressions, permutations, and $R^2$ resulted in an adequate test of mean-independence.
