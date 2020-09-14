@@ -2,8 +2,8 @@
 
 \subsection{Description}
 In the last section, we reviewed a process for creating an initial causal graph using expert opinion.
-Critically, after drafting one's causal graph, we should immediately test the graph against empirical data.
-If our graph captures inaccurate assumptions about the data generating process, then we have no reason to think that our conclusions from using the graph will be accurate.
+Critically, after drafting a causal graph, we should immediately test it against empirical data.
+Indeed, if our graph captures inaccurate assumptions about the data generating process, then we have no reason to think that our conclusions from using the graph will be accurate.
 
 To test our causal graphs against data, we will first test the implications of our graph that involve observable variables only.
 We will defer the task of testing implications that involve unobserved / latent variables to Section \ref{sec:latent-confounding}.
@@ -61,11 +61,28 @@ Moreover, we still retained high power.
 
 We do not claim that these choices for assessing mean independence will always be appropriate.
 Indeed, one should assess one's tests on simulated data that resembles one's real data.
-For our illustrative purposes though, the combination of linear regressions, permutations, and $R^2$ resulted in an adequate test of mean-independence.
+For our illustrative purposes though, the combination of linear regressions, permutations, and $R^2$ resulted in adequate tests of marginal and conditional mean-independence.
 
 \subsection{Demonstration}
 % Illustrative causal graph
+To demonstrate the testing procedures described above, we used the causal graph in Figure \ref{fig:graph-for-testing}.
+This causal graph shows a set of hypothesized causal relationships between variables thought to contribute to the utility of the drive-alone travel alternative in our dataset.
+As drawn, this graph encodes multiple marginal and conditional independence assumptions.
+Tools such as Daggity \citep{textor_2016_robust} can be used to automatically infer all independencies based on one's graph.
+For didactic purposes, however, we focused our attention on two particular independence assumptions.
+
+First, we tested the assumption of marginal independence between the number of licensed drivers and the number of automobiles in a household.
+A-priori, we may expect this independence to be have low-probability since the number of automobiles may generally be positively related to the number of licensed drivers in a household.
+Secondly, we tested the assumption of that travel cost was independent of travel time, conditional on travel distance.
+Unlike the first independence that we focus on, this conditional independence assumption is a-priori more credible.
+Despite their differing levels of a-priori credibility, we will see how we can test both using the procedures described in the previous subsection.
 
 % Marginal testing results
+In particular, Figure \ref{fig:marginal-independence-test} shows the results of using permutation, linear regression, and $R^2$ to test the hypothesis of marginal independence between the number of automobiles and the number of licensed drivers in a household.
+The empirical p-value of 0 confirms that the observed data is unlikely given the null-hypothesis of marginal independence.
+More specifically, when regressing the number of licensed drivers in a household on the number of cars in that household, one achieves an $R^2$ near 0.4.
+In contrast, when permuting the number of cars in the household and re-estimating the regression, the distribution of p-values concentrates around 0.
+This plot visualizes the fact that, through the lens of our chosen test statistic ($R^2$), data generated under an assumption of marginal independence does not ``look like'' the observed data.
+Accordingly, we should consider the weaker assumption of marginal dependence since this may lead to data-generating assumptions that offer greater realism and concordance with our observations.
 
 % Conditional testing results
