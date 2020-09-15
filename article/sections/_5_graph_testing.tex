@@ -78,11 +78,44 @@ Unlike the first independence that we focus on, this conditional independence as
 Despite their differing levels of a-priori credibility, we will see how we can test both using the procedures described in the previous subsection.
 
 % Marginal testing results
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.5\textwidth]{exa}
+% \caption{Example decision tree for bicycle consideration}
+% \label{fig:marginal-independence-test}
+% \end{figure}
+
 In particular, Figure \ref{fig:marginal-independence-test} shows the results of using permutation, linear regression, and $R^2$ to test the hypothesis of marginal independence between the number of automobiles and the number of licensed drivers in a household.
-The empirical p-value of 0 confirms that the observed data is unlikely given the null-hypothesis of marginal independence.
+The empirical p-value of 0 confirms that the observed data is unlikely given the null-hypothesis of marginal, mean-independence.
 More specifically, when regressing the number of licensed drivers in a household on the number of cars in that household, one achieves an $R^2$ near 0.4.
 In contrast, when permuting the number of cars in the household and re-estimating the regression, the distribution of p-values concentrates around 0.
-This plot visualizes the fact that, through the lens of our chosen test statistic ($R^2$), data generated under an assumption of marginal independence does not ``look like'' the observed data.
-Accordingly, we should consider the weaker assumption of marginal dependence since this may lead to data-generating assumptions that offer greater realism and concordance with our observations.
+This plot visualizes the fact that---through the lens of our chosen test statistic ($R^2$), linear regression model, and permutation-based resampling strategy---data generated under an assumption of marginal mean-independence does not ``look like'' the observed data.
+Accordingly, we should consider the weaker assumption of marginal dependence, where we can make data-generating assumptions that offer greater realism and concordance with our observations.
 
 % Conditional testing results
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.5\textwidth]{exa}
+% \caption{Example decision tree for bicycle consideration}
+% \label{fig:conditional-independence-test}
+% \end{figure}
+In Figure \ref{fig:conditional-independence-test}, we have an analogous visualization of a conditional independence test.
+Here, we test the hypothesis that travel time is mean-independent of travel cost, conditional on travel distance.
+To execute this test, we model the conditional expectation of travel time as a linear function of travel cost and travel distance.
+As with the marginal independence test results, the $R^2$ of the model using the observed values of travel cost are greater than the model's $R^2$ using any simulated datasets.
+Again, this means that the $R^2$ using observed data is unlikely given our method of sampling from the null distribution of $R^2$ given conditional, mean-independence of travel time and travel cost.
+
+As before, the response to this result is that we should consider conditional dependence between our variables of interest.
+In particular, we should investigate the idea that travel time is associated with travel cost, conditional on travel distance.
+Why might this be the case?
+Does travel time cause travel cost when driving alone?
+Does travel cost cause travel time while driving alone?
+Does some other set of variables (potentially unmeasured) cause both travel time and travel cost?
+
+Thinking through these questions, we can immediately think of latent variables that cause both travel time, travel cost, and the choice.
+For example, consider whether one drives alone over the San Francisco Bay Bridge.
+If one crosses the bridge, then traffic delays will likely increase one's travel time.
+Moreover, if one crosses the bridge, then one's travel cost is higher due to tolls that one must pay.
+And finally, if one takes a toll lane to get across the bridge faster, then one also pays a higher price.
+Overall, we can think of intuitive explanations for why there might be a dependence between travel time and travel cost, even after conditioning on travel distance.
+These explanations suggest particular relationships to analyze and particular variables, such as bay bridge crossings, to include in one's mode choice (i.e. outcome) model.
