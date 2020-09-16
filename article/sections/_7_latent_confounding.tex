@@ -1,46 +1,159 @@
 \section{Latent Confounding}
 
-This section will focus on the more complicated and realistic case that is typically faced by demand modelers, where we have latent confounders that affect the treatment assignment of our causal variables of interest. We first go over a few examples of confounding in transportation analysese, explain the challenges that come with such cases, and present a few approaches to dealing with this issue, specifically the recent de-confounder technique of Wang et al. (2019). Our application will show how directed acyclic graphs can help increase transparency about one's reasoning regarding the number of confounders, assumptions for which variables are confounded, and the models needed to estimate the causal effects. In addition to the application above, we use simplified simulation scenarios to further investigate the usefulness and pitfalls/sensitivity of this approach for generating accurate model estimates. 
+This section will focus on the more complicated and realistic case that is 
+typically faced by demand modelers, where we have latent confounders that 
+affect the treatment assignment of our causal variables of interest. We first
+ go over a few examples of confounding in transportation analysese, explain 
+ the challenges that come with such cases, and present a few approaches to 
+ dealing with this issue, specifically the recent de-confounder technique of 
+ Wang et al. (2019). Our application will show how directed acyclic graphs can 
+ help increase transparency about one's reasoning regarding the number of 
+ confounders, assumptions for which variables are confounded, and the models 
+ needed to estimate the causal effects. In addition to the application above, 
+ we use simplified simulation scenarios to further investigate the usefulness 
+ and pitfalls/sensitivity of this approach for generating accurate model 
+ estimates. 
+
 
 \subsection{Examples of confounding}
 
-Confounding occurs when a certain (confounding) variable induces variations in both the outcome, as well as the treatment (policy) variable of interest, creating correlation between the treatment and the outcome that is not caused by the treatment variable. When the confounding variable (or variables) is observed, we can control for the confounding effect, and there exists many methods in the literature for how to do that, including post-stratification, multiple regression, propensity score methods, etc. It is when the confounding variable is unobserved that the problem becomes significantly more challenging. For an illustration, imagine we're interested [TODO: insert relevant transportation example with confounding]. Without accounting for the latent confounder, we risk getting very biased estimates of the effects of our treatment variable of interest, created by the induced variations by the confounder in both the treatment and the outcome variable. 
 
-The problem of latent confounding and ommitted variable bias is widely acknowledged in the transportation literature, and demand modelers can draw on a list of method to account for confouding in some specific circumstances. Integrated choice and latent variable (ICLV) models are a way to account for the effect of unobserved attitudinal variables which may affect the selection of some individuals into some treatment level, as well as an outcome of interest. For example, a person's unobserved beliefs and attitudes towards being environmentelly friendly may both affect whether she chooses to bike to work, as well as whether she lives close to a bike infrastructure, which may bias our observational study if we're interested in the effect adding a bikelane has on the mode share of bicycles. Those methods, however, rely on collecting attitudinal indicators typically obtained by conducting (usually) expensive surveys with a sample of the people. This may not be an option in many cases [TODO: list some examples where it's challenging to conduct surveys with people to collect indicator questions]. 
+Confounding occurs when a certain (confounding) variable induces variations in
+ both the outcome, as well as the treatment (policy) variable of interest, 
+ creating correlation between the treatment and the outcome that is not caused
+  by the treatment variable. When the confounding variable (or variables) is 
+  observed, we can control for the confounding effect, and there exists many 
+  methods in the literature for how to do that, including post-stratification,
+   multiple regression, propensity score methods, etc. It is when the 
+   confounding variable is unobserved that the problem becomes significantly 
+   more challenging. For an illustration, imagine we're interested [TODO: 
+   insert relevant transportation example with confounding]. Without 
+   accounting for the latent confounder, we risk getting very biased estimates 
+   of the effects of our treatment variable of interest, created by the 
+   induced variations by the confounder in both the treatment and the outcome 
+   variable. 
+
+
+
+The problem of latent confounding and ommitted variable bias is widely 
+acknowledged in the transportation literature, and demand modelers can draw on 
+a list of method to account for confouding in some specific circumstances. 
+Integrated choice and latent variable (ICLV) models are a way to account for 
+the effect of unobserved attitudinal variables which may affect the selection 
+of some individuals into some treatment level, as well as an outcome of 
+interest. For example, a person's unobserved beliefs and attitudes towards 
+being environmentelly friendly may both affect whether she chooses to bike to 
+work, as well as whether she lives close to a bike infrastructure, which may 
+bias our observational study if we're interested in the effect adding a 
+bikelane has on the mode share of bicycles. Those methods, however, rely on 
+collecting attitudinal indicators typically obtained by conducting (usually) 
+expensive surveys with a sample of the people. This may not be an option in 
+many cases [TODO: list some examples where it's challenging to conduct surveys 
+with people to collect indicator questions]. 
+
 
 \subsection{The deconfounder algorithm}
 
-One recent method that has been proposed to deal with the problem of latent confounding is the deconfounder algorithm by Wang et al. (2019). The method attempts to control for the confouding variable by estimating a "subsitute confounder", a set of variables that once controlled for, renders all variation in the treatment variables of interest exogenous. The process of applying the method is actually quite straightforward and simple. It proceeds as follows:
-	- First, estimate the substitute confounder using any good latent variable model the modeler chooses. The authors suggest estimating a factor model with k factors on the set of covariates the modeler is interested in. 
-	- Second, check the factor model's accuracy using posterior predictive checks (add details). 
-	- Once a sufficiently accurate latent variable model is recovered, use it to estimate an expected value of the latent variable for each observation, and control for this value in the outcome model, alongside the treatment variables and other covariates of interest. 
 
-One main assumption of the deconfounder algorithm is that the data at hand should have multi-cause confounders, thus the title of the paper, "The blessings of multiple causes". In other words, this method works when the unobserved confounders affect multiple of the observed causes (or treatment variables) of interest, alongside the outcome. This assumption is weaker than the one required for ignorability to hold, which requires the absence of both single cause and multi-cause confounders for accurate causal inferences. 
 
-[TODO: Add more mathematical formulations and formulas, and formulate the model rigorously]
+One recent method that has been proposed to deal with the problem of latent 
+confounding is the deconfounder algorithm by Wang et al. (2019). The method 
+attempts to control for the confouding variable by estimating a "subsitute 
+confounder", a set of variables that once controlled for, renders all 
+variation in the treatment variables of interest exogenous. The process of 
+applying the method is actually quite straightforward and simple. It proceeds 
+as follows:
+
+
+	- First, estimate the substitute confounder using any good latent variable 
+	model the modeler chooses. The authors suggest estimating a factor model 
+	with k factors on the set of covariates the modeler is interested in. 
+
+	- Second, check the factor model's accuracy using posterior predictive 
+	checks (add details). 
+
+	- Once a sufficiently accurate latent variable model is recovered, use it 
+	to estimate an expected value of the latent variable for each observation, 
+	and control for this value in the outcome model, alongside the treatment 
+	variables and other covariates of interest. 
+
+
+
+One main assumption of the deconfounder algorithm is that the data at hand 
+should have multi-cause confounders, thus the title of the paper, "The 
+blessings of multiple causes". In other words, this method works when the 
+unobserved confounders affect multiple of the observed causes (or treatment 
+variables) of interest, alongside the outcome. This assumption is weaker than 
+the one required for ignorability to hold, which requires the absence of both 
+single cause and multi-cause confounders for accurate causal inferences. 
+
+
+[TODO: Add more mathematical formulations and formulas, and formulate the 
+model rigorously]
+
 
 \subsection{Case study: Simulation}
 
-The purpose of this section is to investigate the effectiveness of the deconfounder algorithm (Wang et. al, 2019) in adjusting for unobserved confounding. We use a simulated mode choice data where travel distance linearly confounds both travel time and travel cost. We then mask the travel distance data and treat it as an unobserved variable. 
+
+The purpose of this section is to investigate the effectiveness of the 
+deconfounder algorithm (Wang et. al, 2019) in adjusting for unobserved 
+confounding. We use a simulated mode choice data where travel distance 
+linearly confounds both travel time and travel cost. We then mask the travel 
+distance data and treat it as an unobserved variable. 
+
 
 We estimate three models:
 
-	- Model 1: A multinomial logit with the correct original specification, EXCEPT we ommit the travel distance variable in the specification without trying to adjust for it.
-	- Model 2: We use the deconfounder algorithm to try to recover the confounder (travel distance). In this method, we use all the variables in each mode's utility to recover that mode's confounder.
-	- Model 3: We use the deconfounder algorithm to try to recover the confounder (travel distance), but this time, we only use travel time and cost in the factor model, instead of all the variables in the utility specification of each mode. This is different than what is suggested in Wang et al., where they use all the observed covariates to recover the deconfounder. 
 
-We compare the estimates of the coefficients on travel time and cost to the true estimates used in the simulation. The main findings of this exercise are the following:
+	- Model 1: A multinomial logit with the correct original specification, 
+	EXCEPT we ommit the travel distance variable in the specification without 
+	trying to adjust for it.
 
-Using the true variables believed to be confounded (i.e. method 3 where only travel time and cost are used to recover the confounder) leads to a better recovery of the true confounder. This suggests that it may be better to run the deconfounder algorithm based on a hypothesized causal graph, rather than just running it on all the observed covariates.
-Similar to what we found in the investigating_decounfounder notebook, the effectiveness of the deconfounder algorithm is very sensitive to small deviations in the recovered confounder. Although method 3 returns a relatively good fit of the true confounder, the adjusted coefficients on travel time and cost do not exhibit any reduction in the bias resulting from ommitting the true confounder, and the coefficients on the recovered confounder are highly insignificant. This raises questions about the usefulness of the deconfounder algorithm in practice.
+	- Model 2: We use the deconfounder algorithm to try to recover the 
+	confounder (travel distance). In this method, we use all the variables in 
+	each mode's utility to recover that mode's confounder.
+
+	- Model 3: We use the deconfounder algorithm to try to recover the 
+	confounder (travel distance), but this time, we only use travel time and 
+	cost in the factor model, instead of all the variables in the utility 
+	specification of each mode. This is different than what is suggested in 
+	Wang et al., where they use all the observed covariates to recover the 
+	deconfounder. 
+
+
+We compare the estimates of the coefficients on travel time and cost to the 
+true estimates used in the simulation. The main findings of this exercise are 
+the following:
+
+
+Using the true variables believed to be confounded (i.e. method 3 where only 
+travel time and cost are used to recover the confounder) leads to a better 
+recovery of the true confounder. This suggests that it may be better to run 
+the deconfounder algorithm based on a hypothesized causal graph, rather than 
+just running it on all the observed covariates.
+
+Similar to what we found in the investigating_decounfounder notebook, the 
+effectiveness of the deconfounder algorithm is very sensitive to small 
+deviations in the recovered confounder. Although method 3 returns a relatively 
+good fit of the true confounder, the adjusted coefficients on travel time and 
+cost do not exhibit any reduction in the bias resulting from ommitting the 
+true confounder, and the coefficients on the recovered confounder are highly 
+insignificant. This raises questions about the usefulness of the deconfounder 
+algorithm in practice.
+
 
 
 
 
 Things to include:
+
+
 - Simpson's paradox
+
 - Introduction of deconfounder algorithm
+
 - Challenges of deconfounder. 
+
 - Simulation illustrations
 
 
