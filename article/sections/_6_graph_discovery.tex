@@ -1,3 +1,52 @@
 \section{Causal Discovery}
+\label{sec:causal-discovery}
 
-\blindtext[2]
+% How is causal discovery related to testing causal graphs?
+In the previous section, we detailed one method for testing the marginal and conditional independence assumptions of one's causal graph.
+As presented, this strategy requires one to first have a causal graph.
+Indeed, this requirement is why Section \ref{sec:graph-construction} provides instruction on how to construct an initial causal graph using expert opinion.
+
+The unstated presumption is that one will test one's working causal graph, and if any of tests fail, one will then revise the graph until all assumptions appear plausible.
+Essentially, one proceeds in a loop of postulating, testing, and editing one's causal graph until it is not blatantly contradicted by one's data.
+If this sounds tedious, one can consider making one's computer work for you.
+Specifically, by exchanging the human-in-the-loop for a purely algorithmic endeavor, one arrives at the practice of  causal discovery: inferring one's causal graph from one's data.
+
+This section will describe why causal discovery is important, provide a brief overview of the main concepts in causal discover, and show the results of using causal discovery algorithms on the dataset described in Section \ref{sec:graph-importance}.
+
+% Why is causal discovery important?
+% Promotes robustness and understanding of results
+% Inspires creation and editing of expert-opinion graph
+% Aids characterization of posterior uncertainty
+\subsection{The usefulness of causal discovery}
+
+As a topic of study, causal discovery is important for numerous reasons.
+Three of these reasons are the following.
+First, causal discovery promotes robustness and understanding of our causal effect estimates.
+By comparing against our causal effect estimates when using a data-driven causal graph, we can begin to understand how our prior beliefs affect our estimates.
+Secondly, causal discovery helps inspire creation and editing of expert-opinion graphs.
+Indeed, it's typically easier to edit than to create from scratch.
+Graphs found via causal discovery can spark ideas for one's own graph if they feature different causal relations than are present in one's own graph, and they provide a starting point for graph revision.
+Thirdly, causal discovery algorithms can aid characterization of posterior uncertainty in one's causal graph and causal effect estimates.
+Each causal graph discovered from one's data represents an alternative way of understanding the world, and we can quantify the probability of each of these causal models representing our data generating process.
+
+% Why does causal discovery help robustness and model understanding?
+Let's begin with robustness.
+Here, one way of reducing the probability of incorrect inferences is to give oneself multiple chances to be correct.
+In particular, the Section \ref{sec:graph-testing} tested, expert-opinion based graph was never meant to be the stopping point in one's exploration of possible causal relationships.
+Instead, we advocate using multiple graphs to help us understand our causal effect estimates.
+
+Specifically, consider that a causal graph is equivalent to a square matrix with one row for each variable, and binary entries that denote whether the variable for the row causes the variable on the column.
+A prior that expresses maximum ignorance over the graphs would be a prior where each matrix entry followed its own Bernoulli distribution with $p=0.5$.
+Conversely, a prior expressing maximum certainty over the graph could be a prior with 100\% certainty that our expert-opinion graph is the true causal graph.
+These two extremes represent reference priors that we can use in sensitivity analyses.
+By observing the distribution of causal effect estimates under each prior, we can reflect the uncertainty from not knowing the ``true'' causal graph, and we can begin to understand the ways that our estimates are sensitive our prior beliefs.
+
+% How does causal discovery help inspire our creation and editing of an expert-opinion causal graph?
+
+
+% How does causal discovery help characterize posterior uncertainty about the  true causal graph?
+%Randomize-then-optimize / weighted bootstrap posterior.
+
+\subsection{Overview of causal discovery algorithms}
+
+\subsection{An application of causal discovery}
