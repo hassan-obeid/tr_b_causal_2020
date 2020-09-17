@@ -13,12 +13,12 @@ Specifically, by exchanging the human-in-the-loop for a purely algorithmic endea
 
 This section will describe why causal discovery is important, provide a brief overview of the main concepts in causal discover, and show the results of using causal discovery algorithms on the dataset described in Section \ref{sec:graph-importance}.
 
+\subsection{Why use causal discovery?}
+
 % Why is causal discovery important?
 % Promotes robustness and understanding of results
 % Inspires creation and editing of expert-opinion graph
 % Aids characterization of posterior uncertainty
-\subsection{The usefulness of causal discovery}
-
 As a topic of study, causal discovery is important for numerous reasons.
 Three of these reasons are the following.
 First, causal discovery promotes robustness and understanding of our causal effect estimates.
@@ -51,7 +51,28 @@ By contrasting and criticizing alternative graphs, we clarify the strengths and 
 Once we've identified elements that we think should or should not be present in a causal graph for our dataset, we can amend our hand-crafted graph to meet these requirements.
 
 % How does causal discovery help characterize posterior uncertainty about the  true causal graph?
-%Randomize-then-optimize / weighted bootstrap posterior.
+% Weighted bootstrap posterior
+Lastly, causal discovery can help us characterize our posterior uncertainty about the data-generating causal graph.
+They enable approximation of the posterior distribution over causal graphs, in at least two ways.
+One approach is to use a weighted likelihood bootstrap approximation \citep{newton_1994_approximate} to the posterior distribution over graphs.
+In this approach, one would first sample a vector of weights for the likelihood terms.
+Then, one would use those weights in one's causal discovery algorithm to produce a single `sample' from the posterior approximation.
+
+%Randomize-then-optimize.
+Alternatively, we could use yet another randomize-then-optimize \citep{bardsley_2014_randomize, orabona_2014_measure} approach to sampling from an approximate posterior distribution.
+Here, one would sample from a prior on entries of the matrix representation of a causal graph.
+Semantically, we sample constraints such as ``$X \rightarrow Y$ (MUST | MUST NOT) be in the causal graph''.
+We ``sample'' from the approximate posterior by running the causal discovery algorithm on the original dataset, with the inclusion of these randomly generated constraints.
+And, of course, we can consider hybrids of these two posterior approximation schemes.
+
+With these posterior approximation methods, we can generate causal graphs for all the purposes mentioned above:
+\begin{itemize}
+   \item for criticism and inspiration,
+   \item for distributional analyses of one's causal effect estimates conditional on each sampled graph, and
+   \item for distributional analyses of the causal graphs themselves.
+   \newline
+   I.e., how certain are we of any one causal graph?
+\end{itemize}
 
 \subsection{Overview of causal discovery algorithms}
 
