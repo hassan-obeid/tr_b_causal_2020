@@ -42,7 +42,13 @@ These two extremes represent reference priors that we can use in sensitivity ana
 By observing the distribution of causal effect estimates under each prior, we can reflect the uncertainty from not knowing the ``true'' causal graph, and we can begin to understand the ways that our estimates are sensitive our prior beliefs.
 
 % How does causal discovery help inspire our creation and editing of an expert-opinion causal graph?
-
+Beyond increasing our understanding of our estimates, causal discovery algorithms can help us create causal graphs based on expert-opinion.
+In particular, criticizing causal graphs is easy.
+As noted by \citet{pearl_1995_causal}, ``every pair of nodes in the graph waves its own warning flag in front of the modeller's eyes: 'Have you neglected an arrow or a dashed arc?''
+Additionally, the presence of directed causal relations is vividly placed before one's eyes for immediate criticism (e.g., is $X \rightarrow Y$ plausible?).
+And conversely, we may learn from causal links (i.e. arrows) that are present in the graphs output from our causal discovery algorithm that we initially overlooked.
+By contrasting and criticizing alternative graphs, we clarify the strengths and deficiencies of our own point of view.
+Once we've identified elements that we think should or should not be present in a causal graph for our dataset, we can amend our hand-crafted graph to meet these requirements.
 
 % How does causal discovery help characterize posterior uncertainty about the  true causal graph?
 %Randomize-then-optimize / weighted bootstrap posterior.
