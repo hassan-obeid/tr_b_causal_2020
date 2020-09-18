@@ -35,7 +35,7 @@ Here, one way of reducing the probability of incorrect inferences is to give one
 In particular, the Section \ref{sec:graph-testing} tested, expert-opinion based graph was never meant to be the stopping point in one's exploration of possible causal relationships.
 Instead, we advocate using multiple graphs to help us understand our causal effect estimates.
 
-Specifically, consider that a causal graph is equivalent to a square matrix with one row for each variable, and binary entries that denote whether the variable for the row causes the variable on the column.
+Specifically, consider that a causal graph is equivalent to a square matrix with one row for each variable, and binary entries that denote whether the variable for the row causes the variable on the column \citep[p. 3]{glymour_2019_review}.
 A prior that expresses maximum ignorance over the graphs would be a prior where each matrix entry followed its own Bernoulli distribution with $p=0.5$.
 Conversely, a prior expressing maximum certainty over the graph could be a prior with 100\% certainty that our expert-opinion graph is the true causal graph.
 These two extremes represent reference priors that we can use in sensitivity analyses.
@@ -78,16 +78,34 @@ With these posterior approximation methods, we can generate causal graphs for al
 
 % Pointers to thorough review papers
 The following subsection presents a non-exhaustive overview of causal discovery algorithms.
-Crucially, we rely heavily on review papers such as \citet{} and \citet{} to fill in our gaps.
-To present an exhaustive review of causal discovery algorithms is out of the scope of the article.
+For conciseness, an exhaustive review of causal discovery algorithms is out of the scope of the article.
+Crucially, we rely heavily on review papers such as \citet{glymour_2019_review} and \citet{spirtes_2016_causal} to fill in our gaps.
+
 
 % Types of causal discovery algorithms
+Overall, there are three classes of causal discovery algorithms.
+One class attempts to directly infer the marginal and conditional independences in one's causal system.
+Considering the discussion of independence testing in Section \ref{sec:graph-testing}, this class of algorithms is perhaps best understood as repeated and systematic independence tests.
+These causal discovery algorithms are constraint-based algorithms, because the observed independencies represent constraints that define the space of plausible causal graphs for the dataset.
+Common constraint-based algorithms include the Peter-Clarke (PC) algorithm and the Fast Causal Inference (FCI) algorithm \citep{glymour_2001_causation}.
+The PC algorithm assumes no unobserved confounding variables, whereas the FCI allows for (and sometimes infers) the presence of such unobserved confounders.
+
+% DESCRIBE SCORE BASED DISCOVERY ALGORITHMS
+The second class of algorithm proceeds sequentially by variable, trying to estimate the dependencies between each variable and every other available variable.
+These algorithms are score-based algorithms.
+They typically compute a score for each possible dependency (i.e. $X \rightarrow Y$ and $X \leftarrow Y$), and then they use these scores to select a single graph.
+Common score-based algorithms include the Greedy Equivalence Search (GES) algorithm \citep{chickering_2002_optimal}.
+
+% DESCRIBE FCM ALGORITHMS
+%Lastly, the third class of algorithms relies on hypothesized Functional Causal Models (FCM) \citep{} for each of the variables in one's system.
+%Because these algorithms analyze directed relationships, as opposed to only analyzing independencies, they provide more information than the constraint-based algorithms.
+%In particular, FCM-based methods permit inferences in the two-variable case, allowing one to infer whether $X \rightarrow Y$ or $Y \rightarrow X$.
+%Of course, such strength does not come for free.
 
 % What questions can be addressed via these discovery algorithms
 % $X \rightarrow Y$ or $X \leftarrow Y$
 % Full graph inference (with and without allowance-for / detection-of latent confounders)
 % Discovery of equivalence classes
 
-% Assumptions made by these algorithms
 
 \subsection{An application of causal discovery}
