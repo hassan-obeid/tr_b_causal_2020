@@ -44,11 +44,13 @@ By observing the distribution of causal effect estimates under each prior, we ca
 % How does causal discovery help inspire our creation and editing of an expert-opinion causal graph?
 Beyond increasing our understanding of our estimates, causal discovery algorithms can help us create causal graphs based on expert-opinion.
 In particular, criticizing causal graphs is easy.
-As noted by \citet{pearl_1995_causal}, ``every pair of nodes in the graph waves its own warning flag in front of the modeller's eyes: 'Have you neglected an arrow or a dashed arc?''
+
+As noted by \citet[p. 708]{pearl_1995_causal}, ``every pair of nodes in the graph waves its own warning flag in front of the modeller's eyes: 'Have you neglected an arrow or a dashed arc?''
 Additionally, the presence of directed causal relations is vividly placed before one's eyes for immediate criticism (e.g., is $X \rightarrow Y$ plausible?).
+Similarly, undirected or bi-directed edges between variables highlight causal ambiguity, thereby inviting analysts to resolve the question of directionality in the relationship.
 And conversely, we may learn from causal links (i.e. arrows) that are present in the graphs output from our causal discovery algorithm that we initially overlooked.
 By contrasting and criticizing alternative graphs, we clarify the strengths and deficiencies of our own point of view.
-Once we've identified elements that we think should or should not be present in a causal graph for our dataset, we can amend our hand-crafted graph to meet these requirements.
+Then, once we've identified elements that we think should or should not be present in a causal graph for our dataset, we can amend our hand-crafted graph to meet these requirements.
 
 % How does causal discovery help characterize posterior uncertainty about the  true causal graph?
 % Weighted bootstrap posterior
@@ -85,27 +87,33 @@ Crucially, we rely heavily on review papers such as \citet{glymour_2019_review} 
 % Types of causal discovery algorithms
 Overall, there are three classes of causal discovery algorithms.
 One class attempts to directly infer the marginal and conditional independences in one's causal system.
+That is, this class of algorithms identifies a so-called Markov Equivalence Class (MEC) of graphs.
 Considering the discussion of independence testing in Section \ref{sec:graph-testing}, this class of algorithms is perhaps best understood as repeated and systematic independence tests.
 These causal discovery algorithms are constraint-based algorithms, because the observed independencies represent constraints that define the space of plausible causal graphs for the dataset.
 Common constraint-based algorithms include the Peter-Clarke (PC) algorithm and the Fast Causal Inference (FCI) algorithm \citep{glymour_2001_causation}.
 The PC algorithm assumes no unobserved confounding variables, whereas the FCI allows for (and sometimes infers) the presence of such unobserved confounders.
 
 % DESCRIBE SCORE BASED DISCOVERY ALGORITHMS
-The second class of algorithm proceeds sequentially by variable, trying to estimate the dependencies between each variable and every other available variable.
-These algorithms are score-based algorithms.
-They typically compute a score for each possible dependency (i.e. $X \rightarrow Y$ and $X \leftarrow Y$), and then they use these scores to select a single graph.
+The second class of algorithms are known as score-based algorithms.
+They proceed sequentially by pairs of variables, making changes with a constraint on how their chosen score is affected by this change.
+First, we start from a fully disconnected graph, and we add directed causal relationships so as to increase the score of the generative model that corresponds to our graph.
+Then, once we have found the graph structure that maximizes the score on our data, we prune as many directed causal relationships as can be done without harming our score.
+In the end, the algorithms return the resulting set of graphs that retain maximal score.
 Common score-based algorithms include the Greedy Equivalence Search (GES) algorithm \citep{chickering_2002_optimal}.
+Typically these methods operate under stricter assumptions than constrain-based methods, but combinations of the two ideas have often outperformed methods that are strictly in either class \citep{glymour_2019_review}.
 
 % DESCRIBE FCM ALGORITHMS
-%Lastly, the third class of algorithms relies on hypothesized Functional Causal Models (FCM) \citep{} for each of the variables in one's system.
-%Because these algorithms analyze directed relationships, as opposed to only analyzing independencies, they provide more information than the constraint-based algorithms.
-%In particular, FCM-based methods permit inferences in the two-variable case, allowing one to infer whether $X \rightarrow Y$ or $Y \rightarrow X$.
-%Of course, such strength does not come for free.
+Lastly, the third class of algorithms relies on hypothesized Functional Causal Models (FCM) \citep{goudet_2018_learning} for each of the variables in one's system, as a function of their parents.
+The defining characteristic in such algorithms is that they exploit asymmetries in the residuals of models for the hypothesized relationships of $X \rightarrow Y$, $Y \rightarrow X$.
+In particular, the residuals will be independent of the hypothesized cause in only one of the two potential models.
+As noted in the description of such algorithms, they are especially useful for discovering causal relationships between pairs of variables.
+In other words, discovery methods based on FCMs enable orientation of the undirected or bi-directed edges that represent ambiguity over whether $X \rightarrow Y$ or $Y \rightarrow X$.
+This orienting capability can be usefully combined with the previous causal discovery algorithms that infer classes graphs with equivalent marginal and conditional independencies.
+And of course, extensions of these techniques exist for inference in the presence of unobserved confounding \citep[Sec. 6]{goudet_2018_learning} and for learning an entire causal graph as opposed to only dealing with variable pairs \citep{zheng_2020_learning}.
 
 % What questions can be addressed via these discovery algorithms
 % $X \rightarrow Y$ or $X \leftarrow Y$
 % Full graph inference (with and without allowance-for / detection-of latent confounders)
 % Discovery of equivalence classes
-
 
 \subsection{An application of causal discovery}
