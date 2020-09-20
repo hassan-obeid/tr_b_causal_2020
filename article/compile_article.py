@@ -50,6 +50,7 @@ def compile_article():
     unwanted_endings = [
         ".aux",
         ".lof",
+        ".log",
         ".lot",
         ".out",
         ".toc",
@@ -60,7 +61,8 @@ def compile_article():
     ]
 
     base_filepaths = [
-        "./",
+        "./main",
+        "../main",
         "sections/",
     ]
 
