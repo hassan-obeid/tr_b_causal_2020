@@ -1,37 +1,37 @@
 \section{Latent Confounding}
 
-This section will focus on the more complicated and realistic case that is 
+This section focuses on the more complicated and realistic case that is 
 typically faced by demand modelers, where we have latent confounders that 
 affect the treatment assignment of our causal variables of interest. We first
- go over a few examples of confounding in transportation analysese, explain 
- the challenges that come with such cases, and present a few approaches to 
- dealing with this issue, specifically the recent de-confounder technique of 
- Wang et al. (2019). Our application will show how directed acyclic graphs can 
- help increase transparency about one's reasoning regarding the number of 
- confounders, assumptions for which variables are confounded, and the models 
- needed to estimate the causal effects. In addition to the application above, 
- we use simplified simulation scenarios to further investigate the usefulness 
- and pitfalls/sensitivity of this approach for generating accurate model 
- estimates. 
+go over a few examples of confounding in transportation analysese, explain 
+the challenges that come with such cases, and present a few approaches to 
+dealing with this issue, specifically the recent de-confounder technique of 
+Wang et al. (2019). Our application will show how directed acyclic graphs can 
+help increase transparency about one's reasoning regarding the number of 
+confounders, assumptions for which variables are confounded, and the models 
+needed to estimate the causal effects. In addition to the application above, 
+we use simplified simulation scenarios to further investigate the usefulness 
+and pitfalls/sensitivity of this approach for generating accurate model 
+estimates. 
 
 
 \subsection{Examples of confounding}
 
 
 Confounding occurs when a certain (confounding) variable induces variations in
- both the outcome, as well as the treatment (policy) variable of interest, 
- creating correlation between the treatment and the outcome that is not caused
-  by the treatment variable. When the confounding variable (or variables) is 
-  observed, we can control for the confounding effect, and there exists many 
-  methods in the literature for how to do that, including post-stratification,
-   multiple regression, propensity score methods, etc. It is when the 
-   confounding variable is unobserved that the problem becomes significantly 
-   more challenging. For an illustration, imagine we're interested [TODO: 
-   insert relevant transportation example with confounding]. Without 
-   accounting for the latent confounder, we risk getting very biased estimates 
-   of the effects of our treatment variable of interest, created by the 
-   induced variations by the confounder in both the treatment and the outcome 
-   variable. 
+both the outcome, as well as the treatment (policy) variable of interest, 
+creating correlation between the treatment and the outcome that is not caused
+by the treatment variable. When the confounding variable (or variables) is 
+observed, we can control for the confounding effect, and there exists many 
+methods in the literature for how to do that, including post-stratification,
+multiple regression, propensity score methods, etc. It is when the 
+confounding variable is unobserved that the problem becomes significantly 
+more challenging. For an illustration, imagine we're interested [TODO: 
+insert relevant transportation example with confounding]. Without 
+accounting for the latent confounder, we risk getting very biased estimates 
+of the effects of our treatment variable of interest, created by the 
+induced variations by the confounder in both the treatment and the outcome 
+variable. 
 
 
 

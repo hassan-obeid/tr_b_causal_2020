@@ -9,9 +9,6 @@ graphical models as put forward by Pearl et al. Specifically we can leverage
 the deconfounder work by Blei et al. to address unobsrved confounding in 
 tranportation applications.
 
-
-
-
 More often than not, the development of behavioral models in transportation, 
 specifically transportation demand models, is driven by the need to evaluate 
 the impact external interventions, in the form of alternative policies, on a 
@@ -21,6 +18,21 @@ system reacts to \textit{external} interventions. Yet, when those models are
 developed, there is very little consideration given to causality, and when 
 causal concepts are accounted for, the process is done implicitly without a 
 formal framework. 
+
+While the field of transportation demand modeling could benefit greatly from 
+incorporating causal inference techniques, there are barriers that have made 
+this integration slower than what one would hope. These barriers stem from 
+the difference between the types of problems transportation demand modelers deal with and those that are typically studied in the causal inference 
+literature. Perhaps the main fundemental difference is that demand modelers 
+are typically trying to forecast the impacts of policies that haven't been 
+implemented or seen before, which requires additional work and a change to the
+typical causal modeling workflow in order to translate a given policy 
+(treatment) into a set of characteristics and variables that exist in the
+data and system at hand (please refer to Brathwaite and Walker (2018) for a 
+more thorough discussion of those barriers). While those wrinkles make the
+problem of demand modelers harder, there is still a lot to gain from 
+incorporating causal inference techniques where appropriate, and to contribute
+in turn where the literature lacks.  
 
 
 The goal of this chapter is to formalize a framework for approaching 
