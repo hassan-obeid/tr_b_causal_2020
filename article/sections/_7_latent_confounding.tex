@@ -11,8 +11,7 @@ help increase transparency about one's reasoning regarding the number of
 confounders, assumptions for which variables are confounded, and the models 
 needed to estimate the causal effects. In addition to the application above, 
 we use simplified simulation scenarios to further investigate the usefulness 
-and pitfalls/sensitivity of this approach for generating accurate model 
-estimates. 
+and pitfalls in this approach for generating accurate model estimates. 
 
 
 \subsection{Examples of confounding}
@@ -57,12 +56,12 @@ with people to collect indicator questions].
 
 
 One recent method that has been proposed to deal with the problem of latent 
-confounding is the deconfounder algorithm by Wang et al. (2019). The method 
-attempts to control for the confouding variable by estimating a "subsitute 
-confounder", a set of variables that once controlled for, renders all 
-variation in the treatment variables of interest exogenous. The process of 
-applying the method is actually quite straightforward and simple. It proceeds 
-as follows:
+confounding without the need to collect additional data is the deconfounder 
+algorithm by Wang et al. (2019). The method attempts to control for the 
+confouding variable by estimating a "subsitute confounder", a set of variables 
+that once controlled for, renders all variation in the treatment variables of 
+interest exogenous. The process of applying the method is actually quite 
+straightforward and simple. It proceeds as follows:
 
 
 	- First, estimate the substitute confounder using any good latent variable 
@@ -89,7 +88,7 @@ single cause and multi-cause confounders for accurate causal inferences.
 
 
 [TODO: Add more mathematical formulations and formulas, and formulate the 
-model rigorously]
+model rigorously if needed]
 
 
 \subsection{Case study: Simulation}
@@ -107,54 +106,63 @@ We estimate three models:
 
 	- Model 1: A multinomial logit with the correct original specification, 
 	EXCEPT we ommit the travel distance variable in the specification without 
-	trying to adjust for it.
+	trying to adjust for it. This model represents the worst case scenario 
+	where a modeler ignores, or is unaware of, unobserved confounding.
 
 	- Model 2: We use the deconfounder algorithm to try to recover the 
 	confounder (travel distance). In this method, we use all the variables in 
-	each mode's utility to recover that mode's confounder.
+	each mode's utility to recover that mode's confounder. This is in line 
+	with the approach taken in Wang et. al (2019), where they use all the set 
+	of observed variables in the factor model to recover a substitute 
+	confounder.
 
 	- Model 3: We use the deconfounder algorithm to try to recover the 
 	confounder (travel distance), but this time, we only use travel time and 
 	cost in the factor model, instead of all the variables in the utility 
-	specification of each mode. This is different than what is suggested in 
-	Wang et al., where they use all the observed covariates to recover the 
-	deconfounder. 
+	specification of each mode. By only using what we know are confounded 
+	variables to recover the substitute confounder, our goal is to analyze 
+	whether we can improve the accuracy of this approach by adopting a more 
+	thoughtful approach to hypothesizing on the confounder variables. This can 
+	be in the form of building and testing candidate causal graphs that 
+	try to illustrate this confounding. 
 
 
-We compare the estimates of the coefficients on travel time and cost to the 
-true estimates used in the simulation. The main findings of this exercise are 
-the following:
+We compare both the estimates of the coefficients on travel time and cost from 
+each of those three models to the true estimates used in the simulation, as well as the distribution of the recovered substitute confounder under each of 
+models 2 and 3 to the true confounder. The main findings of this exercise are the following:
 
 
 Using the true variables believed to be confounded (i.e. method 3 where only 
 travel time and cost are used to recover the confounder) leads to a better 
-recovery of the true confounder. This suggests that it may be better to run 
-the deconfounder algorithm based on a hypothesized causal graph, rather than 
-just running it on all the observed covariates.
+recovery of the true confounder. Figures bla and bla show a QQ plot of the true 
+and recovered confounders under method 2 and 3 respoectively. Looking at those 
+figures, one can see that the distribution of the recovered substitute 
+confounder under method 3 is closer to that of the true confounder than method 
+2. This suggests that it may be better to run the deconfounder algorithm based 
+on a hypothesized causal graph, rather than just running it on all the 
+observed covariates. Please refer to section 4 {ref} for how to build and test 
+plausible causal graphs. 
 
-Similar to what we found in the investigating_decounfounder notebook, the 
-effectiveness of the deconfounder algorithm is very sensitive to small 
-deviations in the recovered confounder. Although method 3 returns a relatively 
-good fit of the true confounder, the adjusted coefficients on travel time and 
-cost do not exhibit any reduction in the bias resulting from ommitting the 
-true confounder, and the coefficients on the recovered confounder are highly 
-insignificant. This raises questions about the usefulness of the deconfounder 
-algorithm in practice.
+Additionally, and perhaps most importantly, the effectiveness of the 
+deconfounder algorithm is very sensitive to small errors and misfits in the 
+recovered confounder. Although method 3 returns a relatively good fit of the 
+true confounder (based on the QQ plot), the adjusted coefficients on travel 
+time and cost do not exhibit any reduction in the bias resulting from 
+ommitting the true confounder, and the coefficients on the recovered 
+confounder are highly insignificant. This raises questions about the 
+usefulness of the deconfounder algorithm in practice. While this limitation 
+may raise questions on the usefulness of the deconfounder algorithm, it is 
+important to point out that it is not only a by-product of the deconfounder 
+algorithm itself. In fact, it is one of the built in characteristic of ommitted
+variable bias, and perhaps more broadly, the problem of error-in-variables in 
+regression. To illustrate this, suppose we actually observe the true 
+confounder variable, but with some white, random normal noise. Figure bla
+shows how the bias in the parameter of interest increases quickly as a 
+function of the standard deviation of the random noise. This emphasizes the 
+difficulty of recovering unbiased estimates in the presence latent confounders,
+ and highlights potential limitations with methods that attempt to recover a 
+ substitute confounder to control for. 
 
-
-
-
-
-Things to include:
-
-
-- Simpson's paradox
-
-- Introduction of deconfounder algorithm
-
-- Challenges of deconfounder. 
-
-- Simulation illustrations
 
 
 

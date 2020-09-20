@@ -4,16 +4,36 @@ Causal diagrams and causal graphical models have been introduced by Pearl
 (2000) as a powerful tool for causal inference, especially in observational 
 studies. Perhaps one of the most important and useful features of causal 
 graphs when dealing with causal inference problems is the clear illustration 
-of the causal relationships between the variables. It is important to note 
-that the graphical approach to causality focuses primarily on issues of 
-identification of causal effects, that is, given a directed acyclic graph (
-DAG) that encodes an analyst's knowledge and belief about the data 
-generation process of the problem at hand, can a specific causal effect be 
-identified? As such, we emphasize that DAGs are great tools for a modeler to 
-encode their assumptions about a problem, and not necessarily a guide on how 
-to estimate a causal effect of interest. However, DAGs come with a set of 
-testable implications, and incorporating them in any causal analysis adds 
-robustness and defensibility to one's analysis. 
+of the causal relationships between the variables. 
+
+The goal of this section is not to provide a detailed overview of DAGs. Interested readers can refer to Pearl (2000) for a thorough introduction. 
+Instead, we focus specifically on illustrating the power of DAGs to represent 
+and encode complex  causal relationships between variables in an intuitive and 
+clear manner. 
+
+Consider the causal graph represented in Figure bla. Suppose we're interested 
+in the effect of Z on Y. What the graph in figure bla implies is that Z is 
+independent of Y(Z) given X, or in other words, the assignment mechanism is 
+ignorable conditional on the values of X [TODO: insert equations for the 
+ignorability assumption]. In such situations, it is sufficient to control for 
+X to obtain an unbiased estimate of the causal effect of Z on Y. Now suppose 
+we have a third variable, S, that affects both Z and Y (like X) but is 
+unobserved (Figure bla). Now, the ignorability assumption of Z does not hold 
+if we only condition on X, and we risk obtaining biased estimates of the 
+causal effect of Z on Y if we fail to account for S. 
+
+
+It is important to note that the graphical approach to causality focuses 
+primarily on issues of identification of causal effects, that is, given a 
+directed acyclic graph (DAG) that encodes an analyst's knowledge and belief 
+about the data generation process of the problem at hand, can a specific 
+causal effect be identified? As such, we emphasize that DAGs are great tools 
+for a modeler to encode their assumptions about a problem, but not necessarily 
+a guide on how to estimate a causal effects of interest. However, DAGs come 
+with a set of testable implications, and incorporating them in any causal 
+analysis adds robustness and defensibility to one's analysis. 
+
+TODO: insert figures, add equations. 
 
 
 
