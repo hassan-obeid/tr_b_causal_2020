@@ -26,7 +26,17 @@ We would like to remind readers that our goal in this section is to only show ho
 process affect estimates from the outcome model and that controlling for intermediate variables of some policy variable of interest in a causal graph,
 we do not succeed at recovering the true causal parameters of the variable of interest.
 For purposes of this exercise, we take the Multinomial Logit model defined in Brathwaite & Walker [x] as the true outcome generating process.
-We achieve this goal through a simulation exercise as follows:
+
+The systematic portion of the the multinomial logit model from Bratwhaite and Walker is specified as follows:
+
+U_da = $beta_{time_drive}$ * tavel_time + $beta_{cost_per_distance_da}$*cost_per_distance_da + $beta_{autos_ld_auto}$*number_of_autos_per_ld
+U_sr2 = $ASC_{sr2}$ + $beta_{time_drive}$ * tavel_time + $beta_{cost_per_distance_sr2}$*cost_per_distance_sr2 + $beta_{autos_ld_auto}$*number_of_autos_per_ld + $beta_{cross_bay}$*cross_bay_tour + $beta_{hhsize}$ * household_size + $beta_{n_kids_hh}$ * number_of_kids_hh
+U_sr2 = $ASC_{sr3+}$ + $beta_{time_drive}$ * tavel_time + $beta_{cost_per_distance_sr3+}$*cost_per_distance_sr3+ + $beta_{autos_ld_auto}$*number_of_autos_per_ld + $beta_{cross_bay}$*cross_bay_tour + $beta_{hhsize}$ * household_size + $beta_{n_kids_hh}$ * number_of_kids_hh
+U_WTW = $ASC_{WTW}$ + $beta_{travel_time_transit}$ *travel_time + $beta_{travel_cost}$ * tavel_cost
+U_DTW = $ASC_{DTW}$ + $beta_{travel_time_transit}$ *travel_time + $beta_{travel_cost}$ * tavel_cost
+U_WTD = $ASC_{WTD}$ + $beta_{travel_time_transit}$ *travel_time + $beta_{travel_cost}$ * tavel_cost
+
+We achieve our goal through a simulation exercise as follows:
 
 1. We generate a causal graph where we assume that all explanatory variables are observed and that there is no no structural relationship between any of them. 
 We simulate data based on this graph and then simulate outcomes based on parameters from a well-defined mode choice model using a Multinomial Logit (MNL) choice model described in Brathwaite & Walker [reference].
