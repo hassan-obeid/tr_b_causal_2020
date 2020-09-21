@@ -120,3 +120,19 @@ Moreover, if one crosses the bridge, then one's travel cost is higher due to tol
 And finally, if one takes a toll lane to get across the bridge faster, then one also pays a higher price.
 Overall, we can think of intuitive explanations for why there might be a dependence between travel time and travel cost, even after conditioning on travel distance.
 These explanations suggest particular relationships to analyze and particular variables, such as bay bridge crossings, to include in one's mode choice (i.e. outcome) model.
+
+\subsection{Additional information}
+
+The techniques presented in this section have focused on testing independence assertions using one's dataset.
+While this approach may be the most accessible of strategies for testing one's causal graph, they are not the only strategies.
+For instance, \citet{pitchforth_2013_proposed} put forth a detailed checklist of qualitative questions for one's causal graph.
+Answering these questions should increase the trustworthiness of one's graph.
+Alternatively, there are additional quantitative tests of one's causal graph that have not been explored in this section.
+
+For instance, a causal graph makes assumptions about the number of independent variables in one's dataset: i.e., the nodes in one's graph that do not have parent-nodes.
+One can test this assumption by estimating the ``intrinsic dimension'' of one's data, and testing whether the intrinsic dimension equals the number of independent variables implied by one's graph.
+For more information on estimating the intrinsic dimension of a dataset, see \citet{}.
+
+% Test vanishing tetrads / t-separation
+
+% Test functional inequalities / constraints, i.e. entropy constraints / inflation technique
