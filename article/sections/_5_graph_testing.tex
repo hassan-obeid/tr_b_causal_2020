@@ -4,10 +4,10 @@
 \subsection{Description}
 In the last section, we reviewed a process for creating an initial causal graph using expert opinion.
 Critically, after drafting a causal graph, we should immediately test it against empirical data.
-Indeed, if our graph captures inaccurate assumptions about the data generating process, then we have no reason to think that our conclusions from using the graph will be accurate.
+This is important because, if our graph captures inaccurate assumptions about the data generating process, then we have no reason to think that our conclusions from using the graph will be accurate.
 
 To test our causal graphs against data, we will first test the implications of our graph that involve observable variables only.
-We will defer the task of testing implications that involve unobserved / latent variables to Section \ref{sec:latent-confounding}.
+We will defer the task of testing implications that involve unobserved / latent variables to the end  of this subsection.
 For now, recall our discussion in Section \ref{sec:graph-overview} about the two basic implications of causal graphs: marginal independence and conditional independence.
 In both cases, direct testing of marginal or conditional independence amongst nodes in the causal graph may be difficult.
 Indeed, there are no direct tests of conditional independence that can detect all types of dependence, especially for continuous variables \citep{bergsma_2004_testing, shah_2020_hardness}.
@@ -36,13 +36,13 @@ Lastly, we also have to select a resampling method.
 In particular, how (if at all) will our resampling strategy account for the possible dependence between $X$ and $Z$?
 
 % State the choices made in this work.
-
 % Provide some discussion of the alternatives and the effects of different choices.
 For our demonstration, we made the following choices.
 First, we used linear regressions to model $E \left[Y \mid X, Z \right]$ and $E \left[ Y \mid Z \right]$.
-Secondly, we chose to use $R^2$ as our test statistic for judging the predictive performance.
-Finally, we have chosen to resample the $X$ vectors without replacement, keeping the length of the resampled vector equal to the length of the original vector.
+Second, we chose to use $R^2$ as our test statistic for judging the predictive performance.
+Third, we have chosen to resample the $X$ vectors without replacement, keeping the length of the resampled vector equal to the length of the original vector.
 In other words, we permute $X$.
+And finally, we have chosen to visualize these tests by plotting a vertical line to display our observed test-statistic and by plotting the distribution of our test statistics based on the permutations of $Y$.
 
 Our rationale for these choices are as follows.
 In our dataset, most of our explanatory variables were continuous (at least in theory).
@@ -63,6 +63,34 @@ Moreover, we still retained high power.
 We do not claim that these choices for assessing mean independence will always be appropriate.
 Indeed, one should assess one's tests on simulated data that resembles one's real data.
 For our illustrative purposes though, the combination of linear regressions, permutations, and $R^2$ resulted in adequate tests of marginal and conditional mean-independence.
+
+% Describe latent variable testing
+Now that we have described testing with observable variables, we can more easily describe conditional independence tests that involve unobserved (i.e., latent) variables.
+Indeed, when dealing with observational data, we will frequently find ourselves not having observed all variables that are of interest.
+Nevertheless, we still wish to test whether our data contradicts our graph.
+One way to directly extend our conditional independence testing to account for latent variables is to adopt a missing data perspective and impute the latent variables from a prior distribution.
+In particular, we can generalize our previous tests as follows.
+
+First, we can consider that instead of performing one test with a set of observed $X$, observed $Y$ and observed $Z$, we instead perform tests of observed $X$, observed $Y$, and imputed $Z$.
+This recasts our original test statistic of $R^2$ as a function of our permutation of $Y$ and our imputation of $Z$.
+Note that observed $Y$ is the permutation of $Y$ that uses the original ordering of the data.
+We'll now compute the p-value of this test statistic by marginalizing over the permutations and imputations.
+Specifically, our p-value will be $\mathcal{E}_{\textrm{samples, permutations}} \left[ 1_{R^2 \left( X, Y, Z_{\textrm{sampled}} \right) <  R^2 \left( X_{\textrm{sampled}}, Y_{\textrm{sampled, permuted}}, Z_{\textrm{sampled}} \right)} \right]$.
+For reference, this is the p-value for test statistics (or discrepancies) defined in \citet[Eq. 7]{gelman_1996_posterior}.
+
+Lastly, because our test statistic is itself a random variable that depends on the imputed values of $Z$, we change our visualization method.
+Instead of plotting a single line versus a distribution, we now plot two distributions against each other.
+We first plot the distribution of ``observed'' test statistics that is computed using the observed $X$, observed $Y$ and imputed $Z$ values.
+Then, we plot the distribution of ``imputed'' test statistics as a reference.
+In both distributions, we have one value per imputed vector $Z$.
+However, for the distribution of ``imputed'' test statistics, we marginalize over permutations of $Y$ since this distribution represents the null hypothesis of conditional or marginal independence.
+
+Of course, since there is generally ``no free lunch,'' this approach comes with drawbacks.
+One major concern is that such tests are very sensitive to assumptions about the joint prior distribution, $P_{\textrm{prior}} \left( X, Y, Z \right)$
+In our experience using simulation, if the observed data $\left( X, Y \right)$ is unlikely under the joint prior distribution $P_{\textrm{prior}} \left( X, Y, Z \right)$ then the conditional independence test is likely to fail.
+As always, the failing test indicates that the observed data is unlike the data simulated and used to construct the reference distribution.
+However, in this case, the dissimilarity may not relate to the conditional independence properties but may instead be an artifact of the sampled $\left( X, Y \right)$ being generally dissimilar to the observed $\left( X, Y \right)$.
+This highlights the need for extensive prior predictive checking of one's assumed joint prior, $P_{\textrm{prior}} \left( X, Y, Z \right)$, \textit{before} using conditional independence tests on causal graphs with latent variables.
 
 \subsection{Demonstration}
 % Illustrative causal graph
@@ -146,8 +174,10 @@ For a more detailed and intuitive explanation of the graphical criterion for van
 
 % Test functional inequalities / constraints, i.e. entropy constraints / inflation technique
 Finally, we note that there are still a whole host of other techniques for testing one's causal graphs.
-We can make use of so-called ``triad constraints'' that test independence between ``pseudo-residual'' values and one's explanatory variables \citep{cai_2019_triad}.
-Results from tests of triad-constraints are particularly useful for testing assumptions about how unobserved variables in our graph relate to each other and to our observed variables.
+Many of these remaining techniques are useful when one's causal graph contains unobserved (i.e., latent) variables.
+On one hand, we can use ``triad constraint'' tests that test independence between ``pseudo-residual'' values and one's explanatory variables \citep{cai_2019_triad}.
+Results from these tests are particularly useful for judging assumptions about how unobserved variables in our graph relate to each other and to our observed variables.
+
 Relatedly, one can make use of constraints on entropies of our observed variables instead of independencies.
 The basic idea is that differing assumptions about the structure of the unobserved variables in our graph imply differing amounts of entropy in the variables that we do observe, so we should test for these differences in entropy.
 For more information and examples, see the literature about:
