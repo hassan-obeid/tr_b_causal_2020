@@ -6,7 +6,7 @@ the causal inference literature in travel demand modeling. The field of causal
 inference has had a significant boost in interest recently with a new 
 direction of research based on the potential outcome framework and causal 
 graphical models as put forward by Pearl et al. Specifically we can leverage 
-the deconfounder work by Blei et al. to address unobsrved confounding in 
+the deconfounder work by \citet{wang_2019_blessings} to address unobsrved confounding in 
 tranportation applications.
 
 More often than not, the development of behavioral models in transportation, 
@@ -22,13 +22,12 @@ formal framework.
 While the field of transportation demand modeling could benefit greatly from 
 incorporating causal inference techniques, there are barriers that have made 
 this integration slower than what one would hope. These barriers stem from 
-the difference between the types of problems transportation demand modelers deal with and those that are typically studied in the causal inference 
-literature. Perhaps the main fundemental difference is that demand modelers 
+the difference between the types of problems transportation demand modelers deal with and those that are typically studied in the causal inference literature. Perhaps the main fundemental difference is that demand modelers 
 are typically trying to forecast the impacts of policies that haven't been 
 implemented or seen before, which requires additional work and a change to the
 typical causal modeling workflow in order to translate a given policy 
 (treatment) into a set of characteristics and variables that exist in the
-data and system at hand (please refer to Brathwaite and Walker (2018) for a 
+data and system at hand (please refer to \citet{brathwaite_2018_causal} for a 
 more thorough discussion of those barriers). While those wrinkles make the
 problem of demand modelers harder, there is still a lot to gain from 
 incorporating causal inference techniques where appropriate, and to contribute
@@ -50,11 +49,10 @@ traditional approaches.
 
 The last part of this chapter deals with the more complicated issue of latent 
 confounding, where one variable confounds two or more variables in the causal 
-graph, but that variable is not observed (see graph 1). This type of 
-confounding creates variations in the outcome variable that are not caused by 
+graph. This type of confounding creates variations in the outcome variable that are not caused by 
 the confounded variables but are correlated by it, which biases the estimated 
 causal effects of those variables if nothing is done to account for the 
-confounding. 
+confounding. We describe this problem in more details in section 7.
 
 
 
