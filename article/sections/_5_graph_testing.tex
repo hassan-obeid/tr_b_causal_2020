@@ -2,6 +2,7 @@
 \label{sec:graph-testing}
 
 \subsection{Description}
+\label{sec:testing-description}
 In the last section, we reviewed a process for creating an initial causal graph using expert opinion.
 Critically, after drafting a causal graph, we should immediately test it against empirical data.
 This is important because, if our graph captures inaccurate assumptions about the data generating process, then we have no reason to think that our conclusions from using the graph will be accurate.
@@ -94,6 +95,8 @@ However, in this case, the dissimilarity may not relate to the conditional indep
 This highlights the need for extensive prior predictive checking of one's assumed joint prior, $P_{\textrm{prior}} \left( X, Y, Z \right)$, \textit{before} using conditional independence tests on causal graphs with latent variables.
 
 \subsection{Demonstration}
+\label{sec:testing-demonstration}
+
 % Illustrative causal graph
 To demonstrate the testing procedures described above, we used the causal graph in Figure \ref{fig:graph-for-testing}.
 This causal graph shows a set of hypothesized causal relationships between variables thought to contribute to the utility of the drive-alone travel alternative in our dataset.
@@ -151,6 +154,7 @@ Overall, we can think of intuitive explanations for why there might be a depende
 These explanations suggest particular relationships to analyze and particular variables, such as bay bridge crossings, to include in one's mode choice (i.e. outcome) model.
 
 \subsection{Additional techniques}
+\label{sec:testing-addendum}
 
 The methods presented in this section have focused on testing independence assertions using one's dataset.
 While this approach may be the most accessible strategy for testing one's causal graph, there are other applicable techniques.
