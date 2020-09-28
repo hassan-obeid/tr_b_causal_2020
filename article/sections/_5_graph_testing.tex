@@ -72,18 +72,19 @@ One way to directly extend our conditional independence testing to account for l
 In particular, we can generalize our previous tests as follows.
 
 First, we can consider that instead of performing one test with a set of observed $X$, observed $Y$ and observed $Z$, we instead perform tests of observed $X$, observed $Y$, and imputed $Z$.
-This recasts our original test statistic of $R^2$ as a function of our permutation of $Y$ and our imputation of $Z$.
-Note that observed $Y$ is the permutation of $Y$ that uses the original ordering of the data.
-We'll now compute the p-value of this test statistic by marginalizing over the permutations and imputations.
+This recasts the randomness underlying the null-distribution in our original test statistic of $R^2$ as a function of our permutation of $Y$ and our imputation of $Z$.
+Here, we impute $Z$ by sampling from the prior or posterior distribution of $Z$, depending on whether we're testing independencies before or after performing inference on our model's parameters.
+Moreover, we'll now compute the p-value of this test statistic by marginalizing over the permutations and imputations.
 Specifically, our p-value will be $\mathcal{E}_{\textrm{samples, permutations}} \left[ 1_{R^2 \left( X, Y, Z_{\textrm{sampled}} \right) <  R^2 \left( X_{\textrm{sampled}}, Y_{\textrm{sampled, permuted}}, Z_{\textrm{sampled}} \right)} \right]$.
-For reference, this is the p-value for test statistics (or discrepancies) defined in \citet[Eq. 7]{gelman_1996_posterior}.
+For reference, this is the same as the p-value for test statistics (or discrepancies) defined in \citet[Eq. 7]{gelman_1996_posterior}.
 
-Lastly, because our test statistic is itself a random variable that depends on the imputed values of $Z$, we change our visualization method.
-Instead of plotting a single line versus a distribution, we now plot two distributions against each other.
+Lastly, because our test statistic is itself a random variable that depends on the imputed values of $Z$, we must change our visualization method.
+Instead of plotting a single line versus a distribution, we now plot two distributions against one another.
 We first plot the distribution of ``observed'' test statistics that is computed using the observed $X$, observed $Y$ and imputed $Z$ values.
-Then, we plot the distribution of ``imputed'' test statistics as a reference.
-In both distributions, we have one value per imputed vector $Z$.
-However, for the distribution of ``imputed'' test statistics, we marginalize over permutations of $Y$ since this distribution represents the null hypothesis of conditional or marginal independence.
+Then, we plot the distribution of ``sampled'' test statistics using prior samples of $\left( X, Y, Z \right)$ as a reference.
+For an example of such a plot, see Figure \ref{} (discussed in the following subsection).
+Note, we have one value per imputed vector $Z$ in both the observed and sampled distributions.
+However, for the distribution of ``sampled'' test statistics, we marginalize over permutations of $Y$ since this distribution represents the null hypothesis of conditional or marginal independence.
 
 Of course, since there is generally ``no free lunch,'' this approach comes with drawbacks.
 One major concern is that such tests are very sensitive to assumptions about the joint prior distribution, $P_{\textrm{prior}} \left( X, Y, Z \right)$
