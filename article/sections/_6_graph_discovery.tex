@@ -117,3 +117,15 @@ And of course, extensions of these techniques exist for inference in the presenc
 % Discovery of equivalence classes
 
 \subsection{An application of causal discovery}
+To demonstrate the methods in this section, we chose to use the simplest causal discovery algorithm: the PC algorithm \citep{glymour_2001_causation}.
+For practitioners who may reasonably start with the simplest method they can find and only increase methodological complexity as needed, this should be an illuminating starting point.
+Moreover, as noted above, the PC algorithm assumes that one has no unobserved confounders.
+From Section \ref{sec:testing-demonstration}, we expect that our causal graph for the drive alone utility of our dataset likely contains unobserved confounders.
+Accordingly, using the PC algorithm on our example allows us to observe how the algorithm behaves under violation of its assumptions.
+Does the algorithm fail gracefully and point towards violations of its assumptions, or does it return incorrect results with certainty?
+
+To begin, it helps to understand the general procedure of the PC algorithm. First, the algorithm uses all our observed variables to infer a skeleton of a causal graph.
+That is, the algorithm attempts to infer an undirected graph that denotes which variables relate to which other variables, ignoring the directionality of causation between them.
+Then, after inferring a skeleton, the algorithm attempts to orient the undirected arrows as much as possible.
+In the best case, one ends up with a fully directed acyclic graph.
+In other cases, one ends up with a mixed directed and undirected graph, denoting a MEC of graphs with the same independence properties.
