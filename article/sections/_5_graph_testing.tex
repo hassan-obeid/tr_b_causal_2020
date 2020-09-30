@@ -76,7 +76,11 @@ First, we can consider that instead of performing one test with a set of observe
 This recasts the randomness underlying the null-distribution in our original test statistic of $R^2$ as a function of our permutation of $Y$ and our imputation of $Z$.
 Here, we impute $Z$ by sampling from the prior or posterior distribution of $Z$, depending on whether we're testing independencies before or after performing inference on our model's parameters.
 Moreover, we'll now compute the p-value of this test statistic by marginalizing over the permutations and imputations.
-Specifically, our p-value will be $\mathcal{E}_{\textrm{samples, permutations}} \left[ 1_{R^2 \left( X, Y, Z_{\textrm{sampled}} \right) <  R^2 \left( X_{\textrm{sampled}}, Y_{\textrm{sampled, permuted}}, Z_{\textrm{sampled}} \right)} \right]$.
+Specifically, our p-value will be
+\begin{equation}
+E_{\textrm{samples, permutations}} \left[ \mathbb{I} \left \lbrace R^2 \left( X, Y, Z_{\textrm{sampled}} \right) <  R^2 \left( X_{\textrm{sampled}}, Y_{\textrm{sampled}} ^{\textrm{permuted}}, Z_{\textrm{sampled}} \right) \right \rbrace \right]
+\end{equation}
+where $\mathbb{I}$ represents the indicator function that equals one if the condition inside its braces is true and zero otherwise.
 For reference, this is the same as the p-value for test statistics (or discrepancies) defined in \citet[Eq. 7]{gelman_1996_posterior}.
 
 Lastly, because our test statistic is itself a random variable that depends on the imputed values of $Z$, we must change our visualization method.
@@ -145,7 +149,7 @@ Does travel time cause travel cost when driving alone?
 Does travel cost cause travel time while driving alone?
 Does some other set of variables (potentially unmeasured) cause both travel time and travel cost?
 
-Thinking through these questions, we can immediately think of latent variables that cause both travel time, travel cost, and the choice.
+Thinking through these questions, we can immediately think of latent variables that cause both travel time, travel cost, and the choice, even after conditioning on one's travel distance.
 For example, consider whether one drives alone over the San Francisco Bay Bridge.
 If one crosses the bridge, then traffic delays will likely increase one's travel time.
 Moreover, if one crosses the bridge, then one's travel cost is higher due to tolls that one must pay.
