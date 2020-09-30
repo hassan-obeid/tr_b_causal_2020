@@ -14,6 +14,7 @@ Specifically, by exchanging the human-in-the-loop for a purely algorithmic endea
 This section will describe why causal discovery is important, provide a brief overview of the main concepts in causal discovery, and show the results of using causal discovery algorithms on the dataset described in Section \ref{sec:graph-importance}.
 
 \subsection{Why use causal discovery?}
+\label{sec:why-causal-discovery}
 
 % Why is causal discovery important?
 % Promotes robustness and understanding of results
@@ -77,6 +78,7 @@ With these posterior approximation methods, we can generate causal graphs for al
 \end{itemize}
 
 \subsection{Overview of causal discovery algorithms}
+\label{sec:discovery-overview}
 
 % Pointers to thorough review papers
 The following subsection presents a non-exhaustive overview of causal discovery algorithms.
@@ -110,11 +112,6 @@ As noted in the description of such algorithms, they are especially useful for d
 In other words, discovery methods based on FCMs enable orientation of the undirected or bi-directed edges that represent ambiguity over whether $X \rightarrow Y$ or $Y \rightarrow X$.
 This orienting capability can be usefully combined with the previous causal discovery algorithms that infer classes graphs with equivalent marginal and conditional independencies.
 And of course, extensions of these techniques exist for inference in the presence of unobserved confounding \citep[Sec. 6]{goudet_2018_learning} and for learning an entire causal graph as opposed to only dealing with variable pairs \citep{zheng_2020_learning}.
-
-% What questions can be addressed via these discovery algorithms
-% $X \rightarrow Y$ or $X \leftarrow Y$
-% Full graph inference (with and without allowance-for / detection-of latent confounders)
-% Discovery of equivalence classes
 
 \subsection{An application of causal discovery}
 \label{sec:discovery-application}
