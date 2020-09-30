@@ -117,6 +117,7 @@ And of course, extensions of these techniques exist for inference in the presenc
 % Discovery of equivalence classes
 
 \subsection{An application of causal discovery}
+\label{sec:discovery-application}
 To demonstrate the methods in this section, we chose to use the simplest causal discovery algorithm: the PC algorithm \citep{glymour_2001_causation}.
 For practitioners who may reasonably start with the simplest method they can find and only increase methodological complexity as needed, this should be an illuminating starting point.
 Moreover, as noted above, the PC algorithm assumes that one has no unobserved confounders.
@@ -124,8 +125,46 @@ From Section \ref{sec:testing-demonstration}, we expect that our causal graph fo
 Accordingly, using the PC algorithm on our example allows us to observe how the algorithm behaves under violation of its assumptions.
 Does the algorithm fail gracefully and point towards violations of its assumptions, or does it return incorrect results with certainty?
 
-To begin, it helps to understand the general procedure of the PC algorithm. First, the algorithm uses all our observed variables to infer a skeleton of a causal graph.
+To begin, it helps to understand the general procedure of the PC algorithm. The algorithm uses all our observed variables to infer a skeleton of a causal graph.
 That is, the algorithm attempts to infer an undirected graph that denotes which variables relate to which other variables, ignoring the directionality of causation between them.
-Then, after inferring a skeleton, the algorithm attempts to orient the undirected arrows as much as possible.
-In the best case, one ends up with a fully directed acyclic graph.
-In other cases, one ends up with a mixed directed and undirected graph, denoting a MEC of graphs with the same independence properties.
+Then, after inferring a skeleton, the algorithm attempts to orient the undirected edges as much as possible.
+Optimistically, one ends up with a fully directed acyclic graph.
+In other cases, one recovers a mix of directed and undirected edges, denoting a MEC of graphs with the same independence properties.
+In the final case, one recovers an undirected causal graph.
+This corresponds to the situation where one cannot infer which  objects cause which other objects.
+One merely knows that given sets of objects relate to each other, not why this relationship exists.
+
+With these basics understood, we can now present the results of using the PC algorithm to infer the causal graph for the variables present in Figure \ref{fig:graph-for-testing}.
+For reference, the variables (travel time, travel cost, travel distance, number of automobiles in one's household, and the number of licensed drivers in one's household) are all thought to influence the utility of commuting by driving-alone.
+We care about the causal relationships between those explanatory variables because intervening on any one of these variables may cause downstream impacts on another explanatory variable.
+To make accurate causal inferences, we need to know and account for these differing pathways of influence on one's utility and mode choice when estimating the causal effect of interventions or treatments.
+Causal discovery helps us discover these differing pathways of influence by generating plausible causal graphs for our datasets.
+
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.5\textwidth]{discover-example-graph}
+% \caption{Result of using the PC algorithm on variables in the drive-alone utility}
+% \label{fig:discovery-example-graph}
+% \end{figure}
+
+In this case, Figure \ref{fig:discovery-example-graph} shows the final result of applying the PC algorithm to the variables in our drive-alone utility function.
+There are two main differences between this graph and the example graph shown in Figure \ref{fig:graph-for-testing}.
+First, the number of licensed drivers is not independent of the number of automobiles in the household.
+The graph discovered via the PC algorithm depicts the number of automobiles in one's household as being a function of the number of licensed drivers that one has in one's household and as being a function of how far one has to travel to work or to school.
+The second major difference is the presence of an undirected edge between travel time and travel cost.
+The graph discovered by the PC algorithm states that travel time and travel cost are dependent, even after conditioning on travel distance.
+
+As described in Section \ref{sec:testing-demonstration}, independence testing foreshadows (indeed, determines) both of these results.
+Marginal independence testing showed us that the number of licensed drivers in a household and the number of automobiles in that household are not independent.
+Likewise, conditional independence testing showed us that travel cost is not independent of travel time, conditional on travel distance.
+Far from being a surprising congruence, this alignment is to be expected: conditional and marginal independence testing results are, in fact, used to generate the graph returned by the PC algorithm.
+
+Relative to manual independence testing, what do we gain from using causal discovery algorithms?
+Critically, we gain at least three benefits from causal discovery algorithms.
+First, we gain insight into the dependence structure of our variables.
+For instance, we discover that the number of licensed drivers in a household may cause the number of automobiles in that household, as opposed to the number of automobiles causing the number of licensed drivers.
+Secondly, we gain a greater sense of uncertainty in our causal graphs.
+For instance, we can bootstrap our data and look at the distribution of inferred causal graphs.
+Moreover, even our discovery of graphs with undirected edges is an expression of uncertainty about the direction of particular causal relationships.
+In our experience, modellers seldom express and quantitatively address uncertainty about the direction of causal relationships.
+Lastly, we gain comprehensiveness from performing a greater amount of tests than we might otherwise perform if only testing the assumptions of our currently-hypothesized causal graph.
