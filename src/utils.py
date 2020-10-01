@@ -2,16 +2,19 @@
 """
 Generic utilities that helpful across project-submodules.
 """
-# Built-in modules
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple
+from typing import Union
 
-# Third-party modules
 import numpy as np
 from causalgraphicalmodels import CausalGraphicalModel
-from scipy.stats.distributions import rv_continuous, rv_discrete
+from graphviz import Digraph
+from graphviz import Graph
+from scipy.stats.distributions import rv_continuous
+from scipy.stats.distributions import rv_discrete
 
 DISTRIBUTION_TYPE = Union[rv_continuous, rv_discrete]
+GRAPH_TYPE = Union[CausalGraphicalModel, Digraph, Graph]
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -19,7 +22,7 @@ FIGURES_DIRECTORY_PATH = PROJECT_ROOT / "reports" / "figures"
 
 
 def create_graph_image(
-    graph: CausalGraphicalModel,
+    graph: GRAPH_TYPE,
     img_size: str = "5,3",
     output_name: str = "graph",
     output_dir: Path = FIGURES_DIRECTORY_PATH,
@@ -30,7 +33,7 @@ def create_graph_image(
 
     Parameters
     ----------
-    graph : CausalGraphicalModel
+    graph : CausalGraphicalModel, Digraph, or Graph
         The graph to be drawn and written to file.
     img_size : optional, str.
         Denotes the size of the resulting PNG file, in 'width,height' format,
@@ -51,7 +54,9 @@ def create_graph_image(
     None.
     """
     # Extract the graphviz dot file
-    causal_graph = graph.draw()
+    causal_graph = (
+        graph.draw() if isinstance(graph, CausalGraphicalModel) else graph
+    )
     # Set the size of the graph
     causal_graph.graph_attr.update(size=img_size)
     # Write an image of the graph to file
