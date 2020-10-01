@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Creates the final images related to conditional independence tests that only
-use observable variables.
+Creates the final images related to marginal independence tests that only use
+observable variables.
 
 To execute this module by itself, navigate at the command line to the project's
-root directory and type: `python -m src.workflow.cit_testing_images`.
+root directory and type: `python -m src.workflow.mit_testing_images`.
 """
+import pdb
 from pathlib import Path
 
 import click
@@ -13,7 +14,6 @@ import pandas as pd
 
 import src.testing.observable_independence as oi
 from src import utils
-from src.graphs.conditional_independence_example import EXAMPLE_GRAPH
 
 
 # Declare paths to data
@@ -26,20 +26,22 @@ DATA_PATH = (
 
 # Note the columns of interest in the dataset
 MODE_ID_COL = "mode_id"
-TIME_COL = "total_travel_time"
-COST_COL = "total_travel_cost"
-DISTANCE_COL = "total_travel_distance"
+LICENSE_COLUMN = "num_licensed_drivers"
+NUM_AUTOS_COLUMN = "num_cars"
+
+# Note the travel mode of intersest for this plot
+DRIVE_ALONE_ID = 1
 
 
-def create_conditional_independence_testing_results(
+def create_marginal_independence_testing_results(
     output_path: str,
     num_permutations: int = 100,
     permuted_color: str = "#a6bddb",
 ) -> None:
     """
-    Computes and stores the results of permutation testing the implication
-    of conditional mean independence between travel time  and travel cost,
-    conditional on travel distance, for the drive alone utility.
+    Computes and stores the results of permutation testing the implication of
+    marginal mean independence between the number of licensed drivers and the
+    number of automobiles owned in a household, for the drive alone utility.
 
     Parameters
     ----------
@@ -61,16 +63,15 @@ def create_conditional_independence_testing_results(
     df = pd.read_csv(DATA_PATH)
 
     # Extract the data for the test
-    drive_alone_filter = df[MODE_ID_COL] == 1
-    time_array = df.loc[drive_alone_filter, TIME_COL].values
-    cost_array = df.loc[drive_alone_filter, COST_COL].values
-    distance_array = df.loc[drive_alone_filter, DISTANCE_COL].values
+    drive_alone_df = df[df[MODE_ID_COL] == DRIVE_ALONE_ID]
+    license_array = drive_alone_df[LICENSE_COLUMN].values
+    num_cars_array = drive_alone_df[NUM_AUTOS_COLUMN].values
 
     # Perform the permutation and save the resulting visualization of the test
     oi.visual_permutation_test(
-        time_array,
-        cost_array,
-        distance_array,
+        license_array,
+        num_cars_array,
+        z_array=None,
         num_permutations=num_permutations,
         permutation_color=permuted_color,
         output_path=output_path,
@@ -97,25 +98,20 @@ def create_conditional_independence_testing_results(
 )
 @click.option(
     "--output_name",
-    default="cit--time_vs_cost_given_distance.png",
+    default="mit--num_drivers_vs_num_autos.png",
     type=str,
-    help="Filename for results of visual CIT.",
+    help="Filename for results of visual Marginal Independence Test.",
     show_default=True,
 )
 def main(num_permutations, color, output_name) -> None:
-    # Write the image of the conditional independence example to file
-    utils.create_graph_image(
-        graph=EXAMPLE_GRAPH, output_name="conditional_independence_subgraph"
-    )
-
     # Note the path for the output image of the permutation test.
     PERMUTATION_OUTPUT_PATH_STR = str(
         utils.FIGURES_DIRECTORY_PATH / output_name
     )
 
     # Create and store the results of permutation testing the implication
-    # of conditional mean independence
-    create_conditional_independence_testing_results(
+    # of marginal mean independence
+    create_marginal_independence_testing_results(
         output_path=PERMUTATION_OUTPUT_PATH_STR,
         num_permutations=num_permutations,
         permuted_color=color,
