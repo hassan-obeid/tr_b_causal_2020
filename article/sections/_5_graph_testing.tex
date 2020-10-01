@@ -118,7 +118,7 @@ Despite their differing levels of a-priori credibility, we will see how we can t
 % \begin{figure}
 % \centering
 % \includegraphics[width=0.5\textwidth]{exa}
-% \caption{Example decision tree for bicycle consideration}
+% \caption{Marginal independence test results for the number of cars and the number of licensed drivers in a household}
 % \label{fig:marginal-independence-test}
 % \end{figure}
 
@@ -130,12 +130,12 @@ This plot visualizes the fact that---through the lens of our chosen test statist
 Accordingly, we should consider the weaker assumption of marginal dependence, where we can make data-generating assumptions that offer greater realism and concordance with our observations.
 
 % Conditional testing results
-% \begin{figure}
-% \centering
-% \includegraphics[width=0.5\textwidth]{exa}
-% \caption{Example decision tree for bicycle consideration}
-% \label{fig:conditional-independence-test}
-% \end{figure}
+\begin{figure}
+   \centering
+   \includegraphics[width=0.5\textwidth]{cit--time_vs_cost_given_distance}
+   \caption{Conditional independence test results for travel time and travel cost given travel distance}
+   \label{fig:conditional-independence-test}
+\end{figure}
 In Figure \ref{fig:conditional-independence-test}, we have an analogous visualization of a conditional independence test.
 Here, we test the hypothesis that travel time is mean-independent of travel cost, conditional on travel distance.
 To execute this test, we model the conditional expectation of travel time as a linear function of travel cost and travel distance.
