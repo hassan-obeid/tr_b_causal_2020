@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Creates the final images related to marginal and conditional independence tests
-that use only observable variables.
+Creates the final images related to conditional independence tests that only
+use observable variables.
 
 To execute this module by itself, navigate at the command line to the project's
-root directory and type: `python -m src.workflow.obs_testing_images`.
+root directory and type: `python -m src.workflow.cit_testing_images`.
 """
 from pathlib import Path
 
