@@ -10,6 +10,13 @@ We know that choice modellers have made use of causal graphs in varying forms fo
 Here are three examples to illustrate our point.
 First, consider the case of Random Utility Maximization (RUM) models.
 
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.5\textwidth]{rum-causal-graph}
+% \caption{Archetypical RUM causal diagram}
+% \label{fig:example-graph-rum}
+% \end{figure}
+
 For decades now, choice modellers have used stylized directed graphical models to denote or convey the meaning of their economic framework's notion of causality in the context of their research.
 As an example, take the following figure from Walker and Ben-Akiva \cite authors.
 In Figure \ref{figure_title} Walker and Ben-Akiva depict the assumption that covariates X cause random utilities U which collectively cause the choice via utility maximization.
@@ -17,12 +24,26 @@ The reason I call such diagrams stylized is because of their lack of detail of t
 When speaking of the covariates collectively, one is unable to distinguish whether one covariate causes another.
 Such intra-covariate relationships are important for estimating the causal effects of a given policy, as demonstrated in Section \ref{Sec_label}.
 
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.5\textwidth]{iclv-causal-graph}
+% \caption{Archetypical ICLV causal diagram}
+% \label{fig:example-graph-iclv}
+% \end{figure}
+
 Another area of relation with prior choice modelling literature is in Integrated Choice and Latent Variable (ICLV) models.
 These models make inference on one or more latent variables, alongside the typical parameters in one's model.
 An example of such ICLV models is in Figure \ref{}, based on Figure \_bla\_ of Walker and Ben-Akiva \cite.
 As with the causal graphs of RUM models, ICLV causal graphs depict a particular set of structural modeling assumptions about the data generating process.
 Here concern typically centers around unobserved mediators, i.e., variables caused by one's measured covariates that also influence one's outcome.
 Omitting these variables leads to inconsistent estimates for one's remaining parameters, thus leading researchers to care deeply about ICLV models that can overcome such problems.
+
+% \begin{figure}
+% \centering
+% \includegraphics[width=0.5\textwidth]{activity-based-model-causal-graph}
+% \caption{Archetypical causal diagram for activity-based models}
+% \label{fig:example-graph-abm}
+% \end{figure}
 
 Finally, consider activity based travel demand models.
 These models often come with a causal diagram that depicts the interrelations between the outcomes in the model (e.g., household location choice, destination choice, travel mode choice, departure time choice, route choice etc.)
