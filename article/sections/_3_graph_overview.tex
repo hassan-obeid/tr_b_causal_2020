@@ -5,11 +5,11 @@ Causal diagrams and causal graphical models have been introduced by Pearl
 studies. Perhaps one of the most important and useful features of causal 
 graphs when dealing with causal inference problems is the clear illustration 
 of the causal relationships between the variables. 
-
-The goal of this section is not to provide a detailed overview of DAGs. Interested readers can refer to Pearl (2000) for a thorough introduction. 
-Instead, we focus specifically on illustrating the power of DAGs to represent 
+While a formal introduction to the topic of directed acyclic graphs (DAGs) is beyond the scope of this chapter, 
+here we focus specifically on illustrating the power of DAGs to represent 
 and encode complex  causal relationships between variables in an intuitive and 
-clear manner. 
+clear manner. Interested readers can refer to Pearl (2000) for a thorough introduction. 
+
 
 Consider the causal graph represented in Figure bla. Suppose we're interested 
 in the effect of Z on Y. What the graph in figure bla implies is that Z is 
@@ -21,6 +21,11 @@ we have a third variable, S, that affects both Z and Y (like X) but is
 unobserved (Figure bla). Now, the ignorability assumption of Z does not hold 
 if we only condition on X, and we risk obtaining biased estimates of the 
 causal effect of Z on Y if we fail to account for S. 
+
+Now note the set of structural equations needed to convey the same assumptions as figure bla. 
+\[Z = f_Z(X, \epsilon_Z)  \]
+
+\[Y(z) = f_Y(X, z, \epsilon_Y)  \]
 
 
 It is important to note that the graphical approach to causality focuses 
