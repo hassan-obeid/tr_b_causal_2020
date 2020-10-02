@@ -116,9 +116,9 @@ And of course, extensions of these techniques exist for inference in the presenc
 \subsection{An application of causal discovery}
 \label{sec:discovery-application}
 To demonstrate the methods in this section, we chose to use the simplest causal discovery algorithm: the PC algorithm \citep{glymour_2001_causation}.
-For practitioners who may reasonably start with the simplest method they can find and only increase methodological complexity as needed, this should be an illuminating starting point.
+For practitioners who may reasonably start with the simplest method they can find and increase methodological complexity as needed, this should be an illuminating starting point.
 Moreover, as noted above, the PC algorithm assumes that one has no unobserved confounders.
-From Section \ref{sec:testing-demonstration}, we expect that our causal graph for the drive alone utility of our dataset likely contains unobserved confounders.
+As noted in Section \ref{sec:testing-demonstration}, we expect that our causal graph for the drive alone utility of our dataset likely contains unobserved confounders.
 Accordingly, using the PC algorithm on our example allows us to observe how the algorithm behaves under violation of its assumptions.
 Does the algorithm fail gracefully and point towards violations of its assumptions, or does it return incorrect results with certainty?
 
@@ -144,8 +144,8 @@ Causal discovery helps us discover these differing pathways of influence by gene
 % \label{fig:discovery-example-graph}
 % \end{figure}
 
-In this case, Figure \ref{fig:discovery-example-graph} shows the final result of applying the PC algorithm to the variables in our drive-alone utility function.
-There are two main differences between this graph and the example graph shown in Figure \ref{fig:graph-for-testing}.
+Figure \ref{fig:discovery-example-graph} shows the final result of applying the PC algorithm to the variables in our drive-alone utility function.
+Two main differences exist between this graph and the example graph shown in Figure \ref{fig:graph-for-testing}.
 First, the number of licensed drivers is not independent of the number of automobiles in the household.
 The graph discovered via the PC algorithm depicts the number of automobiles in one's household as being a function of the number of licensed drivers that one has in one's household and as being a function of how far one has to travel to work or to school.
 The second major difference is the presence of an undirected edge between travel time and travel cost.
