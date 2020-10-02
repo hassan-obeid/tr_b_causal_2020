@@ -20,8 +20,10 @@ from src.graphs.rum import RUM_GRAPH
     show_default=True,
 )
 def main(output_name):
-    # Write the image of the conditional independence example to file
-    utils.create_graph_image(graph=RUM_GRAPH, output_name=output_name)
+    # Write the image of the RUM graph to file
+    utils.create_graph_image(
+        graph=RUM_GRAPH, output_name=output_name, output_type="pdf"
+    )
 
 
 if __name__ == "__main__":
