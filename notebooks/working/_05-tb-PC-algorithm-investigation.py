@@ -550,7 +550,7 @@ step_9_graph.edge("C", "T", dir="none")
 
 # Display the graph
 utils.create_graph_image(
-    step_9_graph, output_name = PLOT_TITLE, output_type = "pdf"
+    step_9_graph, output_name=PLOT_TITLE, output_type="pdf"
 )
 
 step_9_graph.graph_attr.update(size="10,6")
