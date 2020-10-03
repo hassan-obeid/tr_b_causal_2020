@@ -431,6 +431,9 @@ ax.set_ylabel('Estimated Parameter', size = 18)
 ax.set_xlabel('Standard Deviation of Added Noise', size = 18)
 # ax.set_title('Sensitivity of causal effect to random noise added to the confounder', size = 20)
 ax.legend()
+
+fig.savefig('confounder-sensitivity.pdf')
+fig.savefig('confounder-sensitivity.png')
 # -
 
 
