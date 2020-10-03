@@ -1,14 +1,13 @@
 \section{Overview of Causal Graphs}
 
-Causal diagrams and causal graphical models have been introduced by Pearl 
-(2000) as a powerful tool for causal inference, especially in observational 
+Causal diagrams and causal graphical models have been introduced by \citet{pearl_causality_2000} as a powerful tool for causal inference, especially in observational 
 studies. Perhaps one of the most important and useful features of causal 
 graphs when dealing with causal inference problems is the clear illustration 
 of the causal relationships between the variables. 
 While a formal introduction to the topic of directed acyclic graphs (DAGs) is beyond the scope of this chapter, 
 here we focus specifically on illustrating the power of DAGs to represent 
 and encode complex  causal relationships between variables in an intuitive and 
-clear manner. Interested readers can refer to Pearl (2000) for a thorough introduction. 
+clear manner. Interested readers can refer to \citet{pearl_causality_2000} for a thorough introduction. 
 
 
 Consider the causal graph represented in Figure \ref{fig:simple-graph}. Suppose we're interested 
@@ -39,7 +38,7 @@ Now consider the case where there exists another latent confounding variable, U,
 \begin{figure}
    \centering
    \includegraphics[width=0.5\textwidth]{simple-graph-confounded.pdf}
-   \caption{Simple DAG of the causal relationships between X, Y and Z and confounder U}
+   \caption{Simple DAG of the causal relationships between X, Y, Z and confounder U}
    \label{fig:simple-graph-confounded}
 \end{figure}
 
