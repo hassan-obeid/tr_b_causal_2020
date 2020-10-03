@@ -4,7 +4,7 @@ Creates the final images related to marginal independence tests that only use
 observable variables.
 
 To execute this module by itself, navigate at the command line to the project's
-root directory and type: `python -m src.workflow.mit_testing_images`.
+root directory and type: `python -m src.workflow.testing_images_marginal`.
 """
 import pdb
 from pathlib import Path
