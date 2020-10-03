@@ -38,21 +38,21 @@ As with the causal graphs of RUM models, ICLV causal graphs depict a particular 
 Here concern typically centers around unobserved mediators, i.e., variables caused by one's measured covariates that also influence one's outcome.
 Omitting these variables leads to inconsistent estimates for one's remaining parameters, thus leading researchers to care deeply about ICLV models that can overcome such problems.
 
-% \begin{figure}
-% \centering
-% \includegraphics[width=0.5\textwidth]{activity-based-model-causal-graph}
-% \caption{Archetypical causal diagram for activity-based models}
-% \label{fig:example-graph-abm}
-% \end{figure}
+\begin{figure}
+   \centering
+   \includegraphics[width=0.5\textwidth]{sacsim-model-graph}
+   \caption{Archetypical causal diagram for activity-based models}
+   \label{fig:example-graph-abm}
+\end{figure}
 
 Finally, consider activity based travel demand models.
 These models often come with a causal diagram that depicts the interrelations between the outcomes in the model (e.g., household location choice, destination choice, travel mode choice, departure time choice, route choice etc.)
-For example, see Figure \ref{}, based on Figure \_bla\_ of \citet{bradley_2010_sacsim}.
+For example, see Figure \ref{fig:example-graph-abm}, from \citet[Fig.1]{bradley_2010_sacsim}.
 The purpose of such graphs is to explain the structure of the entire system of outcome models.
 In particular, these graphs depict the researcher's assumed causal ordering of which outcomes temporally precede other outcomes.
 Diagrams of activity-based models also show the modeller's assumptions about how considerations of future choices affect temporally-preceding decisions.
 
-In RUM, ICLV, and activity-based model diagrams, the main distinction between the causal graphs of Pearl \citet{article_name} and the causal diagrams in econometrics are two two-fold.
+In RUM, ICLV, and activity-based model diagrams, the main distinction between the causal graphs of \citet{pearl_1995_causal} and the causal diagrams in econometrics are two two-fold.
 First, causal graphs in RUM, ICLV, and activity-based models ignore relations between the explanatory variables.
 Typically, choice modelling causal graphs depict all explanatory variables together as if they are in independently generated groups that then affect one's utilities and choices.
 In the language used by a large group of causal inference scholars, econometric causal diagrams ignore the treatment assignment mechanism.
