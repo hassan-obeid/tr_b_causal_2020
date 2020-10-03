@@ -6,12 +6,13 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.4.2
+#       jupytext_version: 1.4.0
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
 #     name: python3
 # ---
+
 # +
 # # Purpose
 # The purpose of this notebook is to manually execute the PC Algorithm (Section 5.4.2) of
@@ -70,6 +71,9 @@ NUM_PERMUTATIONS = 100
 # permutation-based test statistics
 PERMUTED_COLOR = "#a6bddb"
 
+# Declare a title for the discovered causal graph
+PLOT_TITLE = "discovery-example-graph"
+
 # +
 # Built-in modules
 import itertools  # noqa: E402 isort:skip
@@ -85,6 +89,7 @@ import pandas as pd  # noqa: E402 isort:skip
 # noreorder
 sys.path.insert(0, "../../")
 import src.testing.observable_independence as oi  # noqa: E402
+import src.utils as utils  # noqa: E402
 from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY  # noqa: E402
 
 
@@ -544,6 +549,11 @@ step_9_graph.edge("D", "C")
 step_9_graph.edge("C", "T", dir="none")
 
 # Display the graph
+utils.create_graph_image(
+    step_9_graph, output_name = PLOT_TITLE, output_type = "pdf"
+)
+
+step_9_graph.graph_attr.update(size="10,6")
 step_9_graph
 # -
 

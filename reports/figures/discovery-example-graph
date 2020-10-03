@@ -1,0 +1,13 @@
+digraph step_9 {
+	graph [size="5,3"]
+	T [label=total_travel_time]
+	C [label=total_travel_cost]
+	D [label=total_travel_distance]
+	L [label=num_licensed_drivers]
+	A [label=num_cars]
+	L -> A
+	D -> A
+	D -> T
+	D -> C
+	C -> T [dir=none]
+}
