@@ -1,4 +1,5 @@
 \section{Overview of Causal Graphs}
+\label{sec:graph-overview}
 
 Causal diagrams and causal graphical models have been introduced by \citet{pearl_causality_2000} as a powerful tool for causal inference, especially in observational studies. 
 Perhaps one of the most important and useful features of causal 
@@ -64,8 +65,70 @@ As such, we emphasize that DAGs are great tools
 for a modeler to encode their assumptions about a problem, but not necessarily 
 a guide on how to estimate a causal effects of interest. 
 
+\subsection{Prior Uses of Causal Graphs in Choice Modelling}
+\label{sec:choice-graphs}
 
+With the introduction to causal graphical models given above, we (the authors) do not want readers to think that we believe the entire notion of a causal graph is foreign to choice modelling.
+We do not think this is true.
+We know that choice modellers have made use of causal graphs in varying forms for years.
+Here are three examples to illustrate our point.
+First, consider the case of Random Utility Maximization (RUM) models.
 
+\begin{figure}
+   \centering
+   \includegraphics[width=0.25\textwidth]{rum-causal-graph}
+   \caption{Archetypical RUM causal diagram}
+   \label{fig:example-graph-rum}
+\end{figure}
 
+For decades now, choice modellers have used stylized directed graphical models to denote or convey the meaning of their economic framework's notion of causality in the context of their research.
+As an example, see Figure \ref{fig:example-graph-rum}, reproduced from Figure 1 of \citet{ben_2002_integration}.
+Here, the authors depict the assumption that explanatory variables cause unobserved utilities which collectively cause the choice via utility maximization.
+The reason I call such diagrams stylized is because of their lack of detail of the relationships amongst the explanatory variables.
+When speaking of these covariates collectively, one is unable to distinguish whether one explanatory variable causes another.
+Such intra-covariate relationships are important for estimating the causal effects of a given policy, as demonstrated in Section \ref{sec:graph-importance}.
 
+\begin{figure}
+   \centering
+   \includegraphics[width=0.5\textwidth]{iclv-causal-graph}
+   \caption{Archetypical ICLV causal diagram}
+   \label{fig:example-graph-iclv}
+\end{figure}
 
+Another area of relation with prior choice modelling literature is in Integrated Choice and Latent Variable (ICLV) models.
+These models make inference on one or more latent variables, alongside the typical parameters in one's model.
+An example of such ICLV models is in Figure \ref{fig:example-graph-iclv}, based on Figure 5 of \citet{ben_2002_integration}.
+As with the causal graphs of RUM models, ICLV causal graphs depict a particular set of structural modeling assumptions about the data generating process.
+Here concern typically centers around unobserved mediators, i.e., variables caused by one's measured covariates that also influence one's outcome.
+Omitting these variables leads to inconsistent estimates for one's remaining parameters, thus leading researchers to care deeply about ICLV models that can overcome such problems.
+
+\begin{figure}
+   \centering
+   \includegraphics[width=0.5\textwidth]{sacsim-model-graph}
+   \caption{Archetypical causal diagram for activity-based models}
+   \label{fig:example-graph-abm}
+\end{figure}
+
+Finally, consider activity based travel demand models.
+These models often come with a causal diagram that depicts the interrelations between the outcomes in the model (e.g., household location choice, destination choice, travel mode choice, departure time choice, route choice etc.)
+For example, see Figure \ref{fig:example-graph-abm}, from \citet[Fig.1]{bradley_2010_sacsim}.
+The purpose of such graphs is to explain the structure of the entire system of outcome models.
+In particular, these graphs depict the researcher's assumed causal ordering of which outcomes temporally precede other outcomes.
+Diagrams of activity-based models also show the modeller's assumptions about how considerations of future choices affect temporally-preceding decisions.
+
+In RUM, ICLV, and activity-based model diagrams, the main distinction between the causal graphs of \citet{pearl_1995_causal} and the causal diagrams in econometrics are two two-fold.
+First, causal graphs in RUM, ICLV, and activity-based models ignore relations between the explanatory variables.
+Typically, choice modelling causal graphs depict all explanatory variables together as if they are in independently generated groups that then affect one's utilities and choices.
+In the language used by a large group of causal inference scholars, econometric causal diagrams ignore the treatment assignment mechanism.
+
+Secondly, causal graphs in choice modelling papers are purely didactic.
+They convey how choice modellers perceive the world and the choice generation process.
+However, they are seldom treated as a fully fledged model that has empirical implications that merit verification (e.g. conditional independence implications).
+In this sense, choice modellers ignore the efforts from causal inference researchers in computer science.
+There, researchers spend much effort testing their causal graphs to see if the data supports their graphs implications.
+
+In conclusion, choice modellers have long made use of causal graphs in select contexts to convey causal assumptions about choice processes.
+Thus far, however, we have underutilized these tools.
+We seldom use causal graphs to encode assumptions about how our explanatory variables came to be in choice situations, and we do not routinely test causal graphs against empirical choice data.
+These two issues represent opportunities for the field of choice modelling to gain from the insights and work of those who study causal inference.
+The rest of the chapter will focus on how we can construct causal diagrams that pay attention to both explanatory and outcome variables, how we can test a given graph against one's data, and how one can deal with ``real-world'' graphs which frequently contain some sort of unobserved confounding.
