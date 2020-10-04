@@ -1,0 +1,16 @@
+digraph {
+	graph [size="5,3"]
+	"Total Travel Time" [label="Total Travel Time" shape=ellipse]
+	"Number of Autos" [label="Number of Autos" shape=ellipse]
+	"Total Travel Cost" [label="Total Travel Cost" shape=ellipse]
+	"Number of Licensed Drivers" [label="Number of Licensed Drivers" shape=ellipse]
+	"Total Travel Distance" [label="Total Travel Distance" shape=ellipse]
+	"Utility (Drive Alone)" [label="Utility (Drive Alone)" shape=ellipse]
+	"Total Travel Distance" -> "Total Travel Time"
+	"Total Travel Distance" -> "Total Travel Cost"
+	"Total Travel Distance" -> "Utility (Drive Alone)"
+	"Total Travel Time" -> "Utility (Drive Alone)"
+	"Total Travel Cost" -> "Utility (Drive Alone)"
+	"Number of Autos" -> "Utility (Drive Alone)"
+	"Number of Licensed Drivers" -> "Utility (Drive Alone)"
+}

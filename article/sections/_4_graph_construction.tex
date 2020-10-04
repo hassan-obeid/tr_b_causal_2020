@@ -1,3 +1,90 @@
-\section{Causal Graph Construction}
+\section{(Initial) Causal Graph Construction}
+\label{sec:graph-construction}
 
-\blindtext[2]
+Construction of an initial causal graph typically proceeds as follows.
+At a high level, we
+\begin{enumerate}
+   \item adopt a population perspective,
+   \item brainstorm all variables that we think affect the system that generates our observations,
+   \item remove any variables that would cause bias in our causal inferences,
+   \item connect all variables in our graph according to our a-priori beliefs about causal relations amongst these variables,
+   \item consider how the graph structure may differ between individuals and subgroups within the population.
+\end{enumerate}
+The following paragraphs will describe these steps in detail.
+
+To begin, we adopt the position of a researcher concerned about population level relationships.
+This means we will think through what is a likely generative model for all individuals.
+Later on, we will devote time to thinking about how subgroups and individual heterogeneity may affect our causal graphs.
+
+Now, we add our first variables to our graph, the outcome variable(s) of interest.
+Then, we note all the variables that we believes to influence the variable(s) of interest.
+We refer to these variables to as our initial explanatory variables.
+
+Next, we iterate through the initial explanatory variables.
+For each current explanatory variable in the iteration, we think of variables that may modify the effect of the current explanatory variable on the outcome(s) of interest.
+We refer to these variables as effect modifiers.
+Note that some effect modifiers may be a part of our initial explanatory variables.
+For any effect modifiers that one thinks of, outside of the initial explanatory variables, add them to our causal graph.
+
+After adding explanatory and effect modifying variables to the graph, we turn our attention to mediating variables.
+Again, we iterate through each explanatory variable.
+On each iteration, we brainstorm all the variables through which our current explanatory variable influences the outcome.
+For instance, consider how the presence of a bike lane influences bicycle mode choice.
+We hypothesize that an individual's subjective perception of safety is be the primary (or sole) variable through which bicycle lane presence influences mode choice.
+Accordingly, we add subjective perception of safety to our causal graph for travel mode choice.
+
+Coming to our second to last category of variables, we think of confounding variables.
+The process is similar to how we generated effect modifying variables.
+We iterate through each of the explanatory, mediating, and effect modifying variables, thinking specifically of any variables that both cause the current variable in the iteration and cause the outcome variable(s).
+We call these variables, which cause our outcome and current variables in the iteration, confounding variables.
+We will add each of them to our causal graph.
+
+For the last set of variables, we should explicitly consider the role of time, even in research that may be cross-sectional due to the data that is available to us.
+In reality, how do we think our system evolves over time?
+If we consider multiple observations of a given decision maker, how do variables observed of that decision maker at time $t$ partially cause future variables important to the context or outcomes for that decision maker at time $t+1$?
+How do the actions of a decision maker $i$ at time $t$ partially cause the future context or outcomes of a decision maker $j$?
+We should add explicit nodes to our graph, subscripted or denoted by time, to show the cross-time causal relationships in our system.
+
+At this point, we have added all the outcome, explanatory, effect modifying, mediating, confounding, and time-indexed variables that we can think of to our causal graph.
+They are all disconnected nodes, singletons, in the graph.
+We now focus on pruning nodes from this graph, before drawing our final hypothesized connections.
+In particular, we focus on pruning ``post-outcome'' variables that are not part of the causal graph for future time periods or other observations.
+The reason for this is that conditioning on such post-outcome variables biases one's causal effect estimates.
+
+To remove the problematic variables, we iterate through each of the non-outcome variables in our graph, and we assess whether the variable is actually a result of the outcome (perhaps in combination with other variables in our graph).
+These post-outcome variables temporally follow the outcome variable(s) but do not cause variables in the causal graph for other observations.
+We remove all such post-outcome variables from our graph.
+
+Now is a good time to step back and consider what other researchers have thought.
+Specifically, we should conduct a literature review to see how other researchers have conceptualized the problem that we are working on.
+Have they included variables that we have not?
+Were those variables related our outcomes of interest?
+If so, should we add these variables to our causal graph, and how?
+Do the included variables of other researchers point suggest the existence of confounders in their work that we should include in our graph?
+Have other researchers ascribed differing roles to our graph's current variables than we have?
+For example, have other researchers judged a variable to be confounder, when we solely thought of the variable as an affect modifier?
+Critically examine the evidence for these alternative decisions to see if we should also reconsider how we're judging our variables.
+
+Finally, we need to connect the variables in our graph.
+\begin{enumerate}
+   \item Draw direct arrows from our explanatory variables, confounders, and effect modifiers to the outcomes.
+   \item Draw arrows from the explanatory variables to the mediators, and then draw arrows from the mediators to the outcomes.
+   \item Draw arrows from the confounders to the explanatory variables and mediators that they may cause.
+   \item Draw arrows from the variables in time $t$ to the variables that they cause in time $t+1$.
+\end{enumerate}
+After drawing in all arrows, we should now have a fully connected causal graph.
+Take a moment to look over the graph to ensure there are no remaining singletons and that we have not drawn any spurious connections.
+Also, take a moment to celebrate.
+Drawing one's first causal graph is hard work!
+
+After celebrating, take a moment to pursue the following graph editing exercises.
+First, think about how the graph might differ across sub-populations.
+What sub-populations exist in your population of interest?
+Are there any causal relationships that should not exist for a given sub-population?
+For instance, are the outcomes in some sub-populations independent of a given explanatory variable?
+Can you think of any inverted causal relationships in this sub-population?
+(I.e., for a given sub-population $B \rightarrow A$ instead of $A \rightarrow B$?)
+Consider adding these sub-population indices to one's initial causal graph, or if this is not clear enough, draw amended causal graphs for each sub-population.
+Now, one can actually relax.
+This concludes the ``purely mental'' drafting of one's causal graph.
+In the next section, we'll look at testing this graph against data, and making any edits deemed empirically necessary.
