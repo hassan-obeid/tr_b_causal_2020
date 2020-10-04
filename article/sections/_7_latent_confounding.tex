@@ -3,16 +3,17 @@
 
 This section focuses on the more complicated and realistic case that is 
 typically faced by demand modelers, where we have latent confounders that 
-affect the treatment assignment of our causal variables of interest. We first
-go over a few examples of confounding in transportation analysese, explain 
+affect the treatment assignment of our causal variables of interest. 
+We first go over a few examples of confounding in transportation analysese, explain 
 the challenges that come with such cases, and present a few approaches to 
 dealing with this issue, specifically the recent de-confounder technique of 
-\citet{wang_2019_blessings}. Our application will show how directed acyclic graphs can 
+\citet{wang_2019_blessings}. 
+Our application will show how directed acyclic graphs can 
 help increase transparency about one's reasoning regarding the number of 
 confounders, assumptions for which variables are confounded, and the models 
-needed to estimate the causal effects. In addition to the application above, 
-we use simplified simulation scenarios to further investigate the usefulness 
-and pitfalls in this approach for generating accurate model estimates. 
+needed to estimate the causal effects. 
+In addition to the application above, we use simplified simulation scenarios to further investigate the usefulness 
+and pitfalls of this approach for generating accurate model estimates. 
 
 
 \subsection{Examples of confounding}
@@ -63,19 +64,17 @@ confouding variable by estimating a "subsitute confounder", a set of variables
 that once controlled for, renders all variation in the treatment variables of 
 interest exogenous. The process of applying the method is actually quite 
 straightforward and simple. It proceeds as follows:
-
-
-	- First, estimate the substitute confounder using any good latent variable 
+\begin{itemize}
+	\item First, estimate the substitute confounder using any good latent variable 
 	model the modeler chooses. The authors suggest estimating a factor model 
 	with k factors on the set of covariates the modeler is interested in. 
-
-	- Second, check the factor model's accuracy using posterior predictive 
+	\item Second, check the factor model's accuracy using posterior predictive 
 	checks (add details). 
-
-	- Once a sufficiently accurate latent variable model is recovered, use it 
+	\item Once a sufficiently accurate latent variable model is recovered, use it 
 	to estimate an expected value of the latent variable for each observation, 
 	and control for this value in the outcome model, alongside the treatment 
 	variables and other covariates of interest. 
+\end{itemize}
 
 
 
@@ -87,9 +86,6 @@ variables) of interest, alongside the outcome. This assumption is weaker than
 the one required for ignorability to hold, which requires the absence of both 
 single cause and multi-cause confounders for accurate causal inferences. 
 
-
-[TODO: Add more mathematical formulations and formulas, and formulate the 
-model rigorously if needed]
 
 
 \subsection{Case study: Simulation}
@@ -104,20 +100,18 @@ distance data and treat it as an unobserved variable.
 
 We estimate three models:
 
-
-	- Model 1: A multinomial logit with the correct original specification, 
+\begin{itemize}
+	\item Model 1: A multinomial logit with the correct original specification, 
 	EXCEPT we ommit the travel distance variable in the specification without 
 	trying to adjust for it. This model represents the worst case scenario 
 	where a modeler ignores, or is unaware of, unobserved confounding.
-
-	- Model 2: We use the deconfounder algorithm to try to recover the 
+	\item Model 2: We use the deconfounder algorithm to try to recover the 
 	confounder (travel distance). In this method, we use all the variables in 
 	each mode's utility to recover that mode's confounder. This is in line 
 	with the approach taken in \citet{wang_2019_blessings}, where they use all the set 
 	of observed variables in the factor model to recover a substitute 
 	confounder.
-
-	- Model 3: We use the deconfounder algorithm to try to recover the 
+	\item Model 3: We use the deconfounder algorithm to try to recover the 
 	confounder (travel distance), but this time, we only use travel time and 
 	cost in the factor model, instead of all the variables in the utility 
 	specification of each mode. By only using what we know are confounded 
@@ -126,6 +120,7 @@ We estimate three models:
 	thoughtful approach to hypothesizing on the confounder variables. This can 
 	be in the form of building and testing candidate causal graphs that 
 	try to illustrate this confounding. 
+\end{itemize}
 
 
 We compare both the estimates of the coefficients on travel time and cost from 
