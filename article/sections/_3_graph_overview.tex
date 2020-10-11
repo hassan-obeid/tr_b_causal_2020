@@ -82,12 +82,18 @@ First, consider the case of Random Utility Maximization (RUM) models.
    \label{fig:example-graph-rum}
 \end{figure}
 
-For decades now, choice modellers have used stylized directed graphical models to denote or convey the meaning of their economic framework's notion of causality in the context of their research.
+For decades, choice modellers have used stylized DAGs to depict RUM models.
+In particular, these diagrams illustrate an assumed choice-making (i.e., causal) process.
 As an example, see Figure \ref{fig:example-graph-rum}, reproduced from Figure 1 of \citet{ben_2002_integration}.
-Here, the authors depict the assumption that explanatory variables cause unobserved utilities which collectively cause the choice via utility maximization.
-The reason I call such diagrams stylized is because of their lack of detail of the relationships amongst the explanatory variables.
-When speaking of these covariates collectively, one is unable to distinguish whether one explanatory variable causes another.
-Such intra-covariate relationships are important for estimating the causal effects of a given policy, as demonstrated in Section \ref{sec:graph-importance}.
+\citeauthor{ben_2002_integration} draw a two-part process.
+First, they assume that explanatory variables cause unobserved utilities.
+Then, they assume that the unobserved utilities cause the choice.
+
+Note that although RUM diagrams adequately show the choice process, we still call them stylized.
+Specifically, these diagrams lack detail about the relationships between explanatory variables.
+When speaking collectively, we cannot tell if one explanatory variable causes another.
+Unfortunately, as shown in Section \ref{sec:graph-importance}, such knowledge is crucial.
+Without more detailed causal knowledge, our inferences may be inconsistent and arbitrarily bad.
 
 \begin{figure}
    \centering
