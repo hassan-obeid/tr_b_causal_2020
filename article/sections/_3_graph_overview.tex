@@ -102,12 +102,14 @@ Without more detailed causal knowledge, our inferences may be inconsistent and a
    \label{fig:example-graph-iclv}
 \end{figure}
 
-Another area of relation with prior choice modelling literature is in Integrated Choice and Latent Variable (ICLV) models.
-These models make inference on one or more latent variables, alongside the typical parameters in one's model.
-An example of such ICLV models is in Figure \ref{fig:example-graph-iclv}, based on Figure 5 of \citet{ben_2002_integration}.
-As with the causal graphs of RUM models, ICLV causal graphs depict a particular set of structural modeling assumptions about the data generating process.
-Here concern typically centers around unobserved mediators, i.e., variables caused by one's measured covariates that also influence one's outcome.
-Omitting these variables leads to inconsistent estimates for one's remaining parameters, thus leading researchers to care deeply about ICLV models that can overcome such problems.
+
+Besides RUM models, causal graphs appear in the literature on Integrated Choice and Latent Variable (ICLV) models.
+An example of an ICLV model is in Figure \ref{fig:example-graph-iclv}, based on Figure 5 of \citet{ben_2002_integration}.
+As with RUM models, ICLV causal graphs represent assumptions about the choice process.
+Here concern typically centers around unobserved mediators.
+These unobserved variables cause the outcome and are caused by one's observed covariates.
+Omitting such mediators leads to models that misrepresent the assumed choice process.
+As a result, researchers care deeply about ICLV models that avoid these behavioral misrepresentations.
 
 \begin{figure}
    \centering
