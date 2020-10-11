@@ -1,23 +1,23 @@
 \section{Overview of Causal Graphs}
 \label{sec:graph-overview}
 
-Causal diagrams and causal graphical models have been introduced by \citet{pearl_causality_2000} as a powerful tool for causal inference, especially in observational studies. 
-Perhaps one of the most important and useful features of causal 
-graphs when dealing with causal inference problems is the clear illustration 
-of the causal relationships between the variables. 
-While a formal introduction to the topic of directed acyclic graphs (DAGs) is beyond the scope of this chapter, 
-here we focus specifically on illustrating the power of DAGs to represent 
-and encode complex  causal relationships between variables in an intuitive and 
-clear manner. 
-Interested readers can refer to \citet{pearl_causality_2000} for a thorough introduction. 
+Causal diagrams and causal graphical models have been introduced by \citet{pearl_causality_2000} as a powerful tool for causal inference, especially in observational studies.
+Perhaps one of the most important and useful features of causal
+graphs when dealing with causal inference problems is the clear illustration
+of the causal relationships between the variables.
+While a formal introduction to the topic of directed acyclic graphs (DAGs) is beyond the scope of this chapter,
+here we focus specifically on illustrating the power of DAGs to represent
+and encode complex  causal relationships between variables in an intuitive and
+clear manner.
+Interested readers can refer to \citet{pearl_causality_2000} for a thorough introduction.
 
-Consider the causal graph represented in Figure \ref{fig:simple-graph}. 
-Suppose we're interested in the effect of Z on Y. 
-What the graph in Figure \ref{fig:simple-graph} implies is that Z is 
-independent of Y(Z) given X, or in other words, the assignment mechanism is 
-ignorable conditional on the values of X. 
-In such situations, it is sufficient to control for 
-X to obtain an unbiased estimate of the causal effect of Z on Y. 
+Consider the causal graph represented in Figure \ref{fig:simple-graph}.
+Suppose we're interested in the effect of Z on Y.
+What the graph in Figure \ref{fig:simple-graph} implies is that Z is
+independent of Y(Z) given X, or in other words, the assignment mechanism is
+ignorable conditional on the values of X.
+In such situations, it is sufficient to control for
+X to obtain an unbiased estimate of the causal effect of Z on Y.
 
 \begin{figure}[h!]
    \centering
@@ -26,12 +26,12 @@ X to obtain an unbiased estimate of the causal effect of Z on Y.
    \label{fig:simple-graph}
 \end{figure}
 
-In comparison, note the set of structural equations needed to convey the same assumptions as Figure \ref{fig:simple-graph}. 
+In comparison, note the set of structural equations needed to convey the same assumptions as Figure \ref{fig:simple-graph}.
 \[Z = f_Z(X, \epsilon_Z)  \]
 
 \[Y(z) = f_Y(X, z, \epsilon_Y)  \]
 
-Now consider the case where there exists another latent confounding variable, U, which also affects both the treatment Z, as well as the outcome, Y. 
+Now consider the case where there exists another latent confounding variable, U, which also affects both the treatment Z, as well as the outcome, Y.
 Figure \ref{fig:simple-graph-confounded} illustrates this assumption in DAG form, and the equations below are the structural equation equivalent:
 
 \[Z = f_Z(X, U, \epsilon_Z)  \]
@@ -45,32 +45,33 @@ Figure \ref{fig:simple-graph-confounded} illustrates this assumption in DAG form
    \label{fig:simple-graph-confounded}
 \end{figure}
 
-It is clear from Figure \ref{fig:simple-graph-confounded} that conditioning on X alone does not block all the indirect paths between Z and Y, and thus ommitting it will yield biased results of the causal relationship between Z and Y. 
-The structural equations also show that the ignorability assumption 
-of Z does not hold if we only condition on X, and we risk obtaining biased estimates of the causal effect of Z on Y if we fail to 
-account for U. 
-Even in this very simple example with only three or four variables, one can see the advantage of using a causal graph to encode assumptions. 
-This advantage of DAGs becomes even more apparent in larger problems with many covariates available, and where the causal structure of the data is way more complicated, which are the types of problems typically faced by transportation demand modelers. 
+It is clear from Figure \ref{fig:simple-graph-confounded} that conditioning on X alone does not block all the indirect paths between Z and Y, and thus ommitting it will yield biased results of the causal relationship between Z and Y.
+The structural equations also show that the ignorability assumption
+of Z does not hold if we only condition on X, and we risk obtaining biased estimates of the causal effect of Z on Y if we fail to
+account for U.
+Even in this very simple example with only three or four variables, one can see the advantage of using a causal graph to encode assumptions.
+This advantage of DAGs becomes even more apparent in larger problems with many covariates available, and where the causal structure of the data is way more complicated, which are the types of problems typically faced by transportation demand modelers.
 
-Another benefit of DAGs is that they come with a set of testable implications, and incorporating them in any causal 
-analysis adds robustness and defensibility to one's analysis. 
+Another benefit of DAGs is that they come with a set of testable implications, and incorporating them in any causal
+analysis adds robustness and defensibility to one's analysis.
 We discuss those implications in section 5, and illustrate how to use those tests in one's analysis.
 
-Lastly, it is important to note that the graphical approach to causality focuses 
-primarily on issues of identification of causal effects, that is, given a 
-directed acyclic graph (DAG) that encodes an analyst's knowledge and belief 
-about the data generation process of the problem at hand, can a specific 
-causal effect be identified? 
-As such, we emphasize that DAGs are great tools 
-for a modeler to encode their assumptions about a problem, but not necessarily 
-a guide on how to estimate a causal effects of interest. 
+Lastly, it is important to note that the graphical approach to causality focuses
+primarily on issues of identification of causal effects, that is, given a
+directed acyclic graph (DAG) that encodes an analyst's knowledge and belief
+about the data generation process of the problem at hand, can a specific
+causal effect be identified?
+As such, we emphasize that DAGs are great tools
+for a modeler to encode their assumptions about a problem, but not necessarily
+a guide on how to estimate a causal effects of interest.
 
 \subsection{Prior Uses of Causal Graphs in Choice Modelling}
 \label{sec:choice-graphs}
 
-With the introduction to causal graphical models given above, we (the authors) do not want readers to think that we believe the entire notion of a causal graph is foreign to choice modelling.
-We do not think this is true.
-We know that choice modellers have made use of causal graphs in varying forms for years.
+In our last subsection, we reviewed the basics of causal graphs: what are they and why are they useful?
+We targeted that subsection at choice modellers who are unfamiliar with these tools.
+However, readers should be aware of the history of causal graphs in choice modelling.
+Indeed, choice modellers have used causal graphs (in limited fashion) for years.
 Here are three examples to illustrate our point.
 First, consider the case of Random Utility Maximization (RUM) models.
 
@@ -81,12 +82,18 @@ First, consider the case of Random Utility Maximization (RUM) models.
    \label{fig:example-graph-rum}
 \end{figure}
 
-For decades now, choice modellers have used stylized directed graphical models to denote or convey the meaning of their economic framework's notion of causality in the context of their research.
+For decades, choice modellers have used stylized DAGs to depict RUM models.
+In particular, these diagrams illustrate an assumed choice-making (i.e., causal) process.
 As an example, see Figure \ref{fig:example-graph-rum}, reproduced from Figure 1 of \citet{ben_2002_integration}.
-Here, the authors depict the assumption that explanatory variables cause unobserved utilities which collectively cause the choice via utility maximization.
-The reason I call such diagrams stylized is because of their lack of detail of the relationships amongst the explanatory variables.
-When speaking of these covariates collectively, one is unable to distinguish whether one explanatory variable causes another.
-Such intra-covariate relationships are important for estimating the causal effects of a given policy, as demonstrated in Section \ref{sec:graph-importance}.
+\citeauthor{ben_2002_integration} draw a two-part process.
+First, they assume that explanatory variables cause unobserved utilities.
+Then, they assume that the unobserved utilities cause the choice.
+
+Note that although RUM diagrams adequately show the choice process, we still call them stylized.
+Specifically, these diagrams lack detail about the relationships between explanatory variables.
+When speaking collectively, we cannot tell if one explanatory variable causes another.
+Unfortunately, as shown in Section \ref{sec:graph-importance}, such knowledge is crucial.
+Without more detailed causal knowledge, our inferences may be inconsistent and arbitrarily bad.
 
 \begin{figure}
    \centering
@@ -95,40 +102,59 @@ Such intra-covariate relationships are important for estimating the causal effec
    \label{fig:example-graph-iclv}
 \end{figure}
 
-Another area of relation with prior choice modelling literature is in Integrated Choice and Latent Variable (ICLV) models.
-These models make inference on one or more latent variables, alongside the typical parameters in one's model.
-An example of such ICLV models is in Figure \ref{fig:example-graph-iclv}, based on Figure 5 of \citet{ben_2002_integration}.
-As with the causal graphs of RUM models, ICLV causal graphs depict a particular set of structural modeling assumptions about the data generating process.
-Here concern typically centers around unobserved mediators, i.e., variables caused by one's measured covariates that also influence one's outcome.
-Omitting these variables leads to inconsistent estimates for one's remaining parameters, thus leading researchers to care deeply about ICLV models that can overcome such problems.
+
+Besides RUM models, causal graphs appear in the literature on Integrated Choice and Latent Variable (ICLV) models.
+An example of an ICLV model is in Figure \ref{fig:example-graph-iclv}, based on Figure 5 of \citet{ben_2002_integration}.
+As with RUM models, ICLV causal graphs represent assumptions about the choice process.
+Here concern typically centers around unobserved mediators.
+These unobserved variables cause the outcome and are caused by one's observed covariates.
+Omitting such mediators leads to models that misrepresent the assumed choice process.
+As a result, researchers care deeply about ICLV models that avoid these behavioral misrepresentations.
 
 \begin{figure}
    \centering
-   \includegraphics[width=0.5\textwidth]{sacsim-model-graph}
+   \includegraphics[width=0.5\textwidth]{daysim-model-graph}
    \caption{Archetypical causal diagram for activity-based models}
    \label{fig:example-graph-abm}
 \end{figure}
 
-Finally, consider activity based travel demand models.
-These models often come with a causal diagram that depicts the interrelations between the outcomes in the model (e.g., household location choice, destination choice, travel mode choice, departure time choice, route choice etc.)
-For example, see Figure \ref{fig:example-graph-abm}, from \citet[Fig.1]{bradley_2010_sacsim}.
-The purpose of such graphs is to explain the structure of the entire system of outcome models.
-In particular, these graphs depict the researcher's assumed causal ordering of which outcomes temporally precede other outcomes.
-Diagrams of activity-based models also show the modeller's assumptions about how considerations of future choices affect temporally-preceding decisions.
+Finally, consider activity based travel demand models (ABM).
+These models often come with a causal diagram that depicts the interrelations between the outcomes in the model.
+E.g., household location choice, destination choice, travel mode choice, departure time choice, route choice etc.
+For example, see Figure \ref{fig:example-graph-abm}, from \citet[Fig. 2]{bradley_2010_sacsim}.
+The purpose of these graphs is to explain the structure of the entire system of outcome models.
 
-In RUM, ICLV, and activity-based model diagrams, the main distinction between the causal graphs of \citet{pearl_1995_causal} and the causal diagrams in econometrics are two two-fold.
-First, causal graphs in RUM, ICLV, and activity-based models ignore relations between the explanatory variables.
-Typically, choice modelling causal graphs depict all explanatory variables together as if they are in independently generated groups that then affect one's utilities and choices.
+In particular, ABM diagrams highlight two sets of researcher assumptions.
+They detail the researcher's beliefs about which choices, i.e. outcomes, precede others.
+For instance, work location choice preceding auto-ownership choice.
+ABM diagrams also detail which downstream choices partially cause which preceding ones.
+For example, considerations about one's travel mode choice influences one's daily activity choices.
+This happens even though the activity choices precede the travel mode choices.
+
+Two main features distinguish RUM, ICLV, and ABM graphs from the causal graphs of \citet{pearl_1995_causal}.
+First, causal graphs in choice modelling traditionally ignore relations between the explanatory variables.
+Typically, choice modelling causal graphs show all explanatory variables together as a monolith.
+The relationships between explanatory variables is often not specified.
+Even worse, researchers may tacitly treat the variables as if they are jointly independent.
 In the language used by a large group of causal inference scholars, econometric causal diagrams ignore the treatment assignment mechanism.
 
 Secondly, causal graphs in choice modelling papers are purely didactic.
 They convey how choice modellers perceive the world and the choice generation process.
-However, they are seldom treated as a fully fledged model that has empirical implications that merit verification (e.g. conditional independence implications).
-In this sense, choice modellers ignore the efforts from causal inference researchers in computer science.
-There, researchers spend much effort testing their causal graphs to see if the data supports their graphs implications.
+However, they are seldom treated as a model themselves.
+In particular, choice modellers rarely test the predictions of causal graphs.
+In doing so, we underuse causal implications such as statistical independence.
+Worse, we possibly violate these implications with great frequency.
+Such actions ignore the efforts from causal inference in computer science.
+There, researchers stress using their data to test the implications of their causal graphs.
 
-In conclusion, choice modellers have long made use of causal graphs in select contexts to convey causal assumptions about choice processes.
-Thus far, however, we have underutilized these tools.
-We seldom use causal graphs to encode assumptions about how our explanatory variables came to be in choice situations, and we do not routinely test causal graphs against empirical choice data.
-These two issues represent opportunities for the field of choice modelling to gain from the insights and work of those who study causal inference.
-The rest of the chapter will focus on how we can construct causal diagrams that pay attention to both explanatory and outcome variables, how we can test a given graph against one's data, and how one can deal with ``real-world'' graphs which frequently contain some sort of unobserved confounding.
+In conclusion, choice modellers have long made use of causal graphs.
+In select contexts, causal graphs convey causal assumptions about choice processes.
+Thus far, however, our field has underutilized these tools.
+We seldom use causal graphs to encode our assumptions about how our explanatory variables came to be.
+Moreover, we do not routinely test causal graphs against empirical choice data.
+
+These two issues are opportunities for choice modelling to gain from the insights and methods of causal inference scholars.
+The rest of the chapter will focus on the following three topics.
+How we can construct causal diagrams that pay attention to explanatory and outcome variables?
+How we can test a given causal graph against one's data?
+How can we deal with ``real-world'' graphs featuring unobserved confounding?
