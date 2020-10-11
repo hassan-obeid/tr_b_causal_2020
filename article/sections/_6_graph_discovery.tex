@@ -128,8 +128,8 @@ Then, after inferring a skeleton, the algorithm attempts to orient the undirecte
 Optimistically, one ends up with a fully directed acyclic graph.
 In other cases, one recovers a mix of directed and undirected edges, denoting a MEC of graphs with the same independence properties.
 In the final case, one recovers an undirected causal graph.
-This corresponds to the situation where one cannot infer which  objects cause which other objects.
-One merely knows that given sets of objects relate to each other, not why this relationship exists.
+This happens when the algorithm cannot infer which variables cause which other variables.
+One merely knows that given sets of variables relate to each other, not why this relationship exists.
 
 With these basics understood, we can now present the results of using the PC algorithm to infer the causal graph for the variables present in Figure \ref{fig:graph-for-testing}.
 For reference, the variables (travel time, travel cost, travel distance, number of automobiles in one's household, and the number of licensed drivers in one's household) are all thought to influence the utility of commuting by driving-alone.
