@@ -2,16 +2,22 @@
 \label{sec:causal-discovery}
 
 % How is causal discovery related to testing causal graphs?
-In the previous section, we detailed one method for testing the marginal and conditional independence assumptions of one's causal graph.
+Our previous section detailed a method for testing independence assumptions of one's causal graph.
 As presented, this strategy requires one to first have a causal graph.
 Indeed, this requirement is why Section \ref{sec:graph-construction} provides instruction on how to construct an initial causal graph using expert opinion.
 
-The unstated presumption is that one will test one's working causal graph, and if any of tests fail, one will then revise the graph until all assumptions appear plausible.
-Essentially, one proceeds in a loop of postulating, testing, and editing one's causal graph until it is not blatantly contradicted by one's data.
-If this sounds tedious, one can consider making one's computer work for you.
-Specifically, by exchanging the human-in-the-loop for a purely algorithmic endeavor, one arrives at the practice of  causal discovery: inferring one's causal graph from one's data.
+Our unstated presumption is that we will test our working causal graph.
+If any of our tests fail, we will then revise the graph until its assumptions appear plausible.
+Essentially, we postulate, test, and edit our causal graph until the data conform to the graph's assumptions.
+If this iterative discovery process sounds tedious, that is because it can be!
 
-This section will describe why causal discovery is important, provide a brief overview of the main concepts in causal discovery, and show the results of using causal discovery algorithms on the dataset described in Section \ref{sec:graph-importance}.
+In this section, we will discuss how we can avoid such repetitive, manual graph editing.
+Instead, we use our computers algorithmic capabilities.
+Specifically, this section describes causal discovery:
+algorithmically inferring our causal graph from data.
+Here, we detail why causal discovery is important;
+we provide a brief overview of the main concepts in causal discovery;
+and we show the results of using causal discovery algorithms on the dataset described in Section \ref{sec:graph-importance}.
 
 \subsection{Why use causal discovery?}
 \label{sec:why-causal-discovery}
@@ -125,11 +131,11 @@ Does the algorithm fail gracefully and point towards violations of its assumptio
 To begin, it helps to understand the general procedure of the PC algorithm. The algorithm uses all our observed variables to infer a skeleton of a causal graph.
 That is, the algorithm attempts to infer an undirected graph that denotes which variables relate to which other variables, ignoring the directionality of causation between them.
 Then, after inferring a skeleton, the algorithm attempts to orient the undirected edges as much as possible.
-Optimistically, one ends up with a fully directed acyclic graph.
-In other cases, one recovers a mix of directed and undirected edges, denoting a MEC of graphs with the same independence properties.
-In the final case, one recovers an undirected causal graph.
-This happens when the algorithm cannot infer which variables cause which other variables.
-One merely knows that given sets of variables relate to each other, not why this relationship exists.
+Optimistically, we end up with a fully directed acyclic graph.
+In other cases, we recover a mix of directed and undirected edges, denoting a MEC of graphs with the same independence properties.
+In the final case, we recover an undirected causal graph.
+This corresponds to the situation where we cannot infer which objects cause which other objects.
+We merely know that given sets of objects relate to each other, not why this relationship exists.
 
 With these basics understood, we can now present the results of using the PC algorithm to infer the causal graph for the variables present in Figure \ref{fig:graph-for-testing}.
 For reference, the variables (travel time, travel cost, travel distance, number of automobiles in one's household, and the number of licensed drivers in one's household) are all thought to influence the utility of commuting by driving-alone.
