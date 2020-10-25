@@ -162,11 +162,14 @@ Each of these graphs is based on the utility function of each mode in the multin
    \label{fig:BIKE_causal_2}
 \end{figure}
 
-We then plot histograms of the computed differences in the average probability of an individual choosing a car centric mode.
-We plot these differences under the two different assumptions about the data generating process illustrated in both constructed graphs.
-Figure \ref{fig:histogram_probability} illustrates these histograms and shows the bias between the computed differences under the two constructed graphs.
-Based on this example, it is easy to envision a situation where two modelers reach two disparate conclusions based on their different assumptions about the data generating process. 
-This example might be an oversimplification, but stresses the importance of using DAGs to encode one's beliefs about the data generating process and how such beliefs affect the final outcome of one's modeling effort.
+Each of these graphs is based on the utility function of each respective mode in the multinomial logit model estimated in \citet{brathwaite-asymmetric}.
+
+We then plot histograms of the computed differences between the average probability of an individual
+in our sample choosing a car centric mode before and after implementing a policy or intervention
+aimed at reducing travel distance.
+These differences are plotted under the two different assumptions about the data generating process illustrated in the causal graphs above.
+Figure \ref{fig:histogram_probability} highlights the bias between the estimated probability of an average individual choosing a car centric mode.
+This difference shows the importance of considering the data generating process when estimating transportation demand models aiming to forecast the impact of proposed policies.
 
 \begin{figure}
    \centering
@@ -175,7 +178,6 @@ This example might be an oversimplification, but stresses the importance of usin
    \label{fig:histogram_probability}
 \end{figure}
 
-The data generating process might not be easily distinguishable in the majority of situations due to the complexity of the real world.
-Constructing a causal graph that represents the accurately represents data generating process is a task that has proven to not only be difficult, but impossible a times.
-
-The following sections of this chapter explores other topics related to this matter, including some guidance on how to build and test causal graphs representing the researchers beliefs about the data generating process and how to deal with situations with latent confounding.
+The data generating process might not be easily distinguishable in the majority of situations, mainly due to the complexity of the real world.
+Therefore, constructing a causal graph that represents the data generating process as much as possible is not an easy task.
+The following section explores this topic and includes some guidance on how to build and test causal graphs representing the researchers beliefs about the data generating process.
