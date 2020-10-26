@@ -29,7 +29,9 @@ and we show the results of using causal discovery algorithms on the dataset desc
 As a topic of study, causal discovery is important for numerous reasons.
 Three of these reasons are the following.
 First, causal discovery promotes robustness and understanding of our causal effect estimates.
-By comparing against our causal effect estimates when using a data-driven causal graph, we can begin to understand how our prior beliefs affect our estimates.
+For example, we can use causal discovery to understand how our prior beliefs affect our inferences.
+To do so, we could compare our inferred causal effects under expert-opinion versus data-driven causal graphs.
+
 Secondly, causal discovery helps inspire creation and editing of expert-opinion graphs.
 Indeed, it's typically easier to edit than to create from scratch.
 Graphs found via causal discovery can spark ideas for one's own graph if they feature different causal relations than are present in one's own graph, and they provide a starting point for graph revision.
@@ -153,9 +155,9 @@ Causal discovery helps us discover these differing pathways of influence by gene
 Figure \ref{fig:discovery-example-graph} shows the final result of applying the PC algorithm to the variables in our drive-alone utility function.
 Two main differences exist between this graph and the example graph shown in Figure \ref{fig:graph-for-testing}.
 First, the number of licensed drivers is not independent of the number of automobiles in the household.
-The graph discovered via the PC algorithm depicts the number of automobiles in one's household as being a function of the number of licensed drivers that one has in one's household and as being a function of how far one has to travel to work or to school.
+The graph discovered via the PC algorithm depicts the number of automobiles in one's household as a function of two variables: the number of licensed drivers that one has in one's household and how far one has to travel to work or to school.
 The second major difference is the presence of an undirected edge between travel time and travel cost.
-The graph discovered by the PC algorithm states that travel time and travel cost are dependent, even after conditioning on travel distance.
+The discovered graph labels travel time and travel cost as dependent, even after conditioning on travel distance.
 
 As described in Section \ref{sec:testing-demonstration}, independence testing foreshadows (indeed, determines) both of these results.
 Marginal independence testing showed us that the number of licensed drivers in a household and the number of automobiles in that household are not independent.
