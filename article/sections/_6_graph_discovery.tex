@@ -166,9 +166,10 @@ Far from being a surprising congruence, we should expect this alignment: conditi
 Relative to manual independence testing, what do we gain from using causal discovery algorithms?
 Critically, we gain at least three benefits from causal discovery algorithms.
 First, we gain insight into the dependence structure of our variables.
-For instance, we discover that the number of licensed drivers in a household may cause the number of automobiles in that household, as opposed to the number of automobiles causing the number of licensed drivers.
+For instance, we recover that the number of licensed drivers causes the number of automobiles, as opposed to the reverse.
 Secondly, we gain a greater sense of uncertainty in our causal graphs.
 For instance, we can bootstrap our data and look at the distribution of inferred causal graphs.
-Moreover, discovered graphs with undirected edges express uncertainty about the direction of particular causal relationships.
-In our experience, modellers seldom express and quantitatively address uncertainty about the direction of causal relationships.
-Lastly, we gain comprehensiveness from performing a greater amount of tests than we might otherwise perform if only testing the assumptions of our currently-hypothesized causal graph.
+Moreover, discovered graphs with undirected edges express uncertainty about what-causes-what.
+Disclosing and marginalizing over structural uncertainty of this kind is rare in choice modelling, as far as we know.
+Lastly, we gain confidence in our results.
+Through automated tests, we ensure our results are not based on untested or implausible causal assumptions.
