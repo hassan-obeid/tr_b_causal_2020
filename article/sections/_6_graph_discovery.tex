@@ -119,14 +119,14 @@ In particular, the residuals will be independent of the hypothesized cause in on
 As noted in the description of such algorithms, they are especially useful for discovering causal relationships between pairs of variables.
 In other words, discovery methods based on FCMs enable orientation of the undirected or bi-directed edges that represent ambiguity over whether $X \rightarrow Y$ or $Y \rightarrow X$.
 This orienting capability can be usefully combined with the previous causal discovery algorithms that infer classes graphs with equivalent marginal and conditional independencies.
-And of course, extensions of these techniques exist for inference in the presence of unobserved confounding \citep[Sec. 6]{goudet_2018_learning} and for learning an entire causal graph as opposed to only dealing with variable pairs \citep{zheng_2020_learning}.
+And of course, extensions of these techniques exist for inference in the presence of unobserved confounding \citep[Sec. 6]{goudet_2018_learning} and for learning an entire causal graph as opposed to dealing solely with variable pairs \citep{zheng_2020_learning}.
 
 \subsection{An application of causal discovery}
 \label{sec:discovery-application}
 To demonstrate the methods in this section, we chose to use the simplest causal discovery algorithm: the PC algorithm \citep{glymour_2001_causation}.
 For practitioners who may reasonably start with the simplest method they can find and increase methodological complexity as needed, this should be an illuminating starting point.
 Moreover, as noted above, the PC algorithm assumes that one has no unobserved confounders.
-As noted in Section \ref{sec:testing-demonstration}, we expect that our causal graph for the drive alone utility of our dataset likely contains unobserved confounders.
+As noted in Section \ref{sec:testing-demonstration}, we suspect that our causal graph for the drive alone utility of our dataset contains unobserved confounding.
 Accordingly, using the PC algorithm on our example allows us to observe how the algorithm behaves under violation of its assumptions.
 Does the algorithm fail gracefully and point towards violations of its assumptions, or does it return incorrect results with certainty?
 
@@ -161,8 +161,8 @@ The discovered graph labels travel time and travel cost as dependent, even after
 
 As described in Section \ref{sec:testing-demonstration}, independence testing foreshadows (indeed, determines) both of these results.
 Marginal independence testing showed us that the number of licensed drivers in a household and the number of automobiles in that household are not independent.
-Likewise, conditional independence testing showed us that travel cost is not independent of travel time, conditional on travel distance.
-Far from being a surprising congruence, this alignment is to be expected: conditional and marginal independence testing results are, in fact, used to generate the graph returned by the PC algorithm.
+Likewise, conditional independence testing revealed that travel cost is not independent of travel time, conditional on travel distance.
+Far from being a surprising congruence, we should expect this alignment: conditional and marginal independence testing results are used to generate the graph returned by the PC algorithm.
 
 Relative to manual independence testing, what do we gain from using causal discovery algorithms?
 Critically, we gain at least three benefits from causal discovery algorithms.
@@ -170,6 +170,6 @@ First, we gain insight into the dependence structure of our variables.
 For instance, we discover that the number of licensed drivers in a household may cause the number of automobiles in that household, as opposed to the number of automobiles causing the number of licensed drivers.
 Secondly, we gain a greater sense of uncertainty in our causal graphs.
 For instance, we can bootstrap our data and look at the distribution of inferred causal graphs.
-Moreover, even our discovery of graphs with undirected edges is an expression of uncertainty about the direction of particular causal relationships.
+Moreover, discovered graphs with undirected edges express uncertainty about the direction of particular causal relationships.
 In our experience, modellers seldom express and quantitatively address uncertainty about the direction of causal relationships.
 Lastly, we gain comprehensiveness from performing a greater amount of tests than we might otherwise perform if only testing the assumptions of our currently-hypothesized causal graph.
