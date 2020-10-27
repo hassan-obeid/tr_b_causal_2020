@@ -103,13 +103,19 @@ Common constraint-based algorithms include the Peter-Clarke (PC) algorithm and t
 The PC algorithm assumes no unobserved confounding variables, whereas the FCI allows for (and sometimes infers) the presence of such unobserved confounders.
 
 % DESCRIBE SCORE BASED DISCOVERY ALGORITHMS
-The second class of algorithms are known as score-based algorithms.
-They proceed sequentially by pairs of variables, making changes with a constraint on how their chosen score is affected by this change.
-First, we start from a fully disconnected graph, and we add directed causal relationships so as to increase the score of the generative model that corresponds to our graph.
-Then, once we have found the graph structure that maximizes the score on our data, we prune as many directed causal relationships as can be done without harming our score.
+The second class of algorithms are score-based algorithms.
+These techniques proceed sequentially, in pairs of variables.
+For each considered pair, an edge may be added, removed, or reversed in direction.
+These changes are made greedily, so long as our scoring criterion improves.
+
+First, we start with a fully disconnected graph.
+To this graph, we add directed causal relationships to increase the score of the generative model that corresponds to our graph.
+Once we cannot improve the score this way anymore, we have found the graph structure that maximizes the score on our data.
+From this graph, we then prune as many directed causal relationships as possible without harming our score.
 In the end, the algorithms return the resulting set of graphs that retain maximal score.
 Common score-based algorithms include the Greedy Equivalence Search (GES) algorithm \citep{chickering_2002_optimal}.
-Typically these methods operate under stricter assumptions than constrain-based methods, but combinations of the two ideas have often outperformed methods that are strictly in either class \citep{glymour_2019_review}.
+Typically these methods operate under stricter assumptions than constraint-based methods.
+Nonetheless, combinations of score and constraint-based ideas have outperformed either class alone \citep{glymour_2019_review}.
 
 % DESCRIBE FCM ALGORITHMS
 Lastly, the third class of algorithms relies on hypothesized Functional Causal Models (FCM) \citep{goudet_2018_learning} for each of the variables in one's system, as a function of their parents.
