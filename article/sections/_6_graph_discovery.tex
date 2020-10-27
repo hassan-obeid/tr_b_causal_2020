@@ -44,11 +44,10 @@ Here, one way of reducing the probability of incorrect inferences is to give one
 In particular, the Section \ref{sec:graph-testing} tested, expert-opinion based graph was never meant to be the stopping point in one's exploration of possible causal relationships.
 Instead, we advocate using multiple graphs to help us understand our causal effect estimates.
 
-Specifically, consider that a causal graph is equivalent to a square matrix with one row for each variable, and binary entries that denote whether the variable for the row causes the variable on the column \citep[p. 3]{glymour_2019_review}.
-A prior that expresses maximum ignorance over the graphs would be a prior where each matrix entry followed its own Bernoulli distribution with $p=0.5$.
-Conversely, a prior expressing maximum certainty over the graph could be a prior with 100\% certainty that our expert-opinion graph is the true causal graph.
-These two extremes represent reference priors that we can use in sensitivity analyses.
-By observing the distribution of causal effect estimates under each prior, we can reflect the uncertainty from not knowing the ``true'' causal graph, and we can begin to understand the ways that our estimates are sensitive our prior beliefs.
+Specifically, our effect estimates are dependent on our causal graphs.
+To assess dependence strength, we can compare our effect estimates under different causal graphs.
+For instance, we can use a discovered graph versus our expert-opinion graph.
+Any graph-induced differences reflect and characterize structural sensitivity in our causal effect inferences.
 
 % How does causal discovery help inspire our creation and editing of an expert-opinion causal graph?
 Beyond increasing our understanding of our estimates, causal discovery algorithms can help us create causal graphs based on expert-opinion.
