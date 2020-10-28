@@ -55,7 +55,8 @@ In particular, criticizing causal graphs is easy.
 
 As noted by \citet[p. 708]{pearl_1995_causal}, ``every pair of nodes in the graph waves its own warning flag in front of the modeller's eyes: `Have you neglected an arrow or a dashed arc?''
 Additionally, the presence of directed causal relations is vividly placed before one's eyes for immediate criticism (e.g., is $X \rightarrow Y$ plausible?).
-Similarly, undirected or bi-directed edges between variables highlight causal ambiguity, thereby inviting analysts to resolve the question of directionality in the relationship.
+Similarly, undirected or bi-directed edges between variables highlight causal ambiguity.
+Such call-outs invite analysts to resolve the question of directionality in the relationship.
 And conversely, we may learn from causal links (i.e. arrows) that are present in the graphs output from our causal discovery algorithm that we initially overlooked.
 By contrasting and criticizing alternative graphs, we clarify the strengths and deficiencies of our own point of view.
 Then, once we've identified elements that we think should or should not be present in a causal graph for our dataset, we can amend our hand-crafted graph to meet these requirements.
@@ -118,7 +119,7 @@ Typically these methods operate under stricter assumptions than constraint-based
 Nonetheless, combinations of score and constraint-based ideas have outperformed methods from either class alone \citep{glymour_2019_review}.
 
 % DESCRIBE FCM ALGORITHMS
-Lastly, the third class of algorithms relies on hypothesized Functional Causal Models (FCM) \citep{goudet_2018_learning} for each of the variables in one's system, as a function of their parents.
+Lastly, the third class of algorithms estimates Functional Causal Models (FCM) \citep{goudet_2018_learning} for each of the variables in our system.
 The defining characteristic in such algorithms is that they exploit asymmetries in the residuals of models for the hypothesized relationships of $X \rightarrow Y$, $Y \rightarrow X$.
 In particular, the residuals will be independent of the hypothesized cause in only one of the two potential models.
 As noted in the description of such algorithms, they are especially useful for discovering causal relationships between pairs of variables.
