@@ -45,10 +45,10 @@ Figure \ref{fig:simple-graph-confounded} illustrates this assumption in DAG form
    \label{fig:simple-graph-confounded}
 \end{figure}
 
-It is clear from Figure \ref{fig:simple-graph-confounded} that conditioning on X alone does not block all the indirect paths between Z and Y, and thus ommitting it will yield biased results of the causal relationship between Z and Y.
+It is clear from Figure \ref{fig:simple-graph-confounded} that conditioning on X alone does not block all the indirect paths between Z and Y, and that ommitting U from the analysis will yield biased results of the causal relationship between Z and Y.
 The structural equations also show that the ignorability assumption
 of Z does not hold if we only condition on X, and we risk obtaining biased estimates of the causal effect of Z on Y if we fail to
-account for U.
+account for U, sometimes referred to as a common cause.
 Even in this very simple example with only three or four variables, one can see the advantage of using a causal graph to encode assumptions.
 This advantage of DAGs becomes even more apparent in larger problems with many covariates available, and where the causal structure of the data is way more complicated, which are the types of problems typically faced by transportation demand modelers.
 

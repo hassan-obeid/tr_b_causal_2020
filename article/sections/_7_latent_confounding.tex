@@ -1,10 +1,10 @@
 \section{Latent Confounding}
 \label{sec:latent-confounding}
 
-This section focuses on the more complicated and realistic case that is 
+This section focuses on the more complicated yet realistic case that is 
 typically faced by demand modelers, where we have latent confounders that 
-affect the treatment assignment of our causal variables of interest. 
-We first go over a few examples of confounding in transportation analysese, explain 
+affect the treatment assignment of our causal variables of interest, as well as the outcome. 
+We first go over a few examples of confounding in transportation analyses, explain 
 the challenges that come with such cases, and present a few approaches to 
 dealing with this issue, specifically the recent de-confounder technique of 
 \citet{wang_2019_blessings}. 
@@ -42,9 +42,13 @@ observed, we can control for the confounding effect, and there exists many
 methods in the literature for how to do that, including post-stratification,
 multiple regression, propensity score methods, etc. It is when the 
 confounding variable is unobserved that the problem becomes significantly 
-more challenging. For an illustration, imagine we're interested [TODO: 
-insert relevant transportation example with confounding]. Without 
-accounting for the latent confounder, we risk getting very biased estimates 
+more challenging. 
+For an illustration, imagine we're interested in the effect of adding a bike on the mode share of bicycling in a given neighborhood. 
+To estimate this effect, one strategy that a modeler may use is to develop a disaggregate mode choice model with a dummy variable for whether a bikelane exists between an individual's trip origin and destination, and then treating the coefficient on this variable as the causal effect of adding a bikelane on the log-odds of choosing to bike. 
+The problem with such strategy is that individuals may self-select to live in an area where bicycle infrastructure exists because they have a preference for commuting by bike. 
+In other words, if we define an additional variable to encode a person's latent inherent preference for biking, then this variable determines both a person's likelihood for living in an area with an existing bicycle infrastructure, as well as whether that person choose to bike. 
+This variable is subsequently expected not to be "balanced" across the treatment and control groups; those who live near a bicycle lane are expected to have higher preference for biking than those who don't. 
+Without accounting for this latent confounder, we risk getting very biased estimates 
 of the effects of our treatment variable of interest, created by the 
 induced variations by the confounder in both the treatment and the outcome 
 variable. 
@@ -62,10 +66,9 @@ being environmentelly friendly may both affect whether she chooses to bike to
 work, as well as whether she lives close to a bike infrastructure, which may 
 bias our observational study if we're interested in the effect adding a 
 bikelane has on the mode share of bicycles. Those methods, however, rely on 
-collecting attitudinal indicators typically obtained by conducting (usually) 
-expensive surveys with a sample of the people. This may not be an option in 
-many cases [TODO: list some examples where it's challenging to conduct surveys 
-with people to collect indicator questions]. 
+collecting attitudinal indicators typically obtained by conducting
+additional surveys with a sample of the people. This may not be an option in 
+many cases; for example, we may not be able to reach the individuals to conduct additional surveys with them. 
 
 
 \subsection{The deconfounder algorithm}
