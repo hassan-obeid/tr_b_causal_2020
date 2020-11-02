@@ -6,25 +6,25 @@ At a high level, we
 \begin{enumerate}
    \item adopt a population perspective,
    \item brainstorm all variables that we think affect the system that generates our observations,
-   \item remove any variables that would cause bias in our causal inferences,
-   \item connect all variables in our graph according to our a-priori beliefs about causal relations amongst these variables,
+   \item remove any variables that could cause bias in our causal inferences,
+   \item connect all variables in our graph according to our a-priori beliefs about causal relations amongst them
    \item consider how the graph structure may differ between individuals and subgroups within the population.
 \end{enumerate}
-The following paragraphs will describe these steps in detail.
+The following paragraphs describe these steps in detail.
 
 To begin, we adopt the position of a researcher concerned about population level relationships.
 This means we will think through what is a likely generative model for all individuals.
 Later on, we will devote time to thinking about how subgroups and individual heterogeneity may affect our causal graphs.
 
-Now, we add our first variables to our graph, the outcome variable(s) of interest.
-Then, we note all the variables that we believes to influence the variable(s) of interest.
-We refer to these variables to as our initial explanatory variables.
+Now, we add our first variable(s) to our graph, the outcome variable(s) of interest in our problem.
+Then, we list all the variables we believe to influence the variable(s) of interest.
+We refer to these variables as our initial explanatory variables.
 
-Next, we iterate through the initial explanatory variables.
+Next, we iterate through these initial explanatory variables.
 For each current explanatory variable in the iteration, we think of variables that may modify the effect of the current explanatory variable on the outcome(s) of interest.
 We refer to these variables as effect modifiers.
-Note that some effect modifiers may be a part of our initial explanatory variables.
-For any effect modifiers that one thinks of, outside of the initial explanatory variables, add them to our causal graph.
+Note that some effect modifiers may be a part of our list of initial explanatory variables.
+For any effect modifiers that we think of, outside of the list of initial explanatory variables, we add them to our causal graph.
 
 After adding explanatory and effect modifying variables to the graph, we turn our attention to mediating variables.
 Again, we iterate through each explanatory variable.
@@ -45,11 +45,11 @@ If we consider multiple observations of a given decision maker, how do observed 
 How do the actions of a decision maker $i$ at time $t$ partially cause the future context or outcomes of a decision maker $j$?
 We should add explicit nodes to our graph, subscripted or denoted by time, to show the cross-time causal relationships in our system.
 
-At this point, we have added all the outcome, explanatory, effect modifying, mediating, confounding, and time-indexed variables that we can think of to our causal graph.
-They are all disconnected nodes, singletons, in the graph.
+At this point, we have added all the outcome, explanatory, effect modifying, mediating, confounding, and time-indexed variables that we believe are relevant to our context to our causal graph.
+However, they are all disconnected nodes, singletons, in the graph.
 We now focus on pruning nodes from this graph, before drawing our final hypothesized connections.
 In particular, we focus on pruning ``post-outcome'' variables that are not part of the causal graph for future time periods or other observations.
-The reason for this is that conditioning on such post-outcome variables biases one's causal effect estimates.
+The reason for this is that conditioning on such post-outcome variables would bias our causal effect estimates.
 
 To remove the problematic variables, we iterate through each of the non-outcome variables in our graph, and we assess whether the variable is actually a result of the outcome (perhaps in combination with other variables in our graph).
 These post-outcome variables temporally follow the outcome variable(s) but do not cause variables in the causal graph for other observations.
@@ -79,12 +79,12 @@ Drawing one's first causal graph is hard work!
 
 After celebrating, take a moment to pursue the following graph editing exercises.
 First, think about how the graph might differ across sub-populations.
-What sub-populations exist in your population of interest?
-Are there any causal relationships that should not exist for a given sub-population?
+What sub-populations, if any, exist in your population of interest?
+Are there any causal relationships that should, or should not, not exist for a given sub-population?
 For instance, are the outcomes in some sub-populations independent of a given explanatory variable?
-Can you think of any inverted causal relationships in this sub-population?
+Can you think of any inverted causal relationships that are specific to this sub-population?
 (I.e., for a given sub-population $B \rightarrow A$ instead of $A \rightarrow B$?)
-Consider adding these sub-population indices to one's initial causal graph, or if this is not clear enough, draw amended causal graphs for each sub-population.
+Consider adding these sub-population indices to one's initial causal graph, or if this is not clear enough, draw modified causal graphs for each sub-population of interest.
 Now, one can actually relax.
 This concludes the ``purely mental'' drafting of one's causal graph.
 In the next section, we'll look at testing this graph against data, and making any edits deemed empirically necessary.
