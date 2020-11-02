@@ -43,10 +43,10 @@ In particular, how (if at all) will our resampling strategy account for the poss
 % Provide some discussion of the alternatives and the effects of different choices.
 For our demonstration, we made the following choices.
 First, we used linear regressions to model $E \left[Y \mid X, Z \right]$ and $E \left[ Y \mid Z \right]$.
-Second, we chose to use $R^2$ as our test statistic for judging the predictive performance.
-Third, we have chosen to resample the $X$ vectors without replacement, keeping the length of the resampled vector equal to the length of the original vector.
-In other words, we permute $X$.
-And finally, we have chosen to visualize these tests by plotting a vertical line to display our observed test-statistic and by plotting the distribution of our test statistics based on the permutations of $Y$.
+Second, we used $R^2$ as our test statistic for judging the predictive performance.
+Third, we resampled $X$ without replacement, keeping the length of the resampled vector equal to the length of the original vector.
+In other words, we permuted $X$.
+Finally, we visualized our tests by encoding our observed test-statistic as a vertical line and by plotting the kernel density estimate of our test statistic's distribution.
 
 Our rationale for these choices are as follows.
 In our dataset, most of our explanatory variables were continuous (at least in theory).

@@ -123,7 +123,8 @@ Lastly, the third class of algorithms estimates Functional Causal Models (FCM) \
 The defining characteristic in such algorithms is that they exploit asymmetries in the residuals of models for the hypothesized relationships of $X \rightarrow Y$, $Y \rightarrow X$.
 In particular, the residuals will be independent of the hypothesized cause in only one of the two potential models.
 As noted in the description of such algorithms, they are especially useful for discovering causal relationships between pairs of variables.
-In other words, discovery methods based on FCMs enable orientation of the undirected or bi-directed edges that represent ambiguity over whether $X \rightarrow Y$ or $Y \rightarrow X$.
+In other words, discovery methods based on FCMs enable orientation of a graph's undirected or bi-directed edges.
+By orienting these edges, FCMs reduce ambiguity over whether $X \rightarrow Y$ or $Y \rightarrow X$.
 This orienting capability can be usefully combined with the previous causal discovery algorithms that infer classes graphs with equivalent marginal and conditional independencies.
 And of course, extensions of these techniques exist for inference in the presence of unobserved confounding \citep[Sec. 6]{goudet_2018_learning} and for learning an entire causal graph as opposed to dealing solely with variable pairs \citep{zheng_2020_learning}.
 
