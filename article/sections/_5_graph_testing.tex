@@ -123,8 +123,8 @@ To execute this test, we model the conditional expectation of travel time as a l
 As with the marginal independence test results, the $R^2$ of the model using the observed values of travel cost are greater than the model's $R^2$ using any simulated datasets.
 Again, this means that the $R^2$ using observed data is unlikely given our method of sampling from the null distribution of $R^2$ given conditional, mean-independence of travel time and travel cost.
 
-As before, we should respond to this result by considering conditional dependence between our variables of interest.
-In particular, we should investigate the idea that travel time is associated with travel cost, conditional on travel distance.
+As before, these results suggest conditional dependence between our variables of interest.
+In particular, we should investigate how travel time and travel cost relate, conditional on travel distance.
 Why might this be the case?
 Does travel time cause travel cost when driving alone?
 Does travel cost cause travel time while driving alone?
@@ -191,9 +191,11 @@ Figure \ref{fig:latent-cit-results} shows the result of following the aforementi
 From the Figure, we see that the distribution of ``observed'' test statistics clusters around zero while the distribution of ``sampled'' test statistics is closer to uniform.
 This result highlights the fact that (generally) there is ``no free lunch'': our approach to testing assumptions involving latent variables has its drawbacks.
 In particular, these tests are sensitive to assumptions about the joint prior distribution, $P_{\textrm{prior}} \left( X, Y, Z \right)$.
+
 If, as in this case\footnote{Details of the prior predictive checks that show prior-data mismatch are not shown due to space constraints. Please see \url{https://github.com/hassan-obeid/tr_b_causal_2020/blob/master/notebooks/final/_04-tb-testing-your-causal-graph.ipynb}}, the observed data $\left( X, Y \right)$ is unlikely under the joint prior distribution $P_{\textrm{prior}} \left( X, Y, Z \right)$ then the conditional independence test is likely to fail.
-As always, the failing test indicates that the observed data is unlike the data simulated and used to construct the reference distribution.
-Unfortunately, we are unsure of how much the dissimilarity comes from violations of conditional independence properties versus other sources.
+As always, the failing test indicates that the observed data is unlike the simulated data used to make the reference distribution.
+Unfortunately, we are unsure of how much dissimilarity comes from conditional independence violations.
+The observed data can differ distributionally from the simulated data in many ways.
 This highlights the need for extensive prior predictive checking of one's assumed joint prior, $P_{\textrm{prior}} \left( X, Y, Z \right)$, \textit{before} using conditional independence tests on causal graphs with latent variables.
 
 \subsection{Additional techniques}
@@ -205,7 +207,7 @@ For instance, \citet{pitchforth_2013_proposed} proposed a checklist of qualitati
 Answering these questions should increase the trustworthiness of one's graph.
 Alternatively, there are other quantitative tests of one's causal graph that were not explored in this section.
 
-For instance, causal graphs encode assumptions about the number of independent variables in one's dataset.
+For instance, causal graphs encode assumptions about the number of independent variables in one's data.
 The independent variables are the parentless-nodes in one's graph.
 Crucially, each graph assumes a particular number of such parentless-nodes.
 To test this assumption we first estimate our data's ``intrinsic dimension.''
@@ -227,7 +229,7 @@ For a more detailed and intuitive explanation of the graphical criterion for van
 Finally, we note that there are still a whole host of other techniques for testing one's causal graphs.
 Many of these remaining techniques are useful when one's causal graph contains unobserved (i.e., latent) variables.
 On one hand, we can use ``triad constraint'' tests that test independence between ``pseudo-residual'' values and one's explanatory variables \citep{cai_2019_triad}.
-Results from these tests are particularly useful for judging assumptions about how unobserved variables in our graph relate to each other and to our observed variables.
+Results from these tests are useful for judging how unobserved variables in our graph relate to each other and to our observed variables.
 
 Relatedly, one can make use of constraints on entropies of our observed variables instead of independencies.
 The basic idea is that differing assumptions about the structure of the unobserved variables in our graph imply differing amounts of entropy in the variables that we do observe, so we should test for these differences in entropy.
