@@ -194,16 +194,19 @@ These explanations suggest particular relationships to analyze and particular va
 \subsection{Additional techniques}
 \label{sec:testing-addendum}
 
-The methods presented in this section have focused on testing independence assertions using one's dataset.
-While this approach may be the most accessible strategy for testing one's causal graph, there are other applicable techniques.
-For instance, \citet{pitchforth_2013_proposed} put forth a detailed checklist of qualitative questions for one's causal graph.
+The methods presented in this section test independence assertions using one's dataset.
+While perhaps the most accessible strategy for testing one's causal graph, other techniques apply as well.
+For instance, \citet{pitchforth_2013_proposed} proposed a checklist of qualitative questions for one's causal graph.
 Answering these questions should increase the trustworthiness of one's graph.
 Alternatively, there are other quantitative tests of one's causal graph that were not explored in this section.
 
-For instance, a causal graph makes assumptions about the number of independent variables in one's dataset: i.e., the nodes in one's graph without parent-nodes.
-One can test this assumption by estimating the ``intrinsic dimension'' of one's data, and testing whether the intrinsic dimension equals the number of independent variables implied by one's graph.
+For instance, causal graphs encode assumptions about the number of independent variables in one's dataset.
+The independent variables are the parentless-nodes in one's graph.
+Crucially, each graph assumes a particular number of such parentless-nodes.
+To test this assumption we first estimate our data's ``intrinsic dimension.''
+Then, we test whether the intrinsic dimension equals the number of parentless-nodes in our graph.
 For more information on estimating the intrinsic dimension of a dataset, see \citet{camastra_2016_intrinsic, song_2019_identification}.
-See \citet{chenwei_2019_likelihood} for an extension of this idea for the situation where one suspects or cannot rule out unobserved confounding.
+Additionally, see \citet{chenwei_2019_likelihood} for an extension of this idea when we cannot rule out unobserved confounding.
 
 % Test vanishing tetrads / t-separation
 Another empirical implication of one's causal graph is the existence of so-called ``vanishing tetrads'' \citep{spearman_1904_general}.
