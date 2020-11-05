@@ -182,8 +182,9 @@ Here, we have one value per imputed vector $Z$ in both the observed and sampled 
 However, for the distribution of ``sampled'' test statistics, we marginalize over permutations of $Y$ since this distribution represents the null hypothesis of conditional or marginal independence.
 
 That last paragraph may have been confusing, so we'll walk through an example.
-Figure \ref{fig:deconfounder-graph} shows the causal graph implied by applying the deconfounder algorithm of \citet{wang_2019_blessings} to our dataset.
-We describe this application more thoroughly in Section \ref{sec:latent-confounding}.
+Here, we apply the deconfounder algorithm of \citet{wang_2019_blessings} to our data.
+In particular, Figure \ref{fig:deconfounder-graph} shows the deconfounder's assumed causal graph.
+Note, we describe this application more thoroughly in Section \ref{sec:latent-confounding}.
 For now, we present the graph to highlight the assumptions that we will test.
 Specifically, we'll examine the assumption that the observed number of licensed drivers in a household is independent of the observed number of automobiles in that household, conditional on the latent variable $X^{*}$.
 
@@ -232,7 +233,8 @@ On one hand, we can use ``triad constraint'' tests that test independence betwee
 Results from these tests are useful for judging how unobserved variables in our graph relate to each other and to our observed variables.
 
 Relatedly, one can make use of constraints on entropies of our observed variables instead of independencies.
-The basic idea is that differing assumptions about the structure of the unobserved variables in our graph imply differing amounts of entropy in the variables that we do observe, so we should test for these differences in entropy.
+The idea is that differing latent variable graphs imply differing entropies in our observed variables.
+Accordingly, we test for these entropies and constraints.
 For more information and examples, see the literature about:
 \begin{itemize}
   \item inequality constraints, e.g. \citet{tian_2002_testable, kang_2006_inequality, ver_2011_sequence}
