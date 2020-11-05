@@ -16,19 +16,22 @@ For now, recall our discussion in Section \ref{sec:graph-overview} about the two
 In both cases, direct testing of marginal or conditional independence amongst nodes in the causal graph may be difficult.
 Indeed, there are no direct tests of conditional independence that can detect all types of dependence, especially for continuous variables \citep{bergsma_2004_testing, shah_2020_hardness}.
 
-As a result of this hardness, there are a myriad of research efforts aimed at testing conditional independence of two variables $X$ and $Y$, given a third variable $Z$ and any number of assumptions about the variables or the test statistic itself.
+As a result of this hardness, there are a myriad of research efforts aimed at testing conditional independence.
+These efforts rely on additional assumptions about the variables or the test statistic itself.
 Some researchers proceed under the assumption that one has access to an approximation of the conditional distribution of $X \mid Z$ \citep{candes_2018_panning, berrett_2019_conditional}.
 Other researchers designed conditional independence tests for general cases, assuming smoothness of the underlying data distributions and assuming accurate estimation of the distribution of the test statistic under the null hypothesis of conditional independence (e.g. \citet{zhang_2012_kernel, strobl_2019_approximate}).
 
 Different from (but not excluding) these approaches, we will take an easier and less decisive route.
 If a pair of variables have conditionally or marginally independent distributions, then their statistical moments will also be conditionally or marginally independent.
-Instead of testing for marginal or conditional independence in distribution, we will perform a more tractable test for marginal or conditional independence in means.
+Accordingly, we will not test for marginal or conditional independence in distribution.
+We will instead perform a more tractable test for marginal or conditional independence in means.
 If the variables in question are not conditionally or marginally independent in their means, then we know they are not independent in their distributions.
 Conversely, even if a set of variables are marginally or conditionally independent in their means, this \textbf{does not} imply that the variables are independent in distribution.
 
 This approach of indirectly assessing distributional independence by testing mean independence is not new.
 The following papers have all proposed and implemented such an idea: \citet{burkart_2017_predictive, chalupka_2018_fast, inacio_2019_conditional}.
-For conditional independences, the crux of the approach is to predict $Y$ based on $X$ and $Z$, then compare against a prediction of $Y$ based on a resampled value of $X$ and the original $Z$.
+For conditional independences, the crux of the approach is to predict $Y$ based on $X$ and $Z$.
+Then, compare against a prediction of $Y$ based on a resampled value of $X$ and the original $Z$.
 If $Y$ is mean-independent of $X$ given $Z$, i.e. $E \left[ Y \mid X, Z \right] = E\left[ Y \mid Z \right]$, then the predictive power of a model with resampled $X$ should resemble the predictive power of a model with the original $X$.
 After all, in both cases, the conditional expectation of $Y$ is independent of one's $X$ values (real or resampled).
 When assessing marginal independencies, one removes $Z$ from the models for the expectation of $Y$ and proceeds as described.
@@ -144,10 +147,11 @@ Nevertheless, we still wish to test whether our data contradicts our graph.
 One way to directly extend our conditional independence testing to account for latent variables is to adopt a missing data perspective and impute the latent variables from a prior distribution.
 In particular, we can generalize our previous tests as follows.
 
-First, we can consider that instead of performing one test with a set of observed $X$, observed $Y$ and observed $Z$, we instead perform tests of observed $X$, observed $Y$, and imputed $Z$.
+First, we can consider expanding our test.
+Instead of performing one test with a set of observed $X$, observed $Y$ and observed $Z$, we perform tests of observed $X$, observed $Y$, and imputed $Z$.
 This recasts the randomness underlying the null-distribution in our original test statistic of $R^2$ as a function of our permutation of $Y$ and our imputation of $Z$.
 Here, we impute $Z$ by sampling from the prior or posterior distribution of $Z$, depending on whether we're testing independencies before or after performing inference on our model's parameters.
-Moreover, we'll now compute the p-value of this test statistic by marginalizing over the permutations and imputations.
+Moreover, we'll now compute this test's p-value by averaging over the permutations and imputations.
 Specifically, our p-value will be
 \begin{equation}
 E_{\textrm{samples, permutations}} \left[ \mathbb{I} \left \lbrace R^2 \left( X, Y, Z_{\textrm{sampled}} \right) <  R^2 \left( X_{\textrm{sampled}}, Y_{\textrm{sampled}} ^{\textrm{permuted}}, Z_{\textrm{sampled}} \right) \right \rbrace \right]
