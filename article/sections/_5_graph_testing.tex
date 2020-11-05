@@ -68,63 +68,6 @@ We do not claim that these choices for assessing mean independence will always b
 Indeed, one should assess one's tests on simulated data that resembles one's real data.
 For our illustrative purposes though, the combination of linear regressions, permutations, and $R^2$ resulted in adequate tests of marginal and conditional mean-independence.
 
-\subsubsection{Testing assumptions involving latent variables}
-\label{sec:latent-tests}
-% Describe latent variable testing
-Now that we have described testing with observable variables, we can more easily describe conditional independence tests that involve unobserved (i.e., latent) variables.
-Indeed, when dealing with observational data, we will frequently find ourselves not having observed all variables that are of interest.
-Nevertheless, we still wish to test whether our data contradicts our graph.
-One way to directly extend our conditional independence testing to account for latent variables is to adopt a missing data perspective and impute the latent variables from a prior distribution.
-In particular, we can generalize our previous tests as follows.
-
-First, we can consider that instead of performing one test with a set of observed $X$, observed $Y$ and observed $Z$, we instead perform tests of observed $X$, observed $Y$, and imputed $Z$.
-This recasts the randomness underlying the null-distribution in our original test statistic of $R^2$ as a function of our permutation of $Y$ and our imputation of $Z$.
-Here, we impute $Z$ by sampling from the prior or posterior distribution of $Z$, depending on whether we're testing independencies before or after performing inference on our model's parameters.
-Moreover, we'll now compute the p-value of this test statistic by marginalizing over the permutations and imputations.
-Specifically, our p-value will be
-\begin{equation}
-E_{\textrm{samples, permutations}} \left[ \mathbb{I} \left \lbrace R^2 \left( X, Y, Z_{\textrm{sampled}} \right) <  R^2 \left( X_{\textrm{sampled}}, Y_{\textrm{sampled}} ^{\textrm{permuted}}, Z_{\textrm{sampled}} \right) \right \rbrace \right]
-\end{equation}
-where $\mathbb{I}$ represents the indicator function that equals one if the condition inside its braces is true and zero otherwise.
-For reference, this is the same as the p-value for test statistics (or discrepancies) defined in \citet[Eq. 7]{gelman_1996_posterior}.
-
-\begin{figure}
-   \centering
-   \includegraphics[width=0.85\textwidth]{deconfounder-causal-graph}
-   \caption{Causal graph from applying the deconfounder algorithm \citep{wang_2019_blessings} to our dataset.}
-   \label{fig:deconfounder-graph}
-\end{figure}
-
-\begin{figure}
-   \centering
-   \includegraphics[width=0.5\textwidth]{latent-drivers-vs-num-autos}
-   \caption{Results of testing that the number of drivers is independent of the number of automobiles in the household, conditional on the latent variable.}
-   \label{fig:latent-cit-results}
-\end{figure}
-
-Lastly, note that our ``observed'' test statistic is itself a random variable: it depends on the imputed values of $Z$.
-Because we now have a distribution of observed test statistics, we change our visualization method.
-Instead of plotting a single line versus a distribution, we now plot two distributions against one another.
-We first plot the distribution of ``observed'' test statistics that we computed using the observed $X$, observed $Y$ and imputed $Z$ values.
-Then, we plot the distribution of ``sampled'' test statistics using prior samples of $\left( X, Y, Z \right)$ as a reference.
-Here, we have one value per imputed vector $Z$ in both the observed and sampled distributions.
-However, for the distribution of ``sampled'' test statistics, we marginalize over permutations of $Y$ since this distribution represents the null hypothesis of conditional or marginal independence.
-
-That last paragraph may have been confusing, so we'll walk through an example.
-Figure \ref{fig:deconfounder-graph} shows the causal graph implied by applying the deconfounder algorithm of \citet{wang_2019_blessings} to our dataset.
-We describe this application more thoroughly in Section \ref{sec:latent-confounding}.
-For now, we present the graph to highlight the assumptions that we will test.
-Specifically, we'll examine the assumption that the observed number of licensed drivers in a household is independent of the observed number of automobiles in that household, conditional on the latent variable $X^{*}$.
-
-Figure \ref{fig:latent-cit-results} shows the result of following the aforementioned testing procedures for assumptions involving latent variables.
-From the Figure, we see that the distribution of ``observed'' test statistics clusters around zero while the distribution of ``sampled'' test statistics is closer to uniform.
-This result highlights the fact that (generally) there is ``no free lunch'': our approach to testing assumptions involving latent variables has its drawbacks.
-In particular, these tests are sensitive to assumptions about the joint prior distribution, $P_{\textrm{prior}} \left( X, Y, Z \right)$.
-If, as in this case\footnote{Details of the prior predictive checks that show prior-data mismatch are not shown due to space constraints. Please see \url{https://github.com/hassan-obeid/tr_b_causal_2020/blob/master/notebooks/final/_04-tb-testing-your-causal-graph.ipynb}}, the observed data $\left( X, Y \right)$ is unlikely under the joint prior distribution $P_{\textrm{prior}} \left( X, Y, Z \right)$ then the conditional independence test is likely to fail.
-As always, the failing test indicates that the observed data is unlike the data simulated and used to construct the reference distribution.
-Unfortunately, we are unsure of how much the dissimilarity comes from violations of conditional independence properties versus other sources.
-This highlights the need for extensive prior predictive checking of one's assumed joint prior, $P_{\textrm{prior}} \left( X, Y, Z \right)$, \textit{before} using conditional independence tests on causal graphs with latent variables.
-
 \subsection{Demonstration}
 \label{sec:testing-demonstration}
 
@@ -191,6 +134,63 @@ Moreover, if one crosses the bridge, then one's travel cost is higher due to tol
 And finally, if one takes a toll lane to get across the bridge faster, then one also pays a higher price.
 Overall, intuitive explanations exist for conditional dependence between travel time and travel cost.
 These explanations suggest particular relationships to analyze and particular variables, such as bay bridge crossings, to include in one's mode choice (i.e. outcome) model.
+
+\subsubsection{Testing assumptions involving latent variables}
+\label{sec:latent-tests}
+% Describe latent variable testing
+Now that we have described testing with observable variables, we can more easily describe conditional independence tests that involve unobserved (i.e., latent) variables.
+Indeed, when dealing with observational data, we will frequently find ourselves not having observed all variables that are of interest.
+Nevertheless, we still wish to test whether our data contradicts our graph.
+One way to directly extend our conditional independence testing to account for latent variables is to adopt a missing data perspective and impute the latent variables from a prior distribution.
+In particular, we can generalize our previous tests as follows.
+
+First, we can consider that instead of performing one test with a set of observed $X$, observed $Y$ and observed $Z$, we instead perform tests of observed $X$, observed $Y$, and imputed $Z$.
+This recasts the randomness underlying the null-distribution in our original test statistic of $R^2$ as a function of our permutation of $Y$ and our imputation of $Z$.
+Here, we impute $Z$ by sampling from the prior or posterior distribution of $Z$, depending on whether we're testing independencies before or after performing inference on our model's parameters.
+Moreover, we'll now compute the p-value of this test statistic by marginalizing over the permutations and imputations.
+Specifically, our p-value will be
+\begin{equation}
+E_{\textrm{samples, permutations}} \left[ \mathbb{I} \left \lbrace R^2 \left( X, Y, Z_{\textrm{sampled}} \right) <  R^2 \left( X_{\textrm{sampled}}, Y_{\textrm{sampled}} ^{\textrm{permuted}}, Z_{\textrm{sampled}} \right) \right \rbrace \right]
+\end{equation}
+where $\mathbb{I}$ represents the indicator function that equals one if the condition inside its braces is true and zero otherwise.
+For reference, this is the same as the p-value for test statistics (or discrepancies) defined in \citet[Eq. 7]{gelman_1996_posterior}.
+
+\begin{figure}
+   \centering
+   \includegraphics[width=0.85\textwidth]{deconfounder-causal-graph}
+   \caption{Causal graph from applying the deconfounder algorithm \citep{wang_2019_blessings} to our dataset.}
+   \label{fig:deconfounder-graph}
+\end{figure}
+
+\begin{figure}
+   \centering
+   \includegraphics[width=0.5\textwidth]{latent-drivers-vs-num-autos}
+   \caption{Results of testing that the number of drivers is independent of the number of automobiles in the household, conditional on the latent variable.}
+   \label{fig:latent-cit-results}
+\end{figure}
+
+Lastly, note that our ``observed'' test statistic is itself a random variable: it depends on the imputed values of $Z$.
+Because we now have a distribution of observed test statistics, we change our visualization method.
+Instead of plotting a single line versus a distribution, we now plot two distributions against one another.
+We first plot the distribution of ``observed'' test statistics that we computed using the observed $X$, observed $Y$ and imputed $Z$ values.
+Then, we plot the distribution of ``sampled'' test statistics using prior samples of $\left( X, Y, Z \right)$ as a reference.
+Here, we have one value per imputed vector $Z$ in both the observed and sampled distributions.
+However, for the distribution of ``sampled'' test statistics, we marginalize over permutations of $Y$ since this distribution represents the null hypothesis of conditional or marginal independence.
+
+That last paragraph may have been confusing, so we'll walk through an example.
+Figure \ref{fig:deconfounder-graph} shows the causal graph implied by applying the deconfounder algorithm of \citet{wang_2019_blessings} to our dataset.
+We describe this application more thoroughly in Section \ref{sec:latent-confounding}.
+For now, we present the graph to highlight the assumptions that we will test.
+Specifically, we'll examine the assumption that the observed number of licensed drivers in a household is independent of the observed number of automobiles in that household, conditional on the latent variable $X^{*}$.
+
+Figure \ref{fig:latent-cit-results} shows the result of following the aforementioned testing procedures for assumptions involving latent variables.
+From the Figure, we see that the distribution of ``observed'' test statistics clusters around zero while the distribution of ``sampled'' test statistics is closer to uniform.
+This result highlights the fact that (generally) there is ``no free lunch'': our approach to testing assumptions involving latent variables has its drawbacks.
+In particular, these tests are sensitive to assumptions about the joint prior distribution, $P_{\textrm{prior}} \left( X, Y, Z \right)$.
+If, as in this case\footnote{Details of the prior predictive checks that show prior-data mismatch are not shown due to space constraints. Please see \url{https://github.com/hassan-obeid/tr_b_causal_2020/blob/master/notebooks/final/_04-tb-testing-your-causal-graph.ipynb}}, the observed data $\left( X, Y \right)$ is unlikely under the joint prior distribution $P_{\textrm{prior}} \left( X, Y, Z \right)$ then the conditional independence test is likely to fail.
+As always, the failing test indicates that the observed data is unlike the data simulated and used to construct the reference distribution.
+Unfortunately, we are unsure of how much the dissimilarity comes from violations of conditional independence properties versus other sources.
+This highlights the need for extensive prior predictive checking of one's assumed joint prior, $P_{\textrm{prior}} \left( X, Y, Z \right)$, \textit{before} using conditional independence tests on causal graphs with latent variables.
 
 \subsection{Additional techniques}
 \label{sec:testing-addendum}
