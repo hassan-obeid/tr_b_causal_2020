@@ -137,7 +137,7 @@ This highlights the need for extensive prior predictive checking of one's assume
 To demonstrate the testing procedures described above, we used the causal graph in Figure \ref{fig:graph-for-testing}.
 This causal graph shows a set of hypothesized causal relationships between variables thought to contribute to the utility of the drive-alone travel alternative in our dataset.
 As drawn, this graph encodes multiple marginal and conditional independence assumptions.
-Tools such as Daggity \citep{textor_2016_robust} can be used to automatically infer all independencies based on one's graph.
+Luckily, tools such as Daggity \citep{textor_2016_robust} can infer all independencies based on one's graph.
 For didactic purposes, however, we focused our attention on two particular independence assumptions.
 
 First, we tested the assumption of marginal independence between the number of licensed drivers and the number of automobiles in a household.
@@ -160,7 +160,8 @@ The empirical p-value of 0 confirms that the observed data is unlikely given the
 More specifically, when regressing the number of licensed drivers in a household on the number of cars in that household, one achieves an $R^2$ near 0.4.
 In contrast, when permuting the number of cars in the household and re-estimating the regression, the distribution of p-values concentrates around 0.
 This plot visualizes the fact that---through the lens of our chosen test statistic ($R^2$), linear regression model, and permutation-based resampling strategy---data generated under an assumption of marginal mean-independence does not ``look like'' the observed data.
-Accordingly, we should consider the weaker assumption of marginal dependence, where we can make data-generating assumptions that offer greater realism and concordance with our observations.
+Accordingly, we should consider the weaker assumption of marginal dependence.
+This relaxation may contain data-generating assumptions that better reflect our observations.
 
 % Conditional testing results
 \begin{figure}
@@ -187,7 +188,7 @@ For example, consider whether one drives alone over the San Francisco Bay Bridge
 If one crosses the bridge, then traffic delays will likely increase one's travel time.
 Moreover, if one crosses the bridge, then one's travel cost is higher due to tolls that one must pay.
 And finally, if one takes a toll lane to get across the bridge faster, then one also pays a higher price.
-Overall, we can think of intuitive explanations for why there might be a dependence between travel time and travel cost, even after conditioning on travel distance.
+Overall, intuitive explanations exist for conditional dependence between travel time and travel cost.
 These explanations suggest particular relationships to analyze and particular variables, such as bay bridge crossings, to include in one's mode choice (i.e. outcome) model.
 
 \subsection{Additional techniques}
@@ -209,7 +210,7 @@ Another empirical implication of one's causal graph is the existence of so-calle
 This term signifies that the difference between the product of two particular pairs of covariances must be zero.
 As stated, this implication of one's causal graph is hard to intuitively understand.
 However, one can graphically determine the existence of vanishing tetrads and determine which variables are part of these tetrads.
-Once one has determined the tetrads that should vanish according to one's graph, one can estimate the corresponding covariances and test to see if their difference of products is indeed unlikely to be zero.
+Then, one can estimate the necessary covariances and test to see if their difference of products is indeed unlikely to be zero.
 Such a test is yet another way to empirically determine whether one's graph is incompatible with one's dataset.
 For the original theorems proving that tetrads can be graphically identified and characterized, see \citet{shafer_1996_vanishing} and references therein.
 For a more detailed and intuitive explanation of the graphical criterion for vanishing tetrads, see \citet{thoemmes_2018_local}.
