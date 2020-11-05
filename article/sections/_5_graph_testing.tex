@@ -59,8 +59,8 @@ We assessed the performance of our mean-independence testing procedures using si
 Of particular importance were our simulations under the null hypothesis where $X$ was conditionally independent of $Y$.
 Our initial simulations used random forests as our conditional expectation models and permutations as resampling methods.
 Random forests are a non-parametric method that would allow us to have less fear of model misspecification, and permutations are easy to implement.
-However, under the null hypothesis, we discovered that the tests based on the random forest models did not result in p-values that were uniformly distributed.
-Given that we planned to use these procedures in a manner akin to hypothesis-testing, we hoped that our test statistics would be U-statistics.
+However, under the null hypothesis, the random forest-based tests resulted in non-uniform p-values.
+Such non-uniform p-values makes it harder to a-priori reject a false model \citep{gelman_2013_two}.
 When we switched from the combination of random forests and permutations to linear regressions and permutations, our p-values were indeed empirically, uniformly distributed.
 Moreover, we still retained high power.
 
@@ -102,7 +102,8 @@ For reference, this is the same as the p-value for test statistics (or discrepan
    \label{fig:latent-cit-results}
 \end{figure}
 
-Lastly, because our test statistic is itself a random variable that depends on the imputed values of $Z$, we must change our visualization method.
+Lastly, note that our ``observed'' test statistic is itself a random variable: it depends on the imputed values of $Z$.
+Because we now have a distribution of observed test statistics, we change our visualization method.
 Instead of plotting a single line versus a distribution, we now plot two distributions against one another.
 We first plot the distribution of ``observed'' test statistics that we computed using the observed $X$, observed $Y$ and imputed $Z$ values.
 Then, we plot the distribution of ``sampled'' test statistics using prior samples of $\left( X, Y, Z \right)$ as a reference.
