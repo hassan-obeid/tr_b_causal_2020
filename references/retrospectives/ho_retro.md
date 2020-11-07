@@ -39,4 +39,58 @@ This document should store one's weekly reflections on the project. In particula
     2. Gained a better understanding of the sensitivity of causal estimates to small changes in the confounder. 
     3. Unclear how to make the deconfounder algorithm useful when we're bound to recover it with some degree of error. 
     4. Nothing specific, we should just keep chugging along and making progress. 
+    
+6. Week of March 29, 2020
+    1. 
+    
+    2. Worked with Amine on nailing down the workflow for estimating the causal effects and proving the importance of having a data generation model (model of Xs) on top of an outcome model. I also brainstormed potential ideas to for our story and to make the work more relevant with steps that modelers can follow when looking to estimate causal effects. 
+    
+    3. Nothing specifically went wrong this week. 
+    
+    4. I'll start working on putting together a presentation that follows the flow of our story. I'll be presenting this to Joan's group in two weeks. 
+    
+7. Week of April 5, 2020
+    1. Learned extensively about causal processes in time series analysis. 
+    
+    2. Thinking about a useful story that explicitely states our contributions, and coming up with a coherent structure for our presentation/the way we want to show our work in general. 
+    
+    3. Didn't get to finish my task list, specifically the refactoring I was planning on doing. 
+    
+    4. I'll start working on putting together a presentation that follows the flow of our story. I'll be presenting this to Joan's group in two weeks. 
+    
+7. Week of April 12, 2020
+    1. Started reading about work done on the limits of the deconfounder algorithm. I have three papers to read on "the challenges of multiple causes", and will digest what applies to travel demand modeling when I read them. 
+    
+    2. Finishing up the presentation that has a clear story and key takeaways. Started working on refactoring.
+    
+    3. Nothing specific. 
+    
+    4. Will investigate setups where the deconfounder can work. It must work under some strict conditions and simulation scenarios, and I want to figure out what those are. 
+    
+8. Week of May 3rd, 2020
+    1. Learned more about collider bias in an attempt to think about how to find an example where not paying attention to causality can lead to serious mistakes and bias.
+    
+    2. The bigger group conversation was useful and we got some good feedback on how to more clearly define and communicate our contribution to the field. 
+    
+    3. Nothing specific. 
+    
+    4. Wrapping up the first stage of the work (the work we've done so far) and have it in a format that is ready for public viewing. 
+    
+10. Week of May 24, 2020
+    1. Learning about estimation techniques with random parameters, in order to learn how to estimate the regression when integrating over the distribution of the deconfounder. 
+    
+    2. Good progress on all tasks for this week. 
+    
+    3. Nothing specific. 
+    
+    4. 
+    
+ 11. Week of May 31, 2020
+    1. Nothing specific
+    
+    2. Pushed v1 of the two pubic notebooks on investigating deconfounder algorithm and applying it on simulation data
+    
+    3. Nothing specific. 
+    
+    4. Keep pushin'
 

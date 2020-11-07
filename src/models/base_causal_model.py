@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import abc
-from typing import Union, Tuple
-from pandas import DataFrame
-from graphviz import Digraph
+from typing import Tuple, Union
 
 from causalgraphicalmodels import CausalGraphicalModel, StructuralCausalModel
+from graphviz import Digraph
+from pandas import DataFrame
 
 SIZE_TYPE = Union[Tuple[int], int]
 
@@ -13,8 +13,11 @@ class AbstractCausalModel(metaclass=abc.ABCMeta):
     @classmethod
     def __subclasshook__(cls, subclass) -> bool:
         return (
-        hasattr(subclass, 'draw') and callable(subclass.draw) and
-        hasattr(subclass, 'sample') and callable(subclass.sample))
+            hasattr(subclass, "draw")
+            and callable(subclass.draw)
+            and hasattr(subclass, "sample")
+            and callable(subclass.sample)
+        )
 
     @abc.abstractmethod
     def draw(self) -> Digraph:
@@ -38,6 +41,7 @@ class CGM_Model(AbstractCausalModel, StructuralCausalModel):
         functions that generate the key-variable from the variables parents.
         See https://github.com/ijmbarr/causalgraphicalmodels for more info.
     """
+
     def __init__(self, assignment_dict):
         super(StructuralCausalModel, self).__init__(assignment_dict)
         return None

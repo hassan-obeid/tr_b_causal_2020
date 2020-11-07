@@ -4,15 +4,17 @@ Functions for plotting simulated vs observed kernel density estimates.
 """
 from __future__ import absolute_import
 
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sbn
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 
+from .plot_utils import (  # noqa: E501
+    _choice_evaluator,
+    _label_despine_save_and_show_plot,
+    _thin_rows,
+)
 from .utils import progress
-from .plot_utils import _label_despine_save_and_show_plot
-from .plot_utils import _choice_evaluator
-from .plot_utils import _thin_rows
 
 try:
     # in Python 3 range returns an iterator instead of list
@@ -22,33 +24,35 @@ except ImportError:
     pass
 
 # Set the plotting style
-sbn.set_style('darkgrid')
+sbn.set_style("darkgrid")
 
 
-def plot_simulated_kdes(sim_y,
-                        orig_df,
-                        filter_idx,
-                        col_to_plot,
-                        choice_col,
-                        sim_color='#a6bddb',
-                        orig_color='#045a8d',
-                        choice_condition=1,
-                        fig_and_ax=None,
-                        label='Simulated',
-                        title=None,
-                        bar_alpha=0.5,
-                        bar_color='#fee391',
-                        thin_pct=None,
-                        n_traces=None,
-                        rseed=None,
-                        show=True,
-                        figsize=(10, 6),
-                        fontsize=12,
-                        xlim=None,
-                        ylim=None,
-                        output_file=None,
-                        dpi=500,
-                        **kwargs):
+def plot_simulated_kdes(
+    sim_y,
+    orig_df,
+    filter_idx,
+    col_to_plot,
+    choice_col,
+    sim_color="#a6bddb",
+    orig_color="#045a8d",
+    choice_condition=1,
+    fig_and_ax=None,
+    label="Simulated",
+    title=None,
+    bar_alpha=0.5,
+    bar_color="#fee391",
+    thin_pct=None,
+    n_traces=None,
+    rseed=None,
+    show=True,
+    figsize=(10, 6),
+    fontsize=12,
+    xlim=None,
+    ylim=None,
+    output_file=None,
+    dpi=500,
+    **kwargs,
+):
     """
     Plots an observed kernel density estimate (KDE) versus the simulated
     versions of that same KDE.
@@ -143,8 +147,9 @@ def plot_simulated_kdes(sim_y,
         np.random.seed(rseed)
 
     if n_traces is not None:
-        selected_cols = np.random.choice(filtered_sim_y.shape[1],
-                                         size=n_traces, replace=False)
+        selected_cols = np.random.choice(
+            filtered_sim_y.shape[1], size=n_traces, replace=False
+        )
         filtered_sim_y = filtered_sim_y[:, selected_cols]
 
     if thin_pct is not None:
@@ -154,15 +159,17 @@ def plot_simulated_kdes(sim_y,
         filtered_sim_y = filtered_sim_y[selected_rows, :]
         filtered_orig_df = filtered_orig_df.iloc[selected_rows, :]
 
-    sample_iterator =\
-        progress(range(filtered_sim_y.shape[1]), desc='Calculating KDEs')
+    sample_iterator = progress(
+        range(filtered_sim_y.shape[1]), desc="Calculating KDEs"
+    )
 
     # Get the original values
     orig_choices = filtered_orig_df[choice_col].values
 
     orig_plotting_idx = _choice_evaluator(orig_choices, choice_condition)
-    orig_plotting_vals =\
-        filtered_orig_df.loc[orig_plotting_idx, col_to_plot].values
+    orig_plotting_vals = filtered_orig_df.loc[
+        orig_plotting_idx, col_to_plot
+    ].values
 
     if fig_and_ax is None:
         fig, axis = plt.subplots(1, figsize=figsize)
@@ -187,30 +194,43 @@ def plot_simulated_kdes(sim_y,
             continue
 
         # Get the values for plotting
-        current_plotting_vals =\
-            filtered_orig_df.loc[plotting_idx, col_to_plot].values
+        current_plotting_vals = filtered_orig_df.loc[
+            plotting_idx, col_to_plot
+        ].values
 
         # Update the plot extents
         min_x = min(current_plotting_vals.min(), min_x)
         max_x = max(current_plotting_vals.max(), max_x)
 
-        sbn.kdeplot(current_plotting_vals,
-                    ax=axis, color=sim_color, alpha=0.5, **kwargs)
+        sbn.kdeplot(
+            current_plotting_vals,
+            ax=axis,
+            color=sim_color,
+            alpha=0.5,
+            **kwargs,
+        )
 
     # Plot the originally observed relationship
-    sbn.kdeplot(orig_plotting_vals,
-                ax=axis, color=orig_color, label='Observed', **kwargs)
+    sbn.kdeplot(
+        orig_plotting_vals,
+        ax=axis,
+        color=orig_color,
+        label="Observed",
+        **kwargs,
+    )
 
     if num_null_choices > 0:
         num_null_pct = num_null_choices / float(filtered_sim_y.shape[1])
         null_pct_density_equivalent = axis.get_ylim()[1] * num_null_pct
-        axis.bar([0],
-                 [null_pct_density_equivalent],
-                 width=0.1 * np.ptp(orig_plotting_vals),
-                 align='edge',
-                 alpha=bar_alpha,
-                 color=bar_color,
-                 label="'No Obs' Simulations: {:.2%}".format(num_null_pct))
+        axis.bar(
+            [0],
+            [null_pct_density_equivalent],
+            width=0.1 * np.ptp(orig_plotting_vals),
+            align="edge",
+            alpha=bar_alpha,
+            color=bar_color,
+            label="'No Obs' Simulations: {:.2%}".format(num_null_pct),
+        )
 
     if label is not None:
         _patch = mpatches.Patch(color=sim_color, label=label)
@@ -218,8 +238,9 @@ def plot_simulated_kdes(sim_y,
         current_handles.append(_patch)
         current_labels.append(label)
 
-        axis.legend(current_handles, current_labels,
-                    loc='best', fontsize=fontsize)
+        axis.legend(
+            current_handles, current_labels, loc="best", fontsize=fontsize
+        )
 
     # set the plot extents
     if xlim is None:
@@ -232,7 +253,15 @@ def plot_simulated_kdes(sim_y,
 
     # Take care of boilerplate plotting necessities
     _label_despine_save_and_show_plot(
-        x_label=col_to_plot, y_label='Density', fig_and_ax=fig_and_ax,
-        fontsize=fontsize, y_rot=0, y_pad=40, title=title,
-        output_file=output_file, show=show, dpi=dpi)
+        x_label=col_to_plot,
+        y_label="Density",
+        fig_and_ax=fig_and_ax,
+        fontsize=fontsize,
+        y_rot=0,
+        y_pad=40,
+        title=title,
+        output_file=output_file,
+        show=show,
+        dpi=dpi,
+    )
     return None
