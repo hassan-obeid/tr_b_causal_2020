@@ -25,6 +25,7 @@ imagedir : plots graphs
 	cp reports/figures/cit--time_vs_cost_given_distance.png article/images/cit--time_vs_cost_given_distance.png
 	cp reports/figures/deconfounder-causal-graph.pdf article/images/deconfounder-causal-graph.pdf
 	cp reports/figures/latent-drivers-vs-num-autos.pdf article/images/latent-drivers-vs-num-autos.pdf
+	cp reports/figures/discovery-example-graph.pdf article/images/discovery-example-graph.pdf
 
 ## article     : Compile the handbook chapter
 .PHONY : article
