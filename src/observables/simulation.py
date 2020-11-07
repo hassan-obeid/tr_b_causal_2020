@@ -3,8 +3,6 @@ Functions used in the simulation of observables
 to simulate data for nodes in a causal graph
 based on specified distribution and parameters
 """
-
-
 import numpy as np
 import pandas as pd
 import scipy.stats
@@ -22,7 +20,7 @@ def is_constant(var_type):  # to be rethought
     Checks whether a variable has a constant
     value.
     """
-    return var_type == 'constant'
+    return var_type == "constant"
 
 
 def is_empirical(var_type):
@@ -31,7 +29,7 @@ def is_empirical(var_type):
     variable of interest is to be taken
     as a constant value or as numerical values.
     """
-    return var_type == 'empirical'
+    return var_type == "empirical"
 
 
 def is_categorical(var_type):
@@ -39,7 +37,7 @@ def is_categorical(var_type):
     Checks whether the variable type for the
     variable of interest is categorical.
     """
-    return var_type == 'categorical'
+    return var_type == "categorical"
 
 
 def sim_categorical(var_dist_params, size):
@@ -49,9 +47,7 @@ def sim_categorical(var_dist_params, size):
     """
     values = var_dist_params[0]
     freq = var_dist_params[1]
-    data_sim = np.random.choice(a=values,
-                                p=freq,
-                                size=size)
+    data_sim = np.random.choice(a=values, p=freq, size=size)
     return data_sim
 
 
@@ -81,11 +77,9 @@ def sim_continuous(var_dist, var_dist_params, size):
     """
     # Get scipy distribution from its
     # name in the params dictionary
-    dist = getattr(scipy.stats,
-                   var_dist)
+    dist = getattr(scipy.stats, var_dist)
 
-    data_sim = dist.rvs(*var_dist_params,
-                        size=size)
+    data_sim = dist.rvs(*var_dist_params, size=size)
     return data_sim
 
 
@@ -134,10 +128,8 @@ def sim_node_no_parent(params_dict, size=1000):
 
     for column in list(params_dict.keys()):
         variable = params_dict[column]
-        var_dist = variable['distribution']
-        var_dist_params = variable['parameters']
-        sim_df[column] = sim_from_distribution(var_dist,
-                                               var_dist_params,
-                                               size)
+        var_dist = variable["distribution"]
+        var_dist_params = variable["parameters"]
+        sim_df[column] = sim_from_distribution(var_dist, var_dist_params, size)
 
     return sim_df

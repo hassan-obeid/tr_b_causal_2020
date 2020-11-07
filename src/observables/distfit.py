@@ -2,11 +2,11 @@
 Functions used in the fitting of distributions
 to variables to be simulated.
 """
+from collections import defaultdict
 
 import numpy as np
 import pandas as pd
 from fitter import Fitter
-from collections import defaultdict
 
 # Functions to replace code within
 # DistNodeNoParent
@@ -34,7 +34,7 @@ def is_constant(var_type):  # to be rethought
     Checks whether a variable has a constant
     value.
     """
-    return var_type == 'constant'
+    return var_type == "constant"
 
 
 def is_empirical(var_type):
@@ -43,7 +43,7 @@ def is_empirical(var_type):
     variable of interest is to be taken
     as a constant value or as numerical values.
     """
-    return var_type == 'empirical'
+    return var_type == "empirical"
 
 
 def is_categorical(var_type):
@@ -51,7 +51,7 @@ def is_categorical(var_type):
     Checks whether the variable type for the
     variable of interest is categorical.
     """
-    return var_type == 'categorical'
+    return var_type == "categorical"
 
 
 def get_alt_specific_variable_name(var_name, alt_name):
@@ -60,7 +60,7 @@ def get_alt_specific_variable_name(var_name, alt_name):
     returns a string starting with variable name and
     ending with alternative name.
     """
-    return var_name + '_' + alt_name
+    return var_name + "_" + alt_name
 
 
 def get_constant_dist(var, var_val, alt_name=None):
@@ -70,11 +70,13 @@ def get_constant_dist(var, var_val, alt_name=None):
     """
     constant_dict = defaultdict(dict)
     # Add name of alternative to variable and store distriburion & parameters
-    var_name =\
-        var if alt_name is None \
+    var_name = (
+        var
+        if alt_name is None
         else get_alt_specific_variable_name(var, alt_name)
-    constant_dict[var_name]['distribution'] = 'constant'
-    constant_dict[var_name]['parameters'] = var_val.unique()
+    )
+    constant_dict[var_name]["distribution"] = "constant"
+    constant_dict[var_name]["parameters"] = var_val.unique()
     return constant_dict
 
 
@@ -85,11 +87,13 @@ def get_empirical_dist(var, var_val, alt_name=None):
     """
     empir_dict = defaultdict(dict)
     # Add name of alternative to variable and store distriburion & parameters
-    var_name =\
-        var if alt_name is None \
+    var_name = (
+        var
+        if alt_name is None
         else get_alt_specific_variable_name(var, alt_name)
-    empir_dict[var_name]['distribution'] = 'empirical'
-    empir_dict[var_name]['parameters'] = np.array(var_val)
+    )
+    empir_dict[var_name]["distribution"] = "empirical"
+    empir_dict[var_name]["parameters"] = np.array(var_val)
     return empir_dict
 
 
@@ -103,15 +107,16 @@ def get_categorical_dist(var, var_val, alt_name=None):
     # If more than one category, compute the frequency of values
     # and store as parameters
     # Add name of alternative to variable and store distriburion & parameters
-    var_name =\
-        var if alt_name is None \
+    var_name = (
+        var
+        if alt_name is None
         else get_alt_specific_variable_name(var, alt_name)
-    categ_dict[var_name]['distribution'] = 'categorical'
+    )
+    categ_dict[var_name]["distribution"] = "categorical"
     np_array_range = np.arange(var_val.max() + 1)
     array_bincount = np.bincount(var_val)
     probs = array_bincount / len(var_val)
-    categ_dict[var_name]['parameters'] = [np_array_range,
-                                          probs]
+    categ_dict[var_name]["parameters"] = [np_array_range, probs]
     return categ_dict
 
 
@@ -123,21 +128,20 @@ def get_continuous_dist(var, var_val, cont_dists, alt_name=None):
     cont_dict = defaultdict(dict)
     # Use the Fitter library to fit distributions
     # to the data
-    fitter_object = Fitter(data=var_val,
-                           distributions=cont_dists,
-                           timeout=60,
-                           verbose=True)
+    fitter_object = Fitter(
+        data=var_val, distributions=cont_dists, timeout=60, verbose=True
+    )
     fitter_object.fit()
     # Get the best distribution and store in dictionary
     BestDict = fitter_object.get_best()
     # Add name of alternative to variable and store distriburion & parameters
-    var_name =\
-        var if alt_name is None \
+    var_name = (
+        var
+        if alt_name is None
         else get_alt_specific_variable_name(var, alt_name)
-    cont_dict[var_name]['distribution'] =\
-        list(BestDict.items())[0][0]
-    cont_dict[var_name]['parameters'] =\
-        list(BestDict.items())[0][1]
+    )
+    cont_dict[var_name]["distribution"] = list(BestDict.items())[0][0]
+    cont_dict[var_name]["parameters"] = list(BestDict.items())[0][1]
     return cont_dict
 
 
@@ -186,28 +190,24 @@ def ind_spec_dist(data_long, obs_id_col, ind_spec, var_types, cont_dists):
     ind_spec_dict = defaultdict(dict)
     for ind_var in ind_spec:
         # generate array of values for individual specific variable
-        var_val =\
-            (data_long[[obs_id_col, ind_var]]
-                .drop_duplicates(obs_id_col, inplace=False)
-                .loc[:, ind_var]
-                .reset_index(drop=True))
+        var_val = (
+            data_long[[obs_id_col, ind_var]]
+            .drop_duplicates(obs_id_col, inplace=False)
+            .loc[:, ind_var]
+            .reset_index(drop=True)
+        )
         # Get distribution of variable
         var_type = var_types[ind_var]
-        ind_var_dic =\
-            get_distribution_dicts(ind_var,
-                                   var_type,
-                                   var_val,
-                                   cont_dists)
+        ind_var_dic = get_distribution_dicts(
+            ind_var, var_type, var_val, cont_dists
+        )
         ind_spec_dict.update(ind_var_dic)
     return ind_spec_dict
 
 
-def alt_spec_dist(data_long,
-                  alt_id_col,
-                  alt_spec_dic,
-                  var_types,
-                  alt_name_dic,
-                  cont_dists):
+def alt_spec_dist(
+    data_long, alt_id_col, alt_spec_dic, var_types, alt_name_dic, cont_dists
+):
     """
     Function that retrieves distributions for all alternative
     specific variables.
@@ -223,12 +223,9 @@ def alt_spec_dist(data_long,
         for alt_var in alt_spec_dic[alt_id]:
             var_val = alt_data[alt_var]
             var_type = var_types[alt_var]
-            alt_spec_var_dist =\
-                get_distribution_dicts(alt_var,
-                                       var_type,
-                                       var_val,
-                                       alt_name,
-                                       cont_dists)
+            alt_spec_var_dist = get_distribution_dicts(
+                alt_var, var_type, var_val, alt_name, cont_dists
+            )
             alt_spec_var_dic.update(alt_spec_var_dist)
         all_alt_spec_var_dic.update(alt_spec_var_dic)
     return all_alt_spec_var_dic
@@ -244,32 +241,33 @@ def trip_spec_dist(data_long, obs_id_col, trip_spec, var_types, cont_dists):
     trip_spec_dict = defaultdict(dict)
     for trip_var in trip_spec:
         # generate array of values for trip specific variable
-        var_val =\
-            (data_long[[obs_id_col, trip_var]]
-                .drop_duplicates(obs_id_col, inplace=False)
-                .loc[:, trip_var]
-                .reset_index(drop=True))
+        var_val = (
+            data_long[[obs_id_col, trip_var]]
+            .drop_duplicates(obs_id_col, inplace=False)
+            .loc[:, trip_var]
+            .reset_index(drop=True)
+        )
         var_type = var_types[trip_var]
         # If data is to be taken as empirical values
-        trip_spec_var_dist =\
-            get_distribution_dicts(trip_var,
-                                   var_type,
-                                   var_val,
-                                   cont_dists)
+        trip_spec_var_dist = get_distribution_dicts(
+            trip_var, var_type, var_val, cont_dists
+        )
         trip_spec_dict.update(trip_spec_var_dist)
     return trip_spec_dict
 
 
 # Define the main function
-def get_dist_node_no_parent(data_long,
-                            alt_id_col,
-                            obs_id_col,
-                            alt_spec_dic,
-                            alt_name_dic,
-                            ind_spec,
-                            trip_spec,
-                            var_types,
-                            cont_dists=None):
+def get_dist_node_no_parent(
+    data_long,
+    alt_id_col,
+    obs_id_col,
+    alt_spec_dic,
+    alt_name_dic,
+    ind_spec,
+    trip_spec,
+    var_types,
+    cont_dists=None,
+):
     """
     Function to find the distribution of specific variables
     from a long format dataset.
@@ -325,11 +323,9 @@ def get_dist_node_no_parent(data_long,
     # Code for Individual Specific Variables
     print("Getting Distributions of Individual Specific Variables...")
     print("---------------------------------------------------------")
-    ind_spec_dic_params = ind_spec_dist(data_long,
-                                        obs_id_col,
-                                        ind_spec,
-                                        var_types,
-                                        cont_dists)
+    ind_spec_dic_params = ind_spec_dist(
+        data_long, obs_id_col, ind_spec, var_types, cont_dists
+    )
     params_dict.update(ind_spec_dic_params)
     print("Done...")
 
@@ -337,12 +333,14 @@ def get_dist_node_no_parent(data_long,
     # Loop around the different available alternatives
     print("Getting Distributions of Alternative Specific Variables...")
     print("----------------------------------------------------------")
-    alt_spec_dic_params = alt_spec_dist(data_long,
-                                        alt_id_col,
-                                        alt_spec_dic,
-                                        var_types,
-                                        alt_name_dic,
-                                        cont_dists)
+    alt_spec_dic_params = alt_spec_dist(
+        data_long,
+        alt_id_col,
+        alt_spec_dic,
+        var_types,
+        alt_name_dic,
+        cont_dists,
+    )
     params_dict.update(alt_spec_dic_params)
     print("Done...")
 
@@ -350,11 +348,9 @@ def get_dist_node_no_parent(data_long,
     # Loop around trip (observation) specific variables
     print("Getting Distributions of Trip Specific Variables...")
     print("---------------------------------------------------------")
-    trip_spec_dic_params = trip_spec_dist(data_long,
-                                          obs_id_col,
-                                          trip_spec,
-                                          var_types,
-                                          cont_dists)
+    trip_spec_dic_params = trip_spec_dist(
+        data_long, obs_id_col, trip_spec, var_types, cont_dists
+    )
     params_dict.update(trip_spec_dic_params)
     print("Done...")
 

@@ -1,9 +1,8 @@
 """
 Utility functions used in selection on observables work
 """
-
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import seaborn as sns
 
 
@@ -38,20 +37,24 @@ def plot_params(sim_par, model, fig_size):
     plt.figure(figsize=fig_size)
 
     # Plot the distribution
-    sns.distplot(sim_par, kde=False, bins=bins, label='Simulated Parameters')
+    sns.distplot(sim_par, kde=False, bins=bins, label="Simulated Parameters")
 
     # Add vertical line for the data generating parameter
-    plt.axvline(model.coefs[sim_par.name],
-                color='black',
-                ls='--',
-                label='Data Generating Parameter')
+    plt.axvline(
+        model.coefs[sim_par.name],
+        color="black",
+        ls="--",
+        label="Data Generating Parameter",
+    )
 
     # Add a title for the figure
-    plt.title(label='Histogram of ' + '"' + sim_par.name + '"',
-              fontdict={'fontsize': 16})
+    plt.title(
+        label="Histogram of " + '"' + sim_par.name + '"',
+        fontdict={"fontsize": 16},
+    )
 
     # Add a y-label
-    plt.ylabel('Frequency', rotation=0, labelpad=50)
+    plt.ylabel("Frequency", rotation=0, labelpad=50)
 
     # Add a legend
     plt.legend()

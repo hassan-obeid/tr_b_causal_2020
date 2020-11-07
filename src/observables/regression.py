@@ -1,21 +1,23 @@
+import json
+from collections import defaultdict
+
 import numpy as np
 import statsmodels.api as sm
-from collections import defaultdict
-import json
 from scipy.stats import multivariate_normal
+
 
 def is_linear(reg_type):
     """
     Checks whether a regression type is linear.
     """
-    return reg_type == 'linear'
+    return reg_type == "linear"
 
 
 def is_bin_log(reg_type):
     """
     Checks whether a regression type is binomial.
     """
-    return reg_type == 'binomial'
+    return reg_type == "binomial"
 
 
 def fit_linear_reg(X, Y):
@@ -53,8 +55,9 @@ def fit_multinomial_reg(X, Y):
     if len(X.shape) == 1:
         X = X.values.reshape((-1, 1))
 
-    multinomial_reg = LogisticRegression(multi_class='multinomial',
-                                         solver='newton-cg')
+    multinomial_reg = LogisticRegression(
+        multi_class="multinomial", solver="newton-cg"
+    )
     # Fit model
     model = multinomial_reg.fit(X, Y)
     return model
@@ -65,12 +68,12 @@ def get_regression_name(x_var, y_var):
     Gets regression name based on the name of
     input variables.
     """
-# TODO: Generalize if you have more than one exp variable
-#     if len(y_var) == 1:
-#         reg_name = y_var + '_on_' + x_var
-#     else: ## need to compe up with a better way to dump dep variable
-#         reg_name = json.dumps(y_var) + '_on_' + x_var
-    return y_var + '_on_' + x_var
+    # TODO: Generalize if you have more than one exp variable
+    #     if len(y_var) == 1:
+    #         reg_name = y_var + '_on_' + x_var
+    #     else: ## need to compe up with a better way to dump dep variable
+    #         reg_name = json.dumps(y_var) + '_on_' + x_var
+    return y_var + "_on_" + x_var
 
 
 def fit_regression(regression, reg_type, data):
@@ -160,12 +163,11 @@ def fit_alternative_regression(regressions, reg_types, data):
         regression = regressions[reg_id]
         reg_type = reg_types[reg_id]
         # If linear regression
-        reg_result = fit_regression(regression,
-                                    reg_type,
-                                    data)
+        reg_result = fit_regression(regression, reg_type, data)
         reg_results.update(reg_result)
 
     return reg_results
+
 
 def lin_reg_pred(X, fitted_reg, size, causal_scale=None):
     """
@@ -204,9 +206,9 @@ def lin_reg_pred(X, fitted_reg, size, causal_scale=None):
     fitted_reg_cov = fitted_reg.cov_params().values
 
     # Adjust the coefficients accouting for variabce
-    coefs = multivariate_normal.rvs(mean=fitted_reg_params,
-                                    cov=fitted_reg_cov,
-                                    size=size)
+    coefs = multivariate_normal.rvs(
+        mean=fitted_reg_params, cov=fitted_reg_cov, size=size
+    )
 
     # scale some parameters if desired causal effect is bigger
     if causal_scale is not None:
@@ -214,11 +216,9 @@ def lin_reg_pred(X, fitted_reg, size, causal_scale=None):
         coefs[:, 1:] = coefs[:, 1:] * scale_array
 
     # Generate noise
-    noise = np.random.normal(loc=0,
-                             scale=fitted_reg.resid.std(),
-                             size=size)
+    noise = np.random.normal(loc=0, scale=fitted_reg.resid.std(), size=size)
     # Compute predictions
-    dot_prod = np.einsum('ij, ij->i', coefs, predictor)
+    dot_prod = np.einsum("ij, ij->i", coefs, predictor)
     prediction = dot_prod + noise
 
     return prediction
