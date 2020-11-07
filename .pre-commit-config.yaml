@@ -1,5 +1,7 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+# See https://jupytext.readthedocs.io/en/latest/using-pre-commit.html for
+#   jupytext pre-commit instructions and examples
 repos:
   - repo: https://github.com/ambv/black
     rev: stable
@@ -15,3 +17,15 @@ repos:
     hooks:
       -   id: reorder-python-imports
           application-directories: .:src
+  - repo: local
+    hooks:
+      - id: format-ipynb
+        name: format-ipynb
+        entry: jupytext --from ipynb --pipe black --check flake8 --pre-commit
+        pass_filenames: false
+        language: python
+      - id: jupytext
+        name: jupytext
+        entry: jupytext --from ipynb --to py:light --pre-commit
+        pass_filenames: false
+        language: python
