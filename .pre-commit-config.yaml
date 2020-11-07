@@ -15,10 +15,3 @@ repos:
     hooks:
       -   id: reorder-python-imports
           application-directories: .:src
-  - repo: local
-    hooks:
-      - id: jupytext
-        name: jupytext
-        entry: jupytext --from ipynb --pipe black --check flake8 --pre-commit
-        pass_filenames: false
-        language: python
