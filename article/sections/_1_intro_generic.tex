@@ -1,37 +1,31 @@
 \section{Introduction}
 \label{sec:intro}
 
-The following chapter is concerned with the existing disconnect between the 
-fields of travel demand modeling and causal inference. 
-More specifically, the chapter is motivated by the current lack of use of methods and findings from 
-the causal inference literature in travel demand modeling. 
-
-More often than not, the development of behavioral models in transportation, 
-specifically transportation demand models, is driven by the need to evaluate 
-the impact of external interventions, in the form of alternative policies, on a 
-certain outcome of interest. 
-These questions that transportation demand models 
-are built to answer are causal by definition: we are interested in how the 
-system reacts to \textit{external} interventions. 
-Yet, when those models are 
-developed, there is very little consideration given to causality, and when 
+In transportation, we often build models that are used for policy evaluation.
+Specifically, we often use behavioral models to evaluate the impact of external interventions on travel outcomes. 
+These evaluations are excplicitly causal: we are interested in how the 
+system reacts to \textit{interventions}. 
+Yet, when these models are 
+developed, causality is often not considered. Furthermore, when 
 causal concepts are accounted for, the process is done implicitly without a 
 formal framework. 
 
+This chapter is concerned with filling this gap. 
+Specifically, we focus on addressing the existing disconnect between the fields of travel demand modeling and causal inference. 
+The chapter is motivated by the current lack of use of methods and findings from 
+the causal inference literature in travel demand modeling. 
+
 While the field of transportation demand modeling could benefit greatly from 
-incorporating causal inference techniques, there are barriers that have made 
-this integration slower than what one would hope. 
+incorporating causal inference techniques, there are barriers that have slowed this integration. 
 These barriers stem from the difference between the types of problems transportation demand modelers deal with and those that are typically studied in the causal inference literature. 
-Perhaps the main fundemental difference is that demand modelers 
-are typically trying to forecast the impacts of policies that haven't been 
-implemented or seen before, which requires additional work and a change to the
-typical causal modeling workflow in order to translate a given policy 
-(treatment) into a set of characteristics and variables that exist in the
-data and system at hand (please refer to \citet{brathwaite_2018_causal} for a 
-more thorough discussion of those barriers). 
-While those barriers make the problem of demand modelers harder, there is still a lot to gain from 
-incorporating causal inference techniques where appropriate, and to contribute
-in turn where the literature lacks.  
+Perhaps the fundemental difference is that demand modelers are typically trying to forecast the impacts of policies that haven't been implemented or seen before.
+Forecasting the effects of unseen interventions requires additional work and a change to the typical causal modeling workflow.
+In particular, we must translate a given policy (treatment) into a set of characteristics and variables that exist in the data and system at hand.
+(For a more thorough discussion of this and other barriers, please refer to \citet{brathwaite_2018_causal}.) 
+
+While these barriers complicate the efforts of demand modelers, there is still a lot to gain from
+incorporating causal inference techniques where appropriate and from contributing
+to the causal inference literature where it's lacking.
 
 The relevance of this topic now is motivated by the significant boost in the causal inference literature recently, both in the potential outcomes and the causal graphical modeling frameworks.
 The goal of this chapter is to formalize a workflow for approaching 
