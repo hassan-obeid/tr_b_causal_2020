@@ -1,42 +1,39 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Travel demand problems aim at forecasting the impact of proposed project and policies. These problems are causal in nature. 
-To our surprise, there has been very little mention of causal inference in the field of travel demand modeling.
+Forecasting the impact of proposed projects and policies is a causal inference.
+Since such forecasting is routine throughout public policy in general and transportation in particular, we are surprised that causal inference methods are rarely used in the field of travel demand modeling.
 \citet{brathwaite_2018_causal} have documented this disconnect and presented an initial framework for addressing it.
 
-In this chapter, we build up on \citet{brathwaite_2018_causal} and highlight the importance of using causal graphs and 
+In this chapter, we highlighted the importance of using causal graphs and 
 causal inference methods in transportation demand modeling efforts.
 
-We presented a numerical exercise aiming to show the importance of  the data generating process in the estimation 
-of effects of interest resulting from external interventions. 
-We showed, using the same outcome model, that different assumptions about the data generating processes could 
+We presented a simulation exercise, aiming to show the importance of the data generating process in the estimation 
+of causal effects from external interventions. 
+We showed, regardless of outcome model, that different assumptions about the data generating processes (i.e., that differing causal graphs) could 
 lead to bias in estimates of the effect of interest.
 
-Data generating processes can be illustrated effectively using DAGs as shown by \citet{pearl_1995_causal}.
+Data generating processes can be illustrated effectively using DAGs, as shown by \citet{pearl_1995_causal}.
 We have shown that DAGs help researchers and practitioners represent their assumptions about the data generating process. 
 
-We presented a process allowing researchers and practitioners to construct causal graphs based on their expert opinion of the problem at hand. 
-We also presented methods for testing the implications encoded in the the practitioners proposed causal graph. 
-These implications might be either observed, latent, or both.
+We detailed a process and guiding questions for constructing causal graphs.
+Though this process is rooted in subjective opinion and prior knowledge, we demonstrate and reference methods for using data to empirically test the implications encoded in one's causal graph. 
+These implications involve observed variables, latent variables, or both.
 
-Beyond testing the implications and assumptions encoded in a one's causal graph, we describe why causal discovery is important in discerning relationships between covariates one's data.
-We shortly presented several causal discovery algorithms used by
-other researchers in different fields. 
-We highlighted the use of one of these causal discovery algorithms on a simple example. 
+Beyond testing the implications and assumptions encoded in one's causal graph, we described why causal discovery is important for discerning relationships between covariates one's data.
+To provide an introduction to these methods, we briefly presented several representative causal discovery algorithms, and we demonstrated the use of one of these causal discovery algorithms on our chapter's travel mode-choice example. 
 We showed that causal discovery methods help us test independence within our data, 
 develop a clearer picture about the uncertainty within the variables shown in the causal graph, 
 and expand the level and amount of tests performed on our data when compared to the tests implicated 
 by the structure of the researcher's proposed causal graph.
 
-We presented examples of latent confounding within the transportation demand modeling field and highlight 
-some examples of current methods aiming at addressing problems resulting from confounding in certain situations.
+We presented examples of latent confounding within the transportation demand modeling field and highlighted
+some methods that address latent confounding in specific situations.
 
-We present a recently developed algorithm by \citet{wang_2019_blessings} aiming to address the problems not 
-addressed by previously developed methods dealing with confounding. We use this model on the same example illustrated in
-the selection on observables simulations and highlight the instances where it leads to a better recovery of 
-a confounder in one's causal graph. 
+Specifically, we presented a recently developed algorithm by \citet{wang_2019_blessings}, The Deconfounder.
+This algorithm aims to address the problem of latent, multi-cause confounding.
+To investigate its usefulness, we applied this technique to the same simulation example mentioned above, and we highlighted the instances where it improved recovery of a confounder in our causal graph.
 
-We then show that while the deconfounder algorithm might be a promising step in the right direction, 
-it still has some notable deficiencies. More specifically, we show that the deconfounder algorithm shows 
-to be sensitive to small errors in one's data.
+We then show that while the deconfounder algorithm is a promising step in the right direction, 
+it still has some notable deficiencies. Specifically, we show that the deconfounder algorithm is 
+sensitive to small errors in one's data.
