@@ -200,6 +200,8 @@ As always, the failing test indicates that the observed data is unlike the simul
 Unfortunately, we are unsure of how much dissimilarity comes from conditional independence violations.
 The observed data can differ distributionally from the simulated data in many ways.
 This highlights the need for extensive prior predictive checking of one's assumed joint prior, $P_{\textrm{prior}} \left( X, Y, Z \right)$, \textit{before} using conditional independence tests on causal graphs with latent variables.
+Specifically, we want our marginal priors $P_{\textrm{prior}} \left( X^{*} \right) = \int P_{\textrm{prior}} \left( X^{*} \mid Z^{*} \right) P \left( Z^{*} \right) \partial Z^{*}$ to reasonably well represent the observed $X$ (and the same for $P_{\textrm{prior}} \left( Y^{*} \right)$ and $Y$).
+Then, any remaining discrepancies between our observed data and our simulated data can be mainly attributed to their differing conditional independence properties.
 
 \subsection{Additional techniques}
 \label{sec:testing-addendum}
