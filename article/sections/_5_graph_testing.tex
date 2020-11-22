@@ -7,7 +7,8 @@
 \subsubsection{Testing observable assumptions}
 \label{sec:observable-tests}
 In the last section, we reviewed a process for creating an initial causal graph using expert opinion.
-Critically, after drafting a causal graph, we should immediately test it against empirical data.
+Critically, after drafting a causal graph, we should test it against our available data.
+Doing so will add robustness and credibility to our final conclusions.
 This is important because, if our graph captures inaccurate assumptions about the data generating process, then we have no reason to think that our conclusions from using the graph will be accurate.
 
 To test our causal graphs against data, we will first test the implications of our graph that involve observable variables only.
@@ -18,15 +19,16 @@ Indeed, there are no direct tests of conditional independence that can detect al
 
 As a result of this hardness, there are a myriad of research efforts aimed at testing conditional independence.
 These efforts rely on additional assumptions about the variables or the test statistic itself.
-Some researchers proceed under the assumption that one has access to an approximation of the conditional distribution of $X \mid Z$ \citep{candes_2018_panning, berrett_2019_conditional}.
+Some researchers create tests under the assumption that one has access to an approximation of the conditional distribution of $X \mid Z$ \citep{candes_2018_panning, berrett_2019_conditional}.
 Other researchers designed conditional independence tests for general cases, assuming smoothness of the underlying data distributions and assuming accurate estimation of the distribution of the test statistic under the null hypothesis of conditional independence (e.g. \citet{zhang_2012_kernel, strobl_2019_approximate}).
 
-Different from (but not excluding) these approaches, we will take an easier and less decisive route.
+In this chapter, we will take an easier and less decisive route to testing independence.
 If a pair of variables have conditionally or marginally independent distributions, then their statistical moments will also be conditionally or marginally independent.
 Accordingly, we will not test for marginal or conditional independence in distribution.
 We will instead perform a more tractable test for marginal or conditional independence in means.
 If the variables in question are not conditionally or marginally independent in their means, then we know they are not independent in their distributions.
 Conversely, even if a set of variables are marginally or conditionally independent in their means, this \textbf{does not} imply that the variables are independent in distribution.
+Mean independence simply provides justification for placing greater belief in the variables being distributionally independent.
 
 This approach of indirectly assessing distributional independence by testing mean independence is not new.
 The following papers have all proposed and implemented such an idea: \citet{burkart_2017_predictive, chalupka_2018_fast, inacio_2019_conditional}.
@@ -37,8 +39,8 @@ After all, in both cases, the conditional expectation of $Y$ is independent of o
 When assessing marginal independencies, one removes $Z$ from the models for the expectation of $Y$ and proceeds as described.
 
 Note that as with the case of testing distributional independence, testing mean independence still requires researchers to make choices.
-We have to select models for $E \left[ Y \mid X, Z \right]$ and $E\left[ Y \mid Z \right]$, respectively, for testing conditional and marginal mean-independence.
-We also have to choose the performance statistic (e.g. $R^2$, log-likelihood, etc.) to compare these models.
+First, we have to select models for $E \left[ Y \mid X, Z \right]$ and $E\left[ Y \mid Z \right]$, respectively, for testing conditional and marginal mean-independence.
+Second, we have to choose the performance statistic (e.g. $R^2$, log-likelihood, etc.) to compare these models.
 Lastly, we also have to select a resampling method.
 In particular, how (if at all) will our resampling strategy account for the possible dependence between $X$ and $Z$?
 
@@ -46,12 +48,12 @@ In particular, how (if at all) will our resampling strategy account for the poss
 % Provide some discussion of the alternatives and the effects of different choices.
 For our demonstration, we made the following choices.
 First, we used linear regressions to model $E \left[Y \mid X, Z \right]$ and $E \left[ Y \mid Z \right]$.
-Second, we used $R^2$ as our test statistic for judging the predictive performance.
+Second, we used $R^2$ as our test statistic for judging the regressions' predictive performances.
 Third, we resampled $X$ without replacement, keeping the length of the resampled vector equal to the length of the original vector.
 In other words, we permuted $X$.
 Finally, we visualized our tests by encoding our observed test-statistic as a vertical line and by plotting the kernel density estimate of our test statistic's distribution.
 
-Our rationale for these choices are as follows.
+Our rationales for these choices are as follows.
 In our dataset, most of our explanatory variables were continuous (at least in theory).
 Accordingly, $R^2$ seemed a sensible performance metric for a model of the conditional expectation of a continuous random variable.
 
@@ -64,12 +66,12 @@ Our initial simulations used random forests as our conditional expectation model
 Random forests are a non-parametric method that would allow us to have less fear of model misspecification, and permutations are easy to implement.
 However, under the null hypothesis, the random forest-based tests resulted in non-uniform p-values.
 Such non-uniform p-values makes it harder to a-priori reject a false model \citep{gelman_2013_two}.
-When we switched from the combination of random forests and permutations to linear regressions and permutations, our p-values were indeed empirically, uniformly distributed.
-Moreover, we still retained high power.
+When we switched from the combination of random forests and permutations to linear regressions and permutations, our p-values turned out to be empirically, uniformly distributed.
+Moreover, we still retained high statistical power.
 
 We do not claim that these choices for assessing mean independence will always be appropriate.
 Indeed, one should assess one's tests on simulated data that resembles one's real data.
-For our illustrative purposes though, the combination of linear regressions, permutations, and $R^2$ resulted in adequate tests of marginal and conditional mean-independence.
+For our dataset and simulations though, the combination of linear regressions, permutations, and $R^2$ resulted in adequate tests of marginal and conditional mean-independence.
 
 \subsection{Demonstration}
 \label{sec:testing-demonstration}
@@ -198,6 +200,8 @@ As always, the failing test indicates that the observed data is unlike the simul
 Unfortunately, we are unsure of how much dissimilarity comes from conditional independence violations.
 The observed data can differ distributionally from the simulated data in many ways.
 This highlights the need for extensive prior predictive checking of one's assumed joint prior, $P_{\textrm{prior}} \left( X, Y, Z \right)$, \textit{before} using conditional independence tests on causal graphs with latent variables.
+Specifically, we want our marginal priors $P_{\textrm{prior}} \left( X^{*} \right) = \int P_{\textrm{prior}} \left( X^{*} \mid Z^{*} \right) P \left( Z^{*} \right) \partial Z^{*}$ to reasonably well represent the observed $X$ (and the same for $P_{\textrm{prior}} \left( Y^{*} \right)$ and $Y$).
+Then, any remaining discrepancies between our observed data and our simulated data can be mainly attributed to their differing conditional independence properties.
 
 \subsection{Additional techniques}
 \label{sec:testing-addendum}
