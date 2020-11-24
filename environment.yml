@@ -29,6 +29,6 @@ dependencies:
     - causalgraphicalmodels==0.0.4
     - mypy==0.770
     - reorder-python-imports==2.3.2
-    - black==19.10
+    - black==19.10b0
     - fitter==1.3.0
 prefix: /Users/tbrathwaite/anaconda2/envs/causalTRB2020

@@ -129,7 +129,7 @@ def get_continuous_dist(var, var_val, cont_dists, alt_name=None):
     # Use the Fitter library to fit distributions
     # to the data
     fitter_object = Fitter(
-        data=var_val, distributions=cont_dists, timeout=60, verbose=True
+        data=var_val, distributions=cont_dists, timeout=60
     )
     fitter_object.fit()
     # Get the best distribution and store in dictionary
