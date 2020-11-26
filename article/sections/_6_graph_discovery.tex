@@ -198,7 +198,11 @@ These include A/B tests in technology companies, medical trials for drug certifi
 Unplanned experiments are instances of true randomization that were not pre-meditated for experimentation.
 For instance, at multiple technology companies, we have found instances of random allocation (e.g., `np.random.choice` in Python) scattered throughout the companies' code bases, outside of formal experiments and seemingly as leftover placeholders.
 Each such instance is an experiment that allocates some individuals to one treatment and some to another.
+
 Finally, natural experiments are instances where our system is subject to non-random interventions.
+Sometimes, these natural experiments take the form of a policy that we apply uniformly across our system.
+For example, imagine a country-wide change in immigration policy that affects the supply of employees into the country, when one is analyzing firm success.
+In other instances, the interventions affect specific individuals.
 For instance, rounding prices up or down to the nearest dollar allocates people with a ``true price'' of $2.51 to a $3.00 treatment, and it allocates people with a ``true price'' of $2.49 to a $2.00 treatment.
 This treatment allocation is not random, but perhaps there are ways it is ``as good as random'' thus permitting us to treat it similarly to a formal experiment.
 
