@@ -6,13 +6,12 @@ Our previous section detailed a method for testing independence assumptions of o
 As presented, this strategy requires one to first have a causal graph.
 Indeed, this requirement is why Section \ref{sec:graph-construction} provides instructions on how to construct an initial causal graph using expert opinion.
 
-Our unstated presumption is that we will test our working causal graph.
-If any of our tests fail, we will then revise the graph until its assumptions appear plausible.
+Our unstated presumption is that we will test our proposed causal graph.
+If any of our tests fail, we will then revise the graph until its assumptions appear defensible.
 Essentially, we postulate, test, and edit our causal graph until the data conform to the graph's assumptions.
 If this iterative discovery process sounds tedious, that is because it can be!
 
-In this section, we will discuss how we can avoid such repetitive, manual graph editing.
-Instead, we use our computers algorithmic capabilities.
+In this section, we will discuss how we can avoid such repetitive, manual graph editing and testing.
 Specifically, this section describes causal discovery:
 algorithmically inferring our causal graph from data.
 Here, we detail why causal discovery is important;
@@ -33,7 +32,7 @@ For example, we can use causal discovery to understand how our prior beliefs aff
 To do so, we could compare our inferred causal effects under expert-opinion versus data-driven causal graphs.
 
 Secondly, causal discovery helps inspire the creation and editing of expert-opinion graphs.
-Indeed, it's typically easier to edit than to create from scratch.
+Indeed, it is typically easier to edit than to create from scratch.
 Graphs found via causal discovery can spark ideas for one's own graph if they feature different causal relations than are present in one's own graph, and they provide a starting point for graph revision.
 Thirdly, causal discovery algorithms can aid characterization of posterior uncertainty in one's causal graph and causal effect estimates.
 Each causal graph discovered from one's data represents an alternative way of understanding the world, and we can quantify the probability of each of these causal models representing our data generating process.
@@ -79,8 +78,9 @@ And, of course, we can consider hybrids of these two posterior approximation sch
 With these posterior approximation methods, we can generate causal graphs for all the purposes mentioned above:
 \begin{itemize}
    \item for criticism and inspiration,
-   \item for distributional analyses of one's causal effect estimates conditional on each sampled graph, and
-   \item for distributional analyses of the causal graphs themselves.
+   \item for distributional analyses of the causal graphs, and
+   \item for distributional analyses of one's causal effect estimates conditional on each sampled graph.
+
    \newline
    I.e., how certain are we of any one causal graph?
 \end{itemize}
@@ -89,7 +89,7 @@ With these posterior approximation methods, we can generate causal graphs for al
 \label{sec:discovery-overview}
 
 % Pointers to thorough review papers
-The following subsection presents a non-exhaustive overview of causal discovery algorithms.
+This subsection presents a non-exhaustive overview of causal discovery algorithms.
 For conciseness, an exhaustive review of causal discovery algorithms is out of the scope of the article.
 Crucially, we rely heavily on review papers such as \citet{glymour_2019_review} and \citet{spirtes_2016_causal} to fill in our gaps.
 
@@ -108,8 +108,9 @@ The second class of algorithms are score-based algorithms.
 These techniques proceed sequentially, in pairs of variables.
 For each considered pair, an edge may be added, removed, or reversed in direction.
 These changes are made greedily, so long as our scoring criterion improves.
+Most commonly, the scoring criterion is the Bayesian Information Criterion for the joint prediction of all variables in our dataset \citep{malinsky_2018_causal}.
 
-First, we start with a fully disconnected graph.
+To begin using a score-based algorithm, we start with a fully disconnected graph.
 To this graph, we add directed causal relationships to increase the score of the generative model that corresponds to our graph.
 Once we cannot improve the score this way anymore, we have found the graph structure that maximizes the score on our data.
 From this graph, we then prune as many directed causal relationships as possible without harming our score.
@@ -125,16 +126,15 @@ In particular, the residuals will be independent of the hypothesized cause in on
 As noted in the description of such algorithms, they are especially useful for discovering causal relationships between pairs of variables.
 In other words, discovery methods based on FCMs enable orientation of a graph's undirected or bi-directed edges.
 By orienting these edges, FCMs reduce ambiguity over whether $X \rightarrow Y$ or $Y \rightarrow X$.
-This orienting capability can be usefully combined with the previous causal discovery algorithms that infer classes graphs with equivalent marginal and conditional independencies.
+This orienting capability can be usefully combined with the previous causal discovery algorithms that infer classes of graphs with equivalent marginal and conditional independencies.
 And of course, extensions of these techniques exist for inference in the presence of unobserved confounding \citep[Sec. 6]{goudet_2018_learning} and for learning an entire causal graph as opposed to dealing solely with variable pairs \citep{zheng_2020_learning}.
 
 \subsection{An application of causal discovery}
 \label{sec:discovery-application}
 To demonstrate the methods in this section, we chose to use the simplest causal discovery algorithm: the PC algorithm \citep{glymour_2001_causation}.
-For practitioners who may reasonably start with the simplest method they can find and increase methodological complexity as needed, this should be an illuminating starting point.
-Moreover, as noted above, the PC algorithm assumes that one has no unobserved confounders.
+For practitioners who may reasonably start with the simplest method available and increase methodological complexity as needed, this should be an illuminating starting point.
 As noted in Section \ref{sec:testing-demonstration}, we suspect that our causal graph for the drive alone utility of our dataset contains unobserved confounding.
-Accordingly, using the PC algorithm on our example allows us to observe how the algorithm behaves under violation of its assumptions.
+Given that the PC algorithm assumes that we are free of unobserved confounding, our example allows us to observe how the algorithm behaves under violation of its assumptions.
 Does the algorithm fail gracefully and point towards violations of its assumptions, or does it return incorrect results with certainty?
 
 To begin, it helps to understand the general procedure of the PC algorithm. The algorithm uses all our observed variables to infer a skeleton of a causal graph.
