@@ -50,11 +50,37 @@ There, the structure of one's causal graph is used to inform general design deci
 Additionally, note the relations to reinforcement learning where an agent has to perform experiments in order to discover the action that will maximize her reward.
 There, \citet{lee_2018_structural} have shown that designing our experiments without guidance from one's causal model is generally suboptimal, and that we can achieve optimality by leveraging our causal graph to design our experimentation plan.
 
-Now, let's transition from decision making to consider experimentation for learning.
-Imagine that we are at a transportation network company and that we are running a pricing experiment to learn about price elasticities of their customers.
+Now, let's transition from experimentation for decision making to consider experimentation for learning.
+Imagine that we are at a transportation network company and that we are running a pricing experiment to learn about price elasticities of our customers.
 Here, there is no immediate decision being made, but we learn about an edge in our causal graph: the edge from price of a trip (treatment) to purchase of the ride (outcome).
 In other cases, we may experiment to learn not just about the strength of an edge, but about the presence of edges and the structure of the graph more generally.
 For example, we may wish to remove residual ambiguity from a causal discovery process that output a Markov Equivalence Class of graphs instead of a single causal DAG.
 In these situations, we're interested in optimally designing an experiment (or series of experiments) to learn a causal graph (or its properties), and we're interested in how we can leverage potentially mutliple experimental datasets to improve our causal graphs.
 For a review of the literature on experimentation for learning and construction/refinement of a preliminary causal graph, see \citet[Sec. 3.1.2]{kalisch_2014_causal}.
 For more recent approaches in this vein, see works such as \citet{triantafillou_2015_constraint, kocaoglu_2017_experimental, brouillard_2020_differentiable, rantanen_2020_learning}.
+
+Finally, after we have run any experiments that we are interested in, we still must decide what to do in our population.
+Three major types of questions come to mind immediately:
+\begin{enumerate}
+   \item Should we launch the treatment(s) at all?
+   \item Should we launch the treatments to everyone?
+   \item How should the treatments be dispersed/implemented?
+\end{enumerate}
+
+After updating our posterior beliefs with the experimental data, we'll want to analyze and come to a conclusion about launching our treatment(s).
+In particular, we will wish to determine the expected distribution of impacts under each scenario (launch treatment(s), business as usual, etc.).
+Here, \citet{manski_2019_treatment} should provide the basic idioms of thought and pointers to the larger literature on treatment choice from a decision theoretic perspective.
+
+Next, if we've decided to launch the treatments, we come to the question of who should receive the treatment(s)?
+Everyone?
+A select few?
+Are there certain subgroups that should receive the treatment but not others?
+These questions fundamentally revolve around the level and nature of heterogeneity in treatment effects.
+We will, with good reason, want to search for evidence of heterogeneity and characterize it if found.
+In doing so, we should consult articles such as \citet{pearl_2017_detecting} and \citet{webster_2020_subgroup} for guidance on how to perform one's subgroup analysis in light of one's causal graph.
+This should help us avoid drawing incorrect conclusions or misinterpreting our analyses.
+
+Thirdly, we will need to answer logistical questions about the levels and the frequency of treatment.
+With regard to choosing the levels of (possibly continuous and multiple) treatments, recent work on causal bayesian optimization represents the state of the art in this area \citep{aglietti_2020_causal}.
+Moreover, the entire field of reinforcement learning focuses on running experiments and learning from past observations to determine the treatment arms/levels that will maximize one's reward (however we define it).
+Accordingly, we stand to gain much by consulting the work on and principles from causal reinforcement learning (c.f. \citet{bareinboim_2015_bandits}) when choosing our optimal treatment plan.
