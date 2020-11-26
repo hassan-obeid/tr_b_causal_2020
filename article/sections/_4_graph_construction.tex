@@ -27,7 +27,7 @@ Note that some effect modifiers may be a part of our list of initial explanatory
 For any effect modifiers that we think of, outside of the list of initial explanatory variables, we add them to our causal graph.
 
 Overall, modifiers are important because our treatment effects systematically vary with them.
-Accordingly, if better understand when our treatments will be effective, then we can better target them.
+Accordingly, if we better understand when our treatments will be effective, then we can better target them.
 % For instance, the effect of a transit voucher on increasing an individual's probability of using transit is likely modified by the recipients income.
 % We expect a smaller treatment effect on wealthy individual's than on individual's with low income
 For instance, imagine that a region-wide lockdown reduces the 14-day rolling average of new COVID-19 cases by X\% (on average).
@@ -36,6 +36,7 @@ If most residents in an area are essential workers, then a lockdown will be less
 We might wish to target other interventions for that region, as a replacement or supplement for the lockdown.
 Targeting aside, knowledge of modifiers is also crucial to generalizing treatment effect inferences from one population to another.
 To credibly transport our inferences, we must know what variables cause the treatment effects to differ between populations, and we must know how the distributions of those variables differs across populations \citep{pearl_2014_external}.
+In general, see \citet{zheng_2018_automated} for a thorough introduction to moderation, its differences from other variables in one's causal graph, and for instructions on how to find moderators through data analysis alone.
 
 After adding explanatory and effect modifying variables to the graph, we turn our attention to mediating variables.
 A mediating variable is one through which an explanatory variable influences our outcome(s) of interest.
