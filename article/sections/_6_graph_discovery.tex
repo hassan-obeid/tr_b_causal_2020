@@ -18,6 +18,7 @@ algorithmically inferring our causal graph from data.
 Here, we detail why causal discovery is important;
 we provide a brief overview of the main concepts in causal discovery;
 and we show the results of using causal discovery algorithms on the dataset described in Section \ref{sec:graph-importance}.
+At the end, we provide references to some further topics at the intersection of causal discovery and experimentation.
 
 \subsection{Why use causal discovery?}
 \label{sec:why-causal-discovery}
@@ -181,3 +182,29 @@ Moreover, discovered graphs with undirected edges express uncertainty about what
 Disclosing and marginalizing over structural uncertainty of this kind is rare in choice modelling, as far as we know.
 Lastly, we gain confidence in our results.
 Through automated tests, we ensure our results are not based on untested or implausible causal assumptions.
+
+\subsection{Experimental extensions}
+\label{sec:experimental-extension}
+
+As just demonstrated, causal discovery algorithms take in data and output causal graphs.
+So far, causal discovery algorithms described in the context of observational data, where there is no random assignment to treatment.
+However, this setting has its limitations.
+Indeed, limitations on a variable's observability lead to causal discovery algorithms sometimes returning graphs with undirected edges, representing latent confounding.
+To overcome issues of confounding, there are causal discovery algorithms that make use of experimental data.
+In particular, one should think of three kinds of experiments: planned, unplanned, and natural.
+
+Planned experiments are what we typically think of as experiments.
+These include A/B tests in technology companies, medical trials for drug certification, randomized controlled trials by economists and social scientists, etc.
+Unplanned experiments are instances of true randomization that were not pre-meditated for experimentation.
+For instance, at multiple technology companies, we have found instances of random allocation (e.g., `np.random.choice` in Python) scattered throughout the companies' code bases, outside of formal experiments and seemingly as leftover placeholders.
+Each such instance is an experiment that allocates some individuals to one treatment and some to another.
+Finally, natural experiments are instances where our system is subject to intervention, though not necessarily randomly.
+Imagine a rule that affects some individuals but not others.
+For instance, rounding prices up or down to the nearest dollar allocates people with a ``true price'' of $2.51 to a $3.00 treatment, and it allocates people with a ``true price'' of $2.49 to a $2.00 treatment.
+This treatment allocation is not random, but perhaps there are ways it is ``as good as random'' thus permitting us to treat it similarly to a formal experiment.
+
+In making use of planned, unplanned, and natural experiments, there are roughly two types of causal discovery algorithms.
+One type of causal discovery algorithm takes a causal graph with unresolved ambiguities, and it outputs an experimentation plan whose resulting data will permit resolution of the causal graph.
+For algorithms of this kind, see work by \citet{ghassami_2018_budgeted}, the work cited therein, and related literature.
+The other type of algorithm takes whatever experimental and observational data one already has, and it tries to best combine these sources of information to construct a causal graph that is valid for all datasets.
+For references and guidance in this vein, see work such as \citet{tian_2013_causal, peters_2016_causal, ghassami_2017_learning, kallus_2018_removing}.
