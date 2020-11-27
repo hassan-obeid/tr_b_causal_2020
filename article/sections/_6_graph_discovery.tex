@@ -187,7 +187,7 @@ Through automated tests, we ensure our results are not based on untested or impl
 \label{sec:experimental-extension}
 
 As just demonstrated, causal discovery algorithms take in data and output causal graphs.
-So far, causal discovery algorithms described in the context of observational data, where there is no random assignment to treatment.
+So far, we described causal discovery algorithms in the context of observational data, where there is no random assignment to treatment.
 However, this setting has its limitations.
 Indeed, limitations on a variable's observability lead to causal discovery algorithms sometimes returning graphs with undirected edges, representing latent confounding.
 To overcome issues of confounding, there are causal discovery algorithms that make use of experimental data.
@@ -207,7 +207,7 @@ For instance, rounding prices up or down to the nearest dollar allocates people 
 This treatment allocation is not random, but perhaps there are ways it is ``as good as random'' thus permitting us to treat it similarly to a formal experiment.
 
 In making use of planned, unplanned, and natural experiments, there are roughly two types of causal discovery algorithms.
-One class of causal discovery algorithm takes a causal graph with unresolved ambiguities, and it outputs an experimentation plan whose resulting data will permit resolution of the causal graph.
+One class of causal discovery algorithm takes a causal graph with unresolved ambiguities and outputs an experimentation plan whose resulting data will permit resolution of the causal graph.
 For algorithms of this kind, see work by \citet{ghassami_2018_budgeted}, the work cited therein, and related literature.
-The second class of algorithm takes whatever experimental and observational data one already has, and it tries to best combine these sources of information to construct a causal graph that is valid for all datasets.
+The second class of algorithm takes available experimental and observational data and tries to best combine these sources of information to construct a causal graph that is valid for all datasets.
 For references and guidance in this vein, see work such as \citet{tian_2013_causal, peters_2016_causal, ghassami_2017_learning, zhang_2017_causal, kallus_2018_removing}.
