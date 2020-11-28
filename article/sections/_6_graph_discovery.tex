@@ -196,8 +196,8 @@ In particular, one should think of three kinds of experiments: planned, unplanne
 Planned experiments are what we typically think of as experiments.
 These include A/B tests in technology companies, medical trials for drug certification, randomized controlled trials by economists and social scientists, etc.
 Unplanned experiments are instances of true randomization that were not pre-meditated for experimentation.
-For instance, at multiple technology companies, we have found instances of random allocation (e.g., `np.random.choice` in Python) scattered throughout the companies' code bases, outside of formal experiments and seemingly as leftover placeholders.
-Each such instance is an experiment that allocates some individuals to one treatment and some to another.
+For instance, technology companies commonly use random allocation (e.g., `np.random.choice` in Python) throughout their code bases, outside of formal experiments.
+These are often placeholders or temporary measures, but each such instance is an experiment that allocates some individuals to one treatment and some to another.
 
 Finally, natural experiments are instances where our system is subject to non-random interventions.
 Sometimes, these natural experiments take the form of a policy that we apply uniformly across our system.
