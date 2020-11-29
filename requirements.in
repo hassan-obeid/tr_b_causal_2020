@@ -1,5 +1,6 @@
 attrs
 causalgraphicalmodels
+checkrs
 click
 coverage
 flake8
