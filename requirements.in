@@ -1,0 +1,17 @@
+attrs
+causalgraphicalmodels
+click
+coverage
+flake8
+jupyterlab
+jupytext
+papermill
+pip-tools
+pipreqs
+pre-commit
+pylogit
+pytest
+scikit-learn
+seaborn
+statsmodels
+tqdm
