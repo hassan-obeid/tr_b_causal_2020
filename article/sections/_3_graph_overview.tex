@@ -1,23 +1,22 @@
 \section{Overview of Causal Graphs}
 \label{sec:graph-overview}
-
-Causal diagrams and causal graphical models have been introduced by \citet{pearl_causality_2000} as a powerful tool for causal inference, especially in observational studies.
+The previous section, \ref{sec:graph-importance}, motivated why the knowledge encoded in one's DAG is important. 
+This section gives a high level overview of what DAGs are and provides references for more thorough readings on the subject. 
+Causal diagrams and causal graphical models have been introduced by \citet{pearl_causality_1995} as a powerful tool for causal inference, especially in observational studies.
 Perhaps one of the most important and useful features of causal
 graphs when dealing with causal inference problems is the clear illustration
 of the causal relationships between the variables.
-While a formal introduction to the topic of directed acyclic graphs (DAGs) is beyond the scope of this chapter,
+While a formal introduction to the topic of DAGs is beyond the scope of this chapter,
 here we focus specifically on illustrating the power of DAGs to represent
-and encode complex  causal relationships between variables in an intuitive and
+and encode complex causal relationships between variables in an intuitive and
 clear manner.
 Interested readers can refer to \citet{pearl_causality_2000} for a thorough introduction.
 
 Consider the causal graph represented in Figure \ref{fig:simple-graph}.
-Suppose we're interested in the effect of Z on Y.
+Suppose we're interested in the effect of a treatment Z on Y.
 What the graph in Figure \ref{fig:simple-graph} implies is that Z is
-independent of Y(Z) given X, or in other words, the assignment mechanism is
-ignorable conditional on the values of X.
-In such situations, it is sufficient to control for
-X to obtain an unbiased estimate of the causal effect of Z on Y.
+independent of Y(Z) given X. In causal jargon, the mechanism by which the treatment Z was assigned is ignorable, once we control for covariates X. 
+In such situations, it is sufficient to control for X to obtain an unbiased estimate of the causal effect of Z on Y.
 
 \begin{figure}[h!]
    \centering
@@ -45,25 +44,26 @@ Figure \ref{fig:simple-graph-confounded} illustrates this assumption in DAG form
    \label{fig:simple-graph-confounded}
 \end{figure}
 
-It is clear from Figure \ref{fig:simple-graph-confounded} that conditioning on X alone does not block all the indirect paths between Z and Y, and that ommitting U from the analysis will yield biased results of the causal relationship between Z and Y.
-The structural equations also show that the ignorability assumption
-of Z does not hold if we only condition on X, and we risk obtaining biased estimates of the causal effect of Z on Y if we fail to
-account for U, sometimes referred to as a common cause.
-Even in this very simple example with only three or four variables, one can see the advantage of using a causal graph to encode assumptions.
-This advantage of DAGs becomes even more apparent in larger problems with many covariates available, and where the causal structure of the data is way more complicated, which are the types of problems typically faced by transportation demand modelers.
+Figure \ref{fig:simple-graph-confounded} shows an indirect connection between Z and Y that goes through U. 
+Therefore, even if we condition on X, omitting U will yield biased results of the relationship between Z and Y, due to the variation in both Z and Y caused by U.
+The structural equations also show that the ignorability assumption of Z does not hold if we only control for X, and we risk obtaining biased estimates of the causal effect of Z on Y if we fail to account for U, sometimes referred to as a common cause.
+Even in this very simple example with only three or four variables, we gain an advantage in parsimony and expressiveness by using a causal graph to encode assumptions.
+The conciseness of DAGs becomes even more useful in real-world applications.
+Here, applied problems may have many available covariates and a complex causal structure.
+In such problems, fully writing out the structural equations for the system may be tedious, and readers may still find it hard to understand.
 
-Another benefit of DAGs is that they come with a set of testable implications, and incorporating them in any causal
-analysis adds robustness and defensibility to one's analysis.
-We discuss those implications in section 5, and illustrate how to use those tests in one's analysis.
+Another benefit of DAGs is that they come with testable implications.
+Incorporating these tests in any causal analysis adds robustness and defensibility to one's study.
+In section 5, we discuss these implications further, and we illustrate how to tests for them in one's analysis.
 
 Lastly, it is important to note that the graphical approach to causality focuses
-primarily on issues of identification of causal effects, that is, given a
+primarily on issues of identification of causal effects. That is, given a
 directed acyclic graph (DAG) that encodes an analyst's knowledge and belief
 about the data generation process of the problem at hand, can a specific
 causal effect be identified?
 As such, we emphasize that DAGs are great tools
-for a modeler to encode their assumptions about a problem, but not necessarily
-a guide on how to estimate a causal effects of interest.
+for a modeler to encode their assumptions about a problem, even though we will use more familiar statistical tools to actually infer/estimate a causal effects of interest. 
+This separation of identification and inference into two separate problems is often advocated for by Judea Pearl himself, emphasizing that whether a causal effect of interest is identifiable does not 
 
 \subsection{Prior Uses of Causal Graphs in Choice Modelling}
 \label{sec:choice-graphs}
