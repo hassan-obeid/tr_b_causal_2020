@@ -39,16 +39,17 @@ jobs:
           channel-priority: true
           activate-environment: causal2020
           environment-file: environment.yml
+          auto-activate-base: false
 
-    # Step 3: Make sure the project is installed locally & can commit if needed
-    - name: Install package locally
-      shell: bash -l {0}
-      run: |
-        flit install --pth-file
-        pre-commit install
+      # Step 3: Make sure the project is installed locally & can commit if needed
+      - name: Install package locally
+        shell: bash -l {0}
+        run: |
+          flit install --pth-file
+          pre-commit install
 
-    # Step 4: Run the project's workflow
-    - name: Run project workflow
-      shell: bash -l {0}
-      run: |
-        make article
+      # Step 4: Run the project's workflow
+      - name: Run project workflow
+        shell: bash -l {0}
+        run: |
+          make article
