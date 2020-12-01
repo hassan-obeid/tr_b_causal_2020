@@ -53,3 +53,4 @@ jobs:
         run: |
           make imagedir
           python article/compile_article.py
+          python notebooks/final/7.0-mab-selection-on-observables-final.py
