@@ -54,4 +54,5 @@ jobs:
       - name: Run project workflow
         shell: bash -l {0}
         run: |
-          make article
+          make imagedir
+          python article/compile_article.py
