@@ -7,9 +7,8 @@ To execute this module by itself, navigate at the command line to the project's
 root directory and type: `python -m src.workflow.store_iclv_graph`.
 """
 import click
-
-from src import utils
-from src.graphs.iclv import ICLV_GRAPH
+from causal2020 import utils
+from causal2020.graphs.iclv import ICLV_GRAPH
 
 
 @click.command()

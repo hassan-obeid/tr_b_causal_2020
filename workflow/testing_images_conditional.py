@@ -8,12 +8,11 @@ root directory and type: `python -m src.workflow.testing_images_conditional`.
 """
 from pathlib import Path
 
+import causal2020.testing.observable_independence as oi
 import click
 import pandas as pd
-
-import src.testing.observable_independence as oi
-from src import utils
-from src.graphs.conditional_independence_example import EXAMPLE_GRAPH
+from causal2020 import utils
+from causal2020.graphs.conditional_independence_example import EXAMPLE_GRAPH
 
 
 # Declare paths to data
