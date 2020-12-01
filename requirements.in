@@ -4,6 +4,7 @@ checkrs
 click
 coverage
 flake8
+flit
 jupyterlab
 jupytext
 papermill
