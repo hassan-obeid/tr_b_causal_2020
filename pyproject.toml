@@ -1,20 +1,59 @@
-[tool.black]
-    line-length = 79
-    py36 = true
-    include = '\.pyi?$'
-    exclude = '''
-    /(
-        \.git
-      | \.hg
-      | \.mypy_cache
-      | \.tox
-      | \.venv
-      | _build
-      | buck-out
-      | build
-      | dist
+[build-system]
+requires = ["flit_core >=2,<4"]
+build-backend = "flit_core.buildapi"
 
-      # The following are specific to Black, you probably don't want those.
-      | blib2to3
-      | tests/data
-    )/
+[tool.flit.metadata]
+module = "causal2020"
+author = "Timothy Brathwaite"
+author-email = "timothyb0912@gmail.com"
+home-page = "https://github.com/hassan-obeid/tr_b_causal_2020"
+requires = [
+    "checkrs",
+    "causalgraphicalmodels",
+    "graphviz",
+    "matplotlib",
+    "numpy",
+    "scikit-learn",
+    "scipy",
+    "seaborn",
+    "tqdm",
+]
+requires-python=">=3.6"
+description-file = "README.md"
+keywords= "causal inference, causal discovery, testing, deconfounder"
+classifiers=[
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Environment :: Console",
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: BSD License",
+]
+
+[tool.black]
+line-length = 79
+py36 = true
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+
+  # The following are specific to Black, you probably don't want those.
+  | blib2to3
+  | tests/data
+)/
+'''
