@@ -3,22 +3,20 @@
 Functions for performing permutation-based, falsification tests of latent,
 marginal and conditional independence assumptions.
 """
-# Built-in modules
 import os
 import sys
 from numbers import Number
-from typing import Optional, Tuple, Union
+from typing import Optional
+from typing import Tuple
+from typing import Union
 
-# Third-party modules
+import causal2020.testing.observable_independence as oi
+import checkrs
+import checkrs.sim_cdf as sim_cdf
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sbn
 from matplotlib.axes import Axes
-
-# Local modules
-import src.testing.observable_independence as oi
-import src.viz as viz
-import src.viz.sim_cdf as sim_cdf
 
 
 def compute_pvalue(
@@ -96,7 +94,7 @@ def compute_predictive_independence_test_values(
     obs_pvals = np.empty((num_samples,), dtype=float)
 
     # Create the iterable to be looped over to compute test values
-    iterable = viz.progress(range(num_permutations))
+    iterable = checkrs.progress(range(num_permutations))
 
     # Populate the arrays of test statistics
     for i in iterable:
