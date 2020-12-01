@@ -4,7 +4,6 @@
 #
 #    pip-compile requirements.in
 #
-
 altair-data-server==0.4.1  # via altair-viewer
 altair-viewer==0.3.0      # via checkrs
 altair==4.1.0             # via altair-data-server, altair-viewer, checkrs
