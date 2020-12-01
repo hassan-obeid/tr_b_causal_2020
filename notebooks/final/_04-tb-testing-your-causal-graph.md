@@ -6,7 +6,7 @@ jupyter:
       extension: .md
       format_name: markdown
       format_version: '1.2'
-      jupytext_version: 1.4.2
+      jupytext_version: 1.7.1
   kernelspec:
     display_name: Python 3
     language: python
@@ -27,16 +27,38 @@ Then, we demonstrate one mechanism for testing the assumption according to that 
 
 
 
+## Import needed libraries
+
+```python
+# Built-in modules
+import sys  # noqa: E402
+
+import causal2020.testing.latent_independence as li  # noqa: E402 noreorder
+import causal2020.testing.observable_independence as oi  # noqa: E402 noreorder
+import checkrs.sim_cdf as sim_cdf  # noqa: E402 noreorder
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+import scipy.stats  # noqa: E402
+from causal2020.graphs.drive_alone_utility import (  # noqa: E402 noreorder
+    DRIVE_ALONE_UTILITY,
+    LATENT_DRIVE_ALONE_UTILITY,
+)
+from causal2020.utils import sample_from_factor_model  # noqa: E402 noreorder
+from pyprojroot import here
+```
+
 ## Set notebook parameters
 
 ```python
+# Parameters
+
 # Declare paths to data
-DATA_PATH = "../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+DATA_PATH = here("data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv")
 # Note that these files are based on using the PPCA model
 # of Wang and Blei (2018). W represents global factor
 # coefficients and Z represents latent factor loadings
-PATH_TO_W_PARAMS = "../../data/processed/W_inferred_PPCA.csv"
-PATH_TO_Z_PARAMS = "../../data/processed/Z_inferred_PPCA.csv"
+PATH_TO_W_PARAMS = here("data/processed/W_inferred_PPCA.csv")
+PATH_TO_Z_PARAMS = here("data/processed/Z_inferred_PPCA.csv")
 
 # Note the columns of interest for this notebook
 MODE_ID_COLUMN = "mode_id"
@@ -68,29 +90,6 @@ NUM_PERMUTATIONS = 100
 PERMUTED_COLOR = "#a6bddb"
 ```
 
-## Import needed libraries
-
-```python
-# Built-in modules
-import sys  # noqa: E402
-
-# Third party modules
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-import scipy.stats  # noqa: E402
-
-# Local modules
-sys.path.insert(0, "../../")
-import src.testing.latent_independence as li  # noqa: E402 isort:skip
-import src.testing.observable_independence as oi  # noqa: E402 isort:skip
-import src.viz.sim_cdf as sim_cdf  # noqa: E402 isort:skip
-from src.graphs.drive_alone_utility import (  # noqa: E402 isort:skip
-    DRIVE_ALONE_UTILITY,
-    LATENT_DRIVE_ALONE_UTILITY,
-)
-from src.utils import sample_from_factor_model  # noqa: E402 isort:skip
-```
-
 ## Load and describe needed data
 
 ```python
@@ -120,7 +119,7 @@ num_drive_alone_obs = drive_alone_df.shape[0]
 ```python
 # Draw the causal model being tested
 causal_graph = DRIVE_ALONE_UTILITY.draw()
-causal_graph.graph_attr.update(size="10,6")
+causal_graph.graph_attr.update(size="5,3")
 causal_graph
 ```
 
@@ -250,7 +249,7 @@ The key differences between the graph underlying the latent, conditional indepen
 ```python
 # Draw the causal model being tested
 latent_causal_graph = LATENT_DRIVE_ALONE_UTILITY.draw()
-latent_causal_graph.graph_attr.update(size="10,6")
+latent_causal_graph.graph_attr.update(size="5,3")
 latent_causal_graph
 ```
 
