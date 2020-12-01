@@ -35,7 +35,6 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
           mamba-version: "*"
-          channels: conda-forge,anaconda,defaults
           channel-priority: true
           activate-environment: causal2020
           environment-file: environment.yml
@@ -45,6 +44,9 @@ jobs:
       - name: Install package locally
         shell: bash -l {0}
         run: |
+          pip install pip-tools
+          pip-compile requirements.in
+          pip install -r requirements.txt
           flit install --pth-file
           pre-commit install
 

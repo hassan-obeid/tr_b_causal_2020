@@ -12,4 +12,4 @@ dependencies:
   # Above, list any packages that MUST be installed via conda
   - pip:
     # Install all pip-installable packages
-    - -r file:requirements.txt
+    # - -r file:requirements.txt
