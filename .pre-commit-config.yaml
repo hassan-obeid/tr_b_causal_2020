@@ -16,7 +16,7 @@ repos:
     rev: v2.3.2
     hooks:
       -   id: reorder-python-imports
-          application-directories: .:src
+          application-directories: src
   - repo: local
     hooks:
       - id: format-ipynb

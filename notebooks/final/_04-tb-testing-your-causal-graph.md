@@ -53,7 +53,9 @@ from pyprojroot import here
 # Parameters
 
 # Declare paths to data
-DATA_PATH = here("data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv")
+DATA_PATH = here(
+    "data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+)
 # Note that these files are based on using the PPCA model
 # of Wang and Blei (2018). W represents global factor
 # coefficients and Z represents latent factor loadings
