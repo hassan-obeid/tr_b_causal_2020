@@ -3,7 +3,7 @@
 Creates the final images related to latent, conditional independence tests.
 
 To execute this module by itself, navigate at the command line to the project's
-root directory and type: `python -m src.workflow.testing_images_latent`.
+root directory and type: `python workflow/testing_images_latent.py`.
 """
 import causal2020.testing.latent_independence as li
 import click
@@ -11,14 +11,12 @@ import numpy as np
 import pandas as pd
 import scipy.stats
 from causal2020 import utils
+from pyprojroot import here
 
 
 # Declare paths to data
-DATA_PATH = (
-    utils.PROJECT_ROOT
-    / "data"
-    / "raw"
-    / "spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+DATA_PATH = here(
+    "data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
 )
 
 # Note the columns of interest in the dataset

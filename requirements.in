@@ -12,6 +12,7 @@ pip-tools
 pipreqs
 pre-commit
 pylogit
+pyprojroot
 pytest
 scikit-learn
 seaborn

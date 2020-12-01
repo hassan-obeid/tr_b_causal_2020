@@ -10,15 +10,16 @@ import numpy as np
 from causalgraphicalmodels import CausalGraphicalModel
 from graphviz import Digraph
 from graphviz import Graph
+from pyprojroot import here
 from scipy.stats.distributions import rv_continuous
 from scipy.stats.distributions import rv_discrete
 
 DISTRIBUTION_TYPE = Union[rv_continuous, rv_discrete]
 GRAPH_TYPE = Union[CausalGraphicalModel, Digraph, Graph]
 
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = here()
 
-FIGURES_DIRECTORY_PATH = PROJECT_ROOT / "reports" / "figures"
+FIGURES_DIRECTORY_PATH = here("reports/figures/")
 
 
 def create_graph_image(

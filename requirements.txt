@@ -100,6 +100,7 @@ pyflakes==2.2.0           # via flake8
 pygments==2.7.2           # via ipython, jupyterlab-pygments, nbconvert
 pylogit==0.2.2            # via -r requirements.in
 pyparsing==2.4.7          # via matplotlib, packaging
+pyprojroot==0.2.0         # via -r requirements.in
 pyrsistent==0.17.3        # via jsonschema
 pytest==6.1.2             # via -r requirements.in
 python-dateutil==2.8.1    # via jupyter-client, matplotlib, pandas
