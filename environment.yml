@@ -9,6 +9,8 @@ dependencies:
   - tectonic=0.3.3
   # Ensure the environment uses its own pip.
   - pip
+  # Ensure that pip-tools is installed somehow
+  - pip-tools=5.4.0
   # Above, list any packages that MUST be installed via conda
   - pip:
     # Install all pip-installable packages

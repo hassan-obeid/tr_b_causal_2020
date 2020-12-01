@@ -45,7 +45,6 @@ jobs:
       - name: Install package locally
         shell: bash -l {0}
         run: |
-          pip install pip-tools
           pip-compile requirements.in
           pip install -r requirements.txt
           flit install --pth-file
