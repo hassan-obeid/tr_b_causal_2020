@@ -1,3 +1,9 @@
+## install     : Install project package locally and install pre-commit.
+.PHONY : install
+install :
+	pre-commit install
+	flit install --pth-file
+
 ## plots       : Create the various plots for the handbook chapter.
 .PHONY : plots
 plots :
