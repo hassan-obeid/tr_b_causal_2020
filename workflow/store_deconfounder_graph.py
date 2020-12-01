@@ -7,9 +7,8 @@ To execute this module, navigate at the command line to the project's root
 directory and type: `python -m src.workflow.store_deconfounder_graph`.
 """
 import click
-
-from src import utils
-from src.graphs.deconfounder_example import DECONFOUNDER_GRAPH
+from causal2020 import utils
+from causal2020.graphs.deconfounder_example import DECONFOUNDER_GRAPH
 
 
 @click.command()

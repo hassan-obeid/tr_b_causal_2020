@@ -1,83 +1,81 @@
----
-jupyter:
-  jupytext:
-    formats: ipynb,md
-    text_representation:
-      extension: .md
-      format_name: markdown
-      format_version: '1.2'
-      jupytext_version: 1.7.1
-  kernelspec:
-    display_name: Python 3
-    language: python
-    name: python3
----
-
-# Selection on Observables
-
-
-## Purpose
-
-
-The purpose of this notebook is to illustrate an example of the workflow outlined in [Brathwaite and Walker (2017)](https://arxiv.org/abs/1706.07502). This simple application aims at highlighting the importance of causal structure in estimating causal effects of interest reflecting changes resulting from policy proposals. The basic idea is to show that when we control for intermediate variables of some variable of interest in a causal graph, we never recover the true causal parameter on the variable of interest.
-
-This notebook uses the dataset and the MNL utility specification from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900) for demonstration.
-The rest of the notebook is organized as follows:
- - Defining different causal graphs representing different views for how individuals make mode choices. These causal graphs are based on the MNL utility functions from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900)
- - Simulating data based on the different beliefs about the data generating process illustrated by both causal graphs.
- - Perturbing one of the variables (e.g.: Travel Distance) to simulate a policy intervention.
- - Calculating and plotting the distributions of treatment effects according to different causal graphs.
-
-
-# Import Needed Libraries
-
-```python
+# ---
+# jupyter:
+#   jupytext:
+#     formats: ipynb,md
+#     text_representation:
+#       extension: .py
+#       format_name: light
+#       format_version: '1.5'
+#       jupytext_version: 1.7.1
+#   kernelspec:
+#     display_name: Python 3
+#     language: python
+#     name: python3
+# ---
+# # Selection on Observables
+# ## Purpose
+# The purpose of this notebook is to illustrate an example of the workflow outlined in [Brathwaite and Walker (2017)](https://arxiv.org/abs/1706.07502). This simple application aims at highlighting the importance of causal structure in estimating causal effects of interest reflecting changes resulting from policy proposals. The basic idea is to show that when we control for intermediate variables of some variable of interest in a causal graph, we never recover the true causal parameter on the variable of interest.
+#
+# This notebook uses the dataset and the MNL utility specification from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900) for demonstration.
+# The rest of the notebook is organized as follows:
+#  - Defining different causal graphs representing different views for how individuals make mode choices. These causal graphs are based on the MNL utility functions from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900)
+#  - Simulating data based on the different beliefs about the data generating process illustrated by both causal graphs.
+#  - Perturbing one of the variables (e.g.: Travel Distance) to simulate a policy intervention.
+#  - Calculating and plotting the distributions of treatment effects according to different causal graphs.
+# # Import Needed Libraries
+# +
 # Built-in libraries
+import copy
 import sys
+from collections import defaultdict
+from collections import OrderedDict
+from functools import reduce
 
-# Third party libraries
+import causal2020.observables.availability as av
+import causal2020.observables.distfit as distfit
+import causal2020.observables.regression as reg
+import causal2020.observables.simulation as sim
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from functools import reduce
-import seaborn as sns
-import copy
-from causalgraphicalmodels import CausalGraphicalModel
-from collections import defaultdict, OrderedDict
 import pylogit as pl
-
-# Local libraries
-import causal2020.observables.distfit as distfit
-import causal2020.observables.simulation as sim
-import causal2020.observables.regression as reg
-import causal2020.observables.availability as av
+import seaborn as sns
+from causal2020.observables.graphs import BIKE_UTILITY
+from causal2020.observables.graphs import DA_UTILITY
+from causal2020.observables.graphs import DTW_UTILITY
+from causal2020.observables.graphs import IND_UTILITY
+from causal2020.observables.graphs import SHARED_2_UTILITY
+from causal2020.observables.graphs import SHARED_3P_UTILITY
+from causal2020.observables.graphs import WALK_UTILITY
+from causal2020.observables.graphs import WTD_UTILITY
+from causal2020.observables.graphs import WTW_UTILITY
+from causalgraphicalmodels import CausalGraphicalModel
 from checkrs.utils import simulate_choice_vector
-from causal2020.observables.graphs import (
-    IND_UTILITY,
-    DA_UTILITY,
-    SHARED_2_UTILITY,
-    SHARED_3P_UTILITY,
-    WTW_UTILITY,
-    DTW_UTILITY,
-    WTD_UTILITY,
-    WALK_UTILITY,
-    BIKE_UTILITY,
-)
-```
+from pyprojroot import here
 
-# Set Notebook Parameters
+# Third party libraries
+# Local libraries
 
-```python
+# -
+
+# # Set Notebook Parameters
+
+# +
 # Path to Data
-DATA_PATH = "../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+DATA_PATH = here(
+    "data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+)
 
 # Path to computational code used
 # in simulation loop
-SIMULATE_NODES_WIDE = open("../../src/observables/simworkflow.py").read()
-SIMULATE_PERTURB = open("../../src/observables/simperturb.py").read()
-```
+SIMULATE_NODES_WIDE = open(
+    here("src/causal2020/observables/simworkflow.py")
+).read()
+SIMULATE_PERTURB = open(
+    here("src/causal2020/observables/simperturb.py")
+).read()
 
-```python
+# +
 # Alternative id column from long format data
 ALT_ID_COL = "mode_id"
 
@@ -148,9 +146,8 @@ VARS_TYPE = {
 
 # Distribution to be explored for continuous variables
 CONT_DISTS = ["norm", "alpha", "beta", "gamma", "expon", "gumbel"]
-```
 
-```python
+# +
 # Declare regression parameters
 
 REGS_DA = {
@@ -190,9 +187,8 @@ REGS_TYPE_DTW = {1: "linear"}
 REGS_WTD = {1: ("total_travel_time", "total_travel_cost")}
 
 REGS_TYPE_WTD = {1: "linear"}
-```
 
-```python
+# +
 # Parameters for conversion from Wide to Long
 
 IND_VARIABLES = [
@@ -263,9 +259,8 @@ OBS_ID_COL = "observation_id"
 
 # Declare choice column
 CHOICE_COL = "sim_choice"
-```
 
-```python
+# +
 # Create my specification and variable names for the basic MNL model
 # NOTE: - Keys should be variables within the long format dataframe.
 #         The sole exception to this is the "intercept" key.
@@ -323,11 +318,11 @@ MNL_NAMES["household_size"] = ["Household Size (Shared Ride 2 & 3+)"]
 
 MNL_SPECIFICATION["num_kids"] = [[2, 3]]
 MNL_NAMES["num_kids"] = ["Number of Kids in Household (Shared Ride 2 & 3+)"]
-```
+# -
 
-# Load and Describe Data
+# # Load and Describe Data
 
-```python
+# +
 # Reading data from the specified PATH
 bike_data_long = pd.read_csv(DATA_PATH)
 
@@ -343,14 +338,13 @@ mode_shares = mode_counts / bike_data_long.observation_id.max()
 mode_shares.index = [ALT_ID_TO_MODE_NAME[x] for x in mode_shares.index.values]
 mode_shares.name = "Mode Shares"
 mode_shares
-```
+# -
 
-# Choice Model Estimation
+# # Choice Model Estimation
 
+# For purposes of this task, we use the MNL specification from Brathwaite and Walker (2016) and estimate the model resulting from such a specification. We assume that the estimated model parameters represent the "true" model parameters.
 
-For purposes of this task, we use the MNL specification from Brathwaite and Walker (2016) and estimate the model resulting from such a specification. We assume that the estimated model parameters represent the "true" model parameters.
-
-```python
+# +
 # Estimate the basic MNL model, using the hessian and newton-conjugate gradient
 mnl_model = pl.create_choice_model(
     data=bike_data_long,
@@ -370,94 +364,70 @@ mnl_model.fit_mle(np.zeros(num_vars), method="BFGS")
 
 # Look at the estimation results
 mnl_model.get_statsmodels_summary()
-```
+# -
 
-# Show Causal Graphs
+# # Show Causal Graphs
 
+# We generate two causal graphs based on the data at hand and the specified utility functions from above:
+#
+#  * An "independent" causal graph: All nodes are independent and do not affect each other. Any change in any variable in the graph would not result in changes in other variables and would only affect the value of the utility function.
+#  * A "realistic" causal graph: The structure of this causal graph shows that some variables affect others. In this example, a change in travel distance affects travel time, travel cosst, and directly affects the utility function.
+#
+# The outcome of each of the causal graphs is the utility of each variable. As such, we generate causal graphs based on the utility specification for each alternative.
 
-We generate two causal graphs based on the data at hand and the specified utility functions from above:
+# ## Independent Causal Graph
 
- * An "independent" causal graph: All nodes are independent and do not affect each other. Any change in any variable in the graph would not result in changes in other variables and would only affect the value of the utility function.
- * A "realistic" causal graph: The structure of this causal graph shows that some variables affect others. In this example, a change in travel distance affects travel time, travel cosst, and directly affects the utility function.
-
-The outcome of each of the causal graphs is the utility of each variable. As such, we generate causal graphs based on the utility specification for each alternative.
-
-
-## Independent Causal Graph
-
-```python
 IND_UTILITY.draw()
-```
 
-## Realistic Causal Graphs
+# ## Realistic Causal Graphs
 
+# ## Drive Alone
 
-## Drive Alone
-
-```python
 DA_UTILITY.draw()
-```
 
-## Shared-2
+# ## Shared-2
 
-```python
 SHARED_2_UTILITY.draw()
-```
 
-## Shared-3+
+# ## Shared-3+
 
-```python
 SHARED_3P_UTILITY.draw()
-```
 
-## Walk-Transit-Walk
+# ## Walk-Transit-Walk
 
-```python
 WTW_UTILITY.draw()
-```
 
-## Drive-Transit-Walk
+# ## Drive-Transit-Walk
 
-```python
 DTW_UTILITY.draw()
-```
 
-##  Walk-Transit-Drive
+# ##  Walk-Transit-Drive
 
-```python
 WTD_UTILITY.draw()
-```
 
-## Walk
+# ## Walk
 
-```python
 WALK_UTILITY.draw()
-```
 
-## Bike
+# ## Bike
 
-```python
 BIKE_UTILITY.draw()
-```
 
-# Selection on Observables Simulation
+# # Selection on Observables Simulation
 
+# We simulate data based on the assumed structure of the causal diagrams and the original data from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900). This process goes as follows:
+#
+# For the independent causal graph:
+#  * We fit a probability distribution for all the nodes in the utility function
+#
+# For the realistic causal graph:
+#  * We fit a probability distribution for all the nodes without any parents/upstream notes in the causal graphs
+#  * We fit any regressions between the related explanatory variables
+#
+# Based on these fitted distributions and regressions, we can then simulate data for the remaining nodes in each of the alternatives in our specified model.
 
-We simulate data based on the assumed structure of the causal diagrams and the original data from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900). This process goes as follows:
+# ## Distribution Fitting
 
-For the independent causal graph:
- * We fit a probability distribution for all the nodes in the utility function
-
-For the realistic causal graph:
- * We fit a probability distribution for all the nodes without any parents/upstream notes in the causal graphs
- * We fit any regressions between the related explanatory variables
-
-Based on these fitted distributions and regressions, we can then simulate data for the remaining nodes in each of the alternatives in our specified model.
-
-
-## Distribution Fitting
-
-```python
 bike_data_params = distfit.get_dist_node_no_parent(
     bike_data_long,
     ALT_ID_COL,
@@ -469,17 +439,14 @@ bike_data_params = distfit.get_dist_node_no_parent(
     VARS_TYPE,
     CONT_DISTS,
 )
-```
 
-## Regression Fitting
+# ## Regression Fitting
 
+# Based on the structure of the "realistic" causal graphs assumed for each of the alternatives, we fit regressions that will allow us to simulate the remaining nodes in the causal graphs. The utility node will be simulated based on the utility function for each alternative.
 
-Based on the structure of the "realistic" causal graphs assumed for each of the alternatives, we fit regressions that will allow us to simulate the remaining nodes in the causal graphs. The utility node will be simulated based on the utility function for each alternative.
+# ## Drive Alone
 
-
-## Drive Alone
-
-```python
+# +
 drive_alone_df = bike_data_long.loc[bike_data_long["mode_id"] == 1]
 
 drive_alone_df.reset_index(drop=True, inplace=True)
@@ -487,11 +454,11 @@ drive_alone_df.reset_index(drop=True, inplace=True)
 fitted_reg_da = reg.fit_alternative_regression(
     regressions=REGS_DA, reg_types=REGS_TYPE_DA, data=drive_alone_df
 )
-```
+# -
 
-## Shared-2
+# ## Shared-2
 
-```python
+# +
 shared_2_df = bike_data_long.loc[bike_data_long["mode_id"] == 2]
 
 shared_2_df.reset_index(drop=True, inplace=True)
@@ -499,11 +466,11 @@ shared_2_df.reset_index(drop=True, inplace=True)
 fitted_reg_shared_2 = reg.fit_alternative_regression(
     regressions=REGS_SHARED_2, reg_types=REGS_TYPE_SHARED_2, data=shared_2_df
 )
-```
+# -
 
-## Shared-3+
+# ## Shared-3+
 
-```python
+# +
 shared_3p_df = bike_data_long.loc[bike_data_long["mode_id"] == 3]
 
 shared_3p_df.reset_index(drop=True, inplace=True)
@@ -513,11 +480,11 @@ fitted_reg_shared_3p = reg.fit_alternative_regression(
     reg_types=REGS_TYPE_SHARED_3P,
     data=shared_3p_df,
 )
-```
+# -
 
-## Walk-Transit-Walk
+# ## Walk-Transit-Walk
 
-```python
+# +
 wtw_df = bike_data_long.loc[bike_data_long["mode_id"] == 4]
 
 wtw_df.reset_index(drop=True, inplace=True)
@@ -525,11 +492,11 @@ wtw_df.reset_index(drop=True, inplace=True)
 fitted_reg_wtw = reg.fit_alternative_regression(
     regressions=REGS_WTW, reg_types=REGS_TYPE_WTW, data=wtw_df
 )
-```
+# -
 
-## Drive-Transit-Walk
+# ## Drive-Transit-Walk
 
-```python
+# +
 dtw_df = bike_data_long.loc[bike_data_long["mode_id"] == 5]
 
 dtw_df.reset_index(drop=True, inplace=True)
@@ -537,11 +504,11 @@ dtw_df.reset_index(drop=True, inplace=True)
 fitted_reg_dtw = reg.fit_alternative_regression(
     regressions=REGS_DTW, reg_types=REGS_TYPE_DTW, data=dtw_df
 )
-```
+# -
 
-## Walk-Transit-Drive
+# ## Walk-Transit-Drive
 
-```python
+# +
 wtd_df = bike_data_long.loc[bike_data_long["mode_id"] == 6]
 
 wtd_df.reset_index(drop=True, inplace=True)
@@ -549,23 +516,20 @@ wtd_df.reset_index(drop=True, inplace=True)
 fitted_reg_wtd = reg.fit_alternative_regression(
     regressions=REGS_WTD, reg_types=REGS_TYPE_WTD, data=wtd_df
 )
-```
+# -
 
-## Simulation
+# ## Simulation
 
+# Identifying the probability distributions of parent nodes and identifying the relationships between connected nodes allows us to complete the selection-on-observables simulation. The workflow proceeds as follows:
+# * Simulate two sets of data for the X variables:
+#   - One where all the Xs are independent (i.e. the only edges in the causal graph are between the X and the outcome variable (which is the value of the utility function)).
+#   - One based on a realistic causal graph with confounders. The confounder in this simple example is Travel Distance.
+# * For each of the two causal graphs mentioned in the previous step, simulate choice data based on the outcome model assumed from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900).
+# * Estimate the choice model for each of those two datasets using the assumed choice model specification.
+# * Apply the do-operator (perturbation) to the variable of interest (Travel Distance), and show that the predicted outcome would be accurate only if our causal graph captures the dependency between the explanatory variables.
 
-Identifying the probability distributions of parent nodes and identifying the relationships between connected nodes allows us to complete the selection-on-observables simulation. The workflow proceeds as follows:
-* Simulate two sets of data for the X variables:
-  - One where all the Xs are independent (i.e. the only edges in the causal graph are between the X and the outcome variable (which is the value of the utility function)).
-  - One based on a realistic causal graph with confounders. The confounder in this simple example is Travel Distance.
-* For each of the two causal graphs mentioned in the previous step, simulate choice data based on the outcome model assumed from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900).
-* Estimate the choice model for each of those two datasets using the assumed choice model specification.
-* Apply the do-operator (perturbation) to the variable of interest (Travel Distance), and show that the predicted outcome would be accurate only if our causal graph captures the dependency between the explanatory variables.
+# ### Simulation Parameters
 
-
-### Simulation Parameters
-
-```python
 simulation_sizes = np.random.randint(low=3000, high=4000, size=30)
 sim_number = np.arange(1, 31)
 models_dictionary = defaultdict(dict)
@@ -575,9 +539,7 @@ simulation_data = {}
 causal_effects = pd.DataFrame(
     columns=["naive_effect", "true_effect", "estimated_effect"]
 )
-```
 
-```python
 for sim_size, number in zip(simulation_sizes, sim_number):
     print("Simulation number", number, "is in progress...")
     print("Simulation size is", sim_size)
@@ -713,14 +675,11 @@ for sim_size, number in zip(simulation_sizes, sim_number):
     print("Simulation number", number, "is complete!")
     print("==========================================")
     print("==========================================")
-```
 
-### Causal Effect Estimation
+# ### Causal Effect Estimation
 
+# We estimate the causal effect related to the perturbation of the Travel Distance variable in each of the causal graphs (independent and realistic) on the probability of choosing Driving based modes (Drive alone, Shared-2, and Shared-3+).
 
-We estimate the causal effect related to the perturbation of the Travel Distance variable in each of the causal graphs (independent and realistic) on the probability of choosing Driving based modes (Drive alone, Shared-2, and Shared-3+).
-
-```python
 for number in sim_number:
 
     initial_data = simulation_data[number]["long_sim_data"]
@@ -760,14 +719,12 @@ for number in sim_number:
         },
         ignore_index=True,
     )
-```
 
-### Generating Plots
+# ### Generating Plots
 
+# We plot the distribution of the causal effects to show the bias in predicted outcomes based on the assumed causal graph.
 
-We plot the distribution of the causal effects to show the bias in predicted outcomes based on the assumed causal graph.
-
-```python
+# +
 plt.figure(figsize=(20, 10))
 sns.distplot(
     causal_effects.true_effect, label="True Effect", kde=False, color="#005AB5"
@@ -817,9 +774,8 @@ plt.xlabel(
     "Average Causal Effect", fontdict={"fontsize": 12, "fontweight": "bold"}
 )
 plt.legend(prop={"size": 14})
-```
+# -
 
-# Conclusion
+# # Conclusion
 
-
-The main conclusion from this notebook is that assigning causal intepretations to model parameters is only valid if we draw clear assumptions about the data generation process about the question at hand. The data generating process was shown to be important even as the outcome model remained unchanged. Drawing a causal graph (and testing its validity with the data at hand) allows one to clearly state their assumptions about the data generating process and to clearly assign causal interpretations to specific model parameters.
+# The main conclusion from this notebook is that assigning causal intepretations to model parameters is only valid if we draw clear assumptions about the data generation process about the question at hand. The data generating process was shown to be important even as the outcome model remained unchanged. Drawing a causal graph (and testing its validity with the data at hand) allows one to clearly state their assumptions about the data generating process and to clearly assign causal interpretations to specific model parameters.

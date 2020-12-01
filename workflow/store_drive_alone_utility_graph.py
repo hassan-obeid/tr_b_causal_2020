@@ -8,9 +8,8 @@ To execute this module, navigate at the command line to the project's root
 directory and type: `python -m src.workflow.store_drive_alone_utility_graph`.
 """
 import click
-
-from src import utils
-from src.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
+from causal2020 import utils
+from causal2020.graphs.drive_alone_utility import DRIVE_ALONE_UTILITY
 
 
 @click.command()

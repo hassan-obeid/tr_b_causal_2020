@@ -1,18 +1,26 @@
+## install     : Install project package locally and install pre-commit.
+.PHONY : install
+install :
+	pip-compile requirements.in
+	pip install -r requirements.txt
+	flit install --pth-file
+	pre-commit install
+
 ## plots       : Create the various plots for the handbook chapter.
 .PHONY : plots
 plots :
-	python -m src.workflow.testing_images_marginal
-	python -m src.workflow.testing_images_conditional
-	python -m src.workflow.testing_images_latent
+	python workflow/testing_images_marginal.py
+	python workflow/testing_images_conditional.py
+	python workflow/testing_images_latent.py
 
 ## graphs      : Create the various causal graphs for the handbook chapter.
 .PHONY : graphs
 graphs :
-	python -m src.workflow.store_rum_graph
-	python -m src.workflow.store_iclv_graph
-	python -m src.workflow.store_drive_alone_utility_graph
-	python -m src.workflow.store_deconfounder_graph
-	python -m src.workflow.store_discovery_graph
+	python workflow/store_rum_graph.py
+	python workflow/store_iclv_graph.py
+	python workflow/store_drive_alone_utility_graph.py
+	python workflow/store_deconfounder_graph.py
+	python workflow/store_discovery_graph.py
 
 ## imagesdir   : Copy the needed images into a common location for article compilation.
 .PHONY : imagedir

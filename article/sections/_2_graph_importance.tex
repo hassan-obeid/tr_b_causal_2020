@@ -2,26 +2,26 @@
 \label{sec:graph-importance}
 
 As stated in \ref{sec:intro}, the development of transportation demand models aims at evaluating the impact of policies on a certain
-transportation demand related outcome. As an example, consider the proposals from the following fictitious scenarios: 
-- Based on input from the public, the Department of Transportation (DOT) of  is considering implementing a new parking policy. 
-This proposed policy would put in place pricing changes and parking restrictions that would discourage individuals from parking in the central business district. 
+transportation demand related outcome. As an example, consider the proposals from the following fictitious scenarios:
+- Based on input from the public, the Department of Transportation (DOT) of  is considering implementing a new parking policy.
+This proposed policy would put in place pricing changes and parking restrictions that would discourage individuals from parking in the central business district.
 The DOT (and its constituents) believes that this policy would encourage people to use more active transportation modes (e.g: walking, biking, etc..).
 - A certain DOT is considering constructing a streetcar (trolley, tram) line in a low/mid-income area in its jurisdiction.
 Citing examples from other cities and countries, the DOT claims that the new streetcar line will create more transit oriented
-developments and increase economic activity in the areas surrounding the proposed project. 
+developments and increase economic activity in the areas surrounding the proposed project.
 
 %% TODO: Present an example or two of real life project proposals?
 
-Thinking more closely about these proposals, it is clear that they assume a causal relationship between the proposed project/policy and the desired goals. 
+Thinking more closely about these proposals, it is clear that they assume a causal relationship between the proposed project/policy and the desired goals.
 The DOT in question analyzed data, concluding that such a policy or project would cause the desired output and achieve the desired goal.
-In the presented scenarios, the DOT claims that implementing the new parking policy will cause an increase the share of 
-active transportation modes in the central business district and that constructing the proposed streetcar line will 
+In the presented scenarios, the DOT claims that implementing the new parking policy will cause an increase the share of
+active transportation modes in the central business district and that constructing the proposed streetcar line will
 cause more transit oriented developments and economic activity.
 
 Policymakers base their analyses and conclusions on hypotheses or beliefs of how the world operates.
 In other words, the data analysis is based on a certain belief about the data generating process.
 However, policymakers often do not present their beliefs about such data generating process.
-As a result, these proposals maintain an obscure representation of how the policy or project will achieve their desired goals. 
+As a result, these proposals maintain an obscure representation of how the policy or project will achieve their desired goals.
 
 DAGs allow one to clearly encode their assumptions about the data generating process and the problem at hand.
 Researchers and practitioners have made use of DAGs in fields ranging from medicine and epidemiology (\citet{shrier_platt_2008}, \citet{sung_2011}) to economics (\citet{white2011causal}) and have found them to be practical.
@@ -34,7 +34,7 @@ Likewise, as in the fields presented above, DAGs could prove useful in addressin
 However, \citet{brathwaite_2018_causal} have not shown an empirical application of their framework and how it results
  in different conclusions when compared to traditional modeling approaches.
 
-In this section, we will present an example illustrating the importance of using DAGs in transportation demand modeling efforts. 
+In this section, we will present an example illustrating the importance of using DAGs in transportation demand modeling efforts.
 Specifically, we will illustrate how different assumptions about the data generating process result in different conclusions.
 To make our point, we build upon \citet{brathwaite_2018_causal}.
 Here, we present an empirical exercise using a simplified transportation modeling problem.
@@ -43,7 +43,7 @@ illustrative, and it does not reflect all complexities in a typical transportati
 Indeed, our goal in this section is not to recover the causal effect of the proposed intervention.
 Instead, we aim to only show how different DAGs would result in different conclusions about the effect of the proposed intervention.
 
-Let us assume that a company wants to reduce its workforce carbon footprint by moving its employees closer to their campus. 
+Let us assume that a company wants to reduce its workforce carbon footprint by moving its employees closer to their campus.
 We would like to forecast how such an intervention would change the share of employees driving to work.
 We model this travel mode choice problem based on a dataset from \citet{brathwaite_asymmetric}.
 This dataset is based on the 2012 California Household Travel Survey, and it
@@ -52,29 +52,40 @@ Readers interested in a more detailed description of the dataset can refer to \c
 For purposes of this exercise, we consider the Multinomial Logit model defined in \citet{brathwaite_asymmetric} as the true outcome generating process.
 
 The systematic utility equations of the adopted multinomial logit model are specified as follows:
-\begin{equation}
-\begin{aligned}
-\[ U_{\textrm{da}} = \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_da}} \times \textrm{Cost\_per\_Distance_{ \textrm{da} } + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \] \\
-\[ U_{\textrm{sr2}} = ASC_{\textrm{sr2}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_sr2}} \times \textrm{Cost\_per\_Distance_{ \textrm{sr2} } + \beta_{\textrm{autos}}  \times \textrm{Number_of_Autos} + \beta_{\texrm{cross_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{HH\_Size} + \beta_{\textrm{n_kids_hh}} \times \textrm{Number\_of\_kids \] \\
-\[ U_{\textrm{sr3+}} = ASC_{\textrm{sr3+}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_sr3+}} \times \textrm{Cost\_per\_Distance}_{\textrm{sr3+}} + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} + \beta_{\textrm{cross\_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{HH\_Size} + \beta_{\textrm{n\_kids\_hh}} \times \textrm{Number\_of\_kids} \] \\
-\[ U_{\textrm{WTW}} = ASC_{\textrm{WTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \] \\
-\[ U_{\textrm{DTW}} = ASC_{\textrm{DTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \] \\
-\[ U_{\textrm{WTD}} = ASC_{\textrm{WTD}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \] \\
-\[ U_{\textrm{Bike}} = ASC_{\textrm{Bike}} + \beta_{\textrm{travel\_distance\_bike}} \times \textrm{Travel\_Distance} \] \\
-\[ U_{\textrm{Walk}} = ASC_{\textrm{Walk}} + \beta_{\textrm{travel\_distance\_walk}} \times \textrm{Travel\_Distance} \] \\
-\end{aligned}
-\end{equation}
+\begin{align*}
+U_{\textrm{da}} &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_da}} \times \textrm{Cost\_per\_Distance}_{ \textrm{da} } \\
+    &\quad + \beta_{\textrm{autos}} \times \textrm{Number\_of\_Autos} \\
+U_{\textrm{sr2}} &= ASC_{\textrm{sr2}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
+    &\quad + \beta_{\textrm{cost\_per\_distance\_sr2}} \times \textrm{Cost\_per\_Distance}_{ \textrm{sr2} } + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
+    &\quad + \beta_{\textrm{cross\_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{HH\_Size} \\
+    &\quad + \beta_{\textrm{n\_kids\_hh}} \times \textrm{Number\_of\_kids} \\
+U_{\textrm{sr3+}} &= ASC_{\textrm{sr3+}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
+    &\quad + \beta_{\textrm{cost\_per\_distance\_sr3+}} \times \textrm{Cost\_per\_Distance}_{\textrm{sr3+}} + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
+    &\quad + \beta_{\textrm{cross\_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{HH\_Size} \\
+    &\quad + \beta_{\textrm{n\_kids\_hh}} \times \textrm{Number\_of\_kids} \\
+U_{\textrm{WTW}} &= ASC_{\textrm{WTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
+    &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
+U_{\textrm{DTW}} &= ASC_{\textrm{DTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
+    &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
+U_{\textrm{WTD}} &= ASC_{\textrm{WTD}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
+    &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
+U_{\textrm{Bike}} &= ASC_{\textrm{Bike}} + \beta_{\textrm{travel\_distance\_bike}} \times \textrm{Travel\_Distance} \\
+U_{\textrm{Walk}} &= ASC_{\textrm{Walk}} + \beta_{\textrm{travel\_distance\_walk}} \times \textrm{Travel\_Distance} \\
+\end{align*}
 
 For our purposes, we assume that there are no latent variables.
 The variables were chosen based on the specification of the MNL model outlined by the equations above.
 We can describe the variables as follows:
-- Total Travel Distance: is the total travel distance for individual i and mode j, for all available modes for individual i during trip t of tour l.
-- Total Travel Cost: is the travel cost in dollars for individual i and mode j, for all available modes for individual i during trip t of tour l.
-- Total travel time: is the travel time in minutes for individual i and mode j, for all available modes for individual i during trip t tour l.
-- Number of Autos: is the number of automobiles owned by individual i's household.
-- Number of Licensed Drivers: is the number of licensed drives in individual i's household.
-- Number of Kids: is the number of kids in individual i's household.
-- Cross-bay trip: is a binary variable indicating whether the trip t in tour l for individual i is a cross-bay trip.
+
+\begin{itemize}
+  \item Total Travel Distance: is the total travel distance for individual i and mode j, for all available modes for individual i during trip t of tour l.
+  \item Total Travel Cost: is the travel cost in dollars for individual i and mode j, for all available modes for individual i during trip t of tour l.
+  \item Total travel time: is the travel time in minutes for individual i and mode j, for all available modes for individual i during trip t tour l.
+  \item Number of Autos: is the number of automobiles owned by individual i's household.
+  \item Number of Licensed Drivers: is the number of licensed drives in individual i's household.
+  \item Number of Kids: is the number of kids in individual i's household.
+  \item Cross-bay trip: is a binary variable indicating whether the trip t in tour l for individual i is a cross-bay trip.
+\end{itemize}
 
 Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables are independent of each other for each utility equation.
 Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:BIKE_causal_2} illustrate the causal graphs with ``interacting'' explanatory variables.
@@ -146,7 +157,7 @@ Each of these graphs is based on the utility function of each mode in the multin
 Using the setup described above, we conduct our simulation exercise as follows:
 \begin{enumerate}
 
-\item We build a DAG (Figure \ref{fig:IND_GRAPH}) where we assume all explanatory variables are independent of each other. 
+\item We build a DAG (Figure \ref{fig:IND_GRAPH}) where we assume all explanatory variables are independent of each other.
 \item We simulate data based on this graph and generate outcomes based on a chosen ``true'' multinomial logit model.
 \item We predict outcomes based on the mode choice model.
 \item We apply the do-operator \citet{pearl_causality_2000} to our simulated data to reduce the travel distance for all individuals in the dataset. This emulates a company's decision to move its employees closer to campus.
@@ -162,7 +173,7 @@ Using the setup described above, we conduct our simulation exercise as follows:
 \end{enumerate}
 
 We repeat this simulation process several times and recover the choice probability of all modes for all individuals.
-For our purposes, we focus on car-centric modes (Drive alone, Shared ride with another person, 
+For our purposes, we focus on car-centric modes (Drive alone, Shared ride with another person,
 and a shared ride with two or more individuals).
 We compute the difference in mode choice probabilities from different models based on the two constructed DAGs.
 

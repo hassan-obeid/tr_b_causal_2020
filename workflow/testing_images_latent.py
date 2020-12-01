@@ -3,23 +3,20 @@
 Creates the final images related to latent, conditional independence tests.
 
 To execute this module by itself, navigate at the command line to the project's
-root directory and type: `python -m src.workflow.testing_images_latent`.
+root directory and type: `python workflow/testing_images_latent.py`.
 """
+import causal2020.testing.latent_independence as li
 import click
 import numpy as np
 import pandas as pd
 import scipy.stats
-
-import src.testing.latent_independence as li
-from src import utils
+from causal2020 import utils
+from pyprojroot import here
 
 
 # Declare paths to data
-DATA_PATH = (
-    utils.PROJECT_ROOT
-    / "data"
-    / "raw"
-    / "spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+DATA_PATH = here(
+    "data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
 )
 
 # Note the columns of interest in the dataset
@@ -33,7 +30,8 @@ UTILITY_COLS = [TIME_COL, COST_COL, DISTANCE_COL, LICENSE_COL, AUTO_COL]
 
 
 def create_latent_independence_testing_results(
-    output_path: str, num_permutations: int = 100,
+    output_path: str,
+    num_permutations: int = 100,
 ) -> None:
     """
     Computes and stores the results of permutation testing the implication
@@ -139,7 +137,8 @@ def main(num_permutations, output_name) -> None:
     # Create and store the results of permutation testing the implication
     # of conditional mean independence
     create_latent_independence_testing_results(
-        output_path=output_path, num_permutations=num_permutations,
+        output_path=output_path,
+        num_permutations=num_permutations,
     )
     return None
 
