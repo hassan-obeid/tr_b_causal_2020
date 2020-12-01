@@ -13,6 +13,7 @@ requires = [
     "graphviz",
     "matplotlib",
     "numpy",
+    "pyprojroot",
     "scikit-learn",
     "scipy",
     "seaborn",
