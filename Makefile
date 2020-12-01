@@ -1,7 +1,7 @@
 ## install     : Install project package locally and install pre-commit.
 .PHONY : install
 install :
-  pip-compile requirements.in
+	pip-compile requirements.in
 	pip install -r requirements.txt
 	flit install --pth-file
 	pre-commit install
