@@ -1,8 +1,10 @@
 ## install     : Install project package locally and install pre-commit.
 .PHONY : install
 install :
-	pre-commit install
+  pip-compile requirements.in
+	pip install -r requirements.txt
 	flit install --pth-file
+	pre-commit install
 
 ## plots       : Create the various plots for the handbook chapter.
 .PHONY : plots

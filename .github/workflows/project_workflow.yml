@@ -45,10 +45,7 @@ jobs:
       - name: Install package locally
         shell: bash -l {0}
         run: |
-          pip-compile requirements.in
-          pip install -r requirements.txt
-          flit install --pth-file
-          pre-commit install
+          make install
 
       # Step 4: Run the project's workflow
       - name: Run project workflow
