@@ -12,11 +12,8 @@
 #     language: python
 #     name: python3
 # ---
-
 # # Selection on Observables
-
 # ## Purpose
-
 # The purpose of this notebook is to illustrate an example of the workflow outlined in [Brathwaite and Walker (2017)](https://arxiv.org/abs/1706.07502). This simple application aims at highlighting the importance of causal structure in estimating causal effects of interest reflecting changes resulting from policy proposals. The basic idea is to show that when we control for intermediate variables of some variable of interest in a causal graph, we never recover the true causal parameter on the variable of interest.
 #
 # This notebook uses the dataset and the MNL utility specification from [Brathwaite and Walker (2016)](https://arxiv.org/abs/1606.05900) for demonstration.
@@ -25,53 +22,58 @@
 #  - Simulating data based on the different beliefs about the data generating process illustrated by both causal graphs.
 #  - Perturbing one of the variables (e.g.: Travel Distance) to simulate a policy intervention.
 #  - Calculating and plotting the distributions of treatment effects according to different causal graphs.
-
 # # Import Needed Libraries
-
 # +
 # Built-in libraries
+import copy
 import sys
+from collections import defaultdict
+from collections import OrderedDict
+from functools import reduce
 
-# Third party libraries
+import causal2020.observables.availability as av
+import causal2020.observables.distfit as distfit
+import causal2020.observables.regression as reg
+import causal2020.observables.simulation as sim
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from functools import reduce
-import seaborn as sns
-import copy
-from causalgraphicalmodels import CausalGraphicalModel
-from collections import defaultdict, OrderedDict
 import pylogit as pl
-
-# Local libraries
-import causal2020.observables.distfit as distfit
-import causal2020.observables.simulation as sim
-import causal2020.observables.regression as reg
-import causal2020.observables.availability as av
+import seaborn as sns
+from causal2020.observables.graphs import BIKE_UTILITY
+from causal2020.observables.graphs import DA_UTILITY
+from causal2020.observables.graphs import DTW_UTILITY
+from causal2020.observables.graphs import IND_UTILITY
+from causal2020.observables.graphs import SHARED_2_UTILITY
+from causal2020.observables.graphs import SHARED_3P_UTILITY
+from causal2020.observables.graphs import WALK_UTILITY
+from causal2020.observables.graphs import WTD_UTILITY
+from causal2020.observables.graphs import WTW_UTILITY
+from causalgraphicalmodels import CausalGraphicalModel
 from checkrs.utils import simulate_choice_vector
-from causal2020.observables.graphs import (
-    IND_UTILITY,
-    DA_UTILITY,
-    SHARED_2_UTILITY,
-    SHARED_3P_UTILITY,
-    WTW_UTILITY,
-    DTW_UTILITY,
-    WTD_UTILITY,
-    WALK_UTILITY,
-    BIKE_UTILITY,
-)
+from pyprojroot import here
+
+# Third party libraries
+# Local libraries
+
 # -
 
 # # Set Notebook Parameters
 
 # +
 # Path to Data
-DATA_PATH = "../../data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+DATA_PATH = here(
+    "data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
+)
 
 # Path to computational code used
 # in simulation loop
-SIMULATE_NODES_WIDE = open("../../src/observables/simworkflow.py").read()
-SIMULATE_PERTURB = open("../../src/observables/simperturb.py").read()
+SIMULATE_NODES_WIDE = open(
+    here("src/causal2020/observables/simworkflow.py")
+).read()
+SIMULATE_PERTURB = open(
+    here("src/causal2020/observables/simperturb.py")
+).read()
 
 # +
 # Alternative id column from long format data
