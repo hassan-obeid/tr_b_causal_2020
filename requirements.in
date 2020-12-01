@@ -3,6 +3,7 @@ causalgraphicalmodels
 checkrs
 click
 coverage
+fitter
 flake8
 flit
 jupyterlab
