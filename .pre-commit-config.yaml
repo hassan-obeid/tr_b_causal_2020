@@ -3,20 +3,43 @@
 # See https://jupytext.readthedocs.io/en/latest/using-pre-commit.html for
 #   jupytext pre-commit instructions and examples
 repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0  # Use the ref you want to point at
+    hooks:
+      - id: check-yaml
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0  # Use the ref you want to point at
+    hooks:
+      - id: trailing-whitespace
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0  # Use the ref you want to point at
+    hooks:
+      - id: end-of-file-fixer
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0  # Use the ref you want to point at
+    hooks:
+      - id: check-merge-conflict
+
   - repo: https://github.com/ambv/black
     rev: stable
     hooks:
       - id: black
         language_version: python3.7
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.0.0
     hooks:
       - id: flake8
+
   - repo: https://github.com/asottile/reorder_python_imports
     rev: v2.3.2
     hooks:
-      -   id: reorder-python-imports
-          application-directories: src
+      - id: reorder-python-imports
+        application-directories: src
+
   - repo: local
     hooks:
       - id: format-ipynb
