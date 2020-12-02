@@ -1,0 +1,27 @@
+digraph "Deconfounder Example" {
+	graph [size="5,3"]
+	"X*" [label=<Latent Variables<BR/>X<SUP>*</SUP>> shape=ellipse]
+	time [label="Travel Time
+X_1" shape=box]
+	cost [label="Travel Cost
+X_2" shape=box]
+	distance [label="Travel Distance
+X_3" shape=box]
+	num_autos [label="Number of Automobiles
+X_4" shape=box]
+	num_drivers [label="Number of Licensed Drivers
+X_5" shape=box]
+	utility [label="Utility
+U" shape=ellipse]
+	"X*" -> time
+	time -> utility
+	"X*" -> cost
+	cost -> utility
+	"X*" -> distance
+	distance -> utility
+	"X*" -> num_autos
+	num_autos -> utility
+	"X*" -> num_drivers
+	num_drivers -> utility
+	"X*" -> utility
+}

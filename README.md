@@ -1,10 +1,21 @@
-Causal_Inference_Transportation
-==============================
+# Causal Inference and Transportation
 
-causal graphs and transportability
+On the use of causal graphs in travel demand modeling.
 
-Project Organization
-------------
+## Installation
+
+0. Create and activate a conda environment by using (for example):
+```
+conda env create -n causal2020 -f environment.yml python=3.7
+conda activate causal2020
+```
+
+1. Locally install the project and its dependencies by running:
+```
+make install
+```
+
+## Project Organization
 
     ├── LICENSE
     ├── Makefile           <- Makefile with commands like `make data` or `make train`
