@@ -19,8 +19,8 @@ active transportation modes in the central business district and that constructi
 cause more transit oriented developments and economic activity.
 
 Policymakers base their analyses and conclusions on hypotheses or beliefs of how the world operates.
-In other words, the data analysis is based on a certain belief about the data generating process.
-However, policymakers often do not present their beliefs about such data generating process.
+In other words, the data analysis is based on certain beliefs about the data generating process.
+However, policymakers often do not present those beliefs in a clear, concise, and transparent manner.
 As a result, these proposals maintain an obscure representation of how the policy or project will achieve their desired goals. 
 
 DAGs allow one to clearly encode their assumptions about the data generating process and the problem at hand.
@@ -28,13 +28,12 @@ Researchers and practitioners have made use of DAGs in fields ranging from medic
 
 %% TODO: maybe insert some references of where DAGs were used?.
 
-Likewise, as in the fields presented above, DAGs could prove useful in addressing transportation policy questions, similar to the ones presented above.
 \citet{brathwaite_2018_causal} have proposed a framework illustrating how practitioners and researchers can use DAGs
  to answer such transportation modeling questions in a causal context.
 However, \citet{brathwaite_2018_causal} have not shown an empirical application of their framework and how it results
  in different conclusions when compared to traditional modeling approaches.
 
-In this section, we will present an example illustrating the importance of using DAGs in transportation demand modeling efforts. 
+In this section, we will present an example illustrating the importance of using DAGs in transportation demand modeling.
 Specifically, we will illustrate how different assumptions about the data generating process result in different conclusions.
 To make our point, we build upon \citet{brathwaite_2018_causal}.
 Here, we present an empirical exercise using a simplified transportation modeling problem.
@@ -49,7 +48,7 @@ We model this travel mode choice problem based on a dataset from \citet{brathwai
 This dataset is based on the 2012 California Household Travel Survey, and it
 contains approximately 4000 home-based school or work tours made by approximately 3850 individuals in the California Bay area.
 Readers interested in a more detailed description of the dataset can refer to \citet{brathwaite_asymmetric}.
-For purposes of this exercise, we consider the Multinomial Logit model defined in \citet{brathwaite_asymmetric} as the true outcome generating process.
+For purposes of this exercise, we consider the Multinomial Logit model defined in \citet{brathwaite_asymmetric} as the true outcome model.
 
 The systematic utility equations of the adopted multinomial logit model are specified as follows:
 \begin{equation}
@@ -68,13 +67,13 @@ The systematic utility equations of the adopted multinomial logit model are spec
 For our purposes, we assume that there are no latent variables.
 The variables were chosen based on the specification of the MNL model outlined by the equations above.
 We can describe the variables as follows:
-- Total Travel Distance: is the total travel distance for individual i and mode j, for all available modes for individual i during trip t of tour l.
-- Total Travel Cost: is the travel cost in dollars for individual i and mode j, for all available modes for individual i during trip t of tour l.
-- Total travel time: is the travel time in minutes for individual i and mode j, for all available modes for individual i during trip t tour l.
-- Number of Autos: is the number of automobiles owned by individual i's household.
-- Number of Licensed Drivers: is the number of licensed drives in individual i's household.
-- Number of Kids: is the number of kids in individual i's household.
-- Cross-bay trip: is a binary variable indicating whether the trip t in tour l for individual i is a cross-bay trip.
+- Total Travel Distance: the total travel distance for individual i and mode j, for all available modes for individual i during trip t of tour l.
+- Total Travel Cost: the travel cost in dollars for individual i and mode j, for all available modes for individual i during trip t of tour l.
+- Total travel time: the travel time in minutes for individual i and mode j, for all available modes for individual i during trip t tour l.
+- Number of Autos: the number of automobiles owned by individual i's household.
+- Number of Licensed Drivers: the number of licensed drives in individual i's household.
+- Number of Kids: the number of kids in individual i's household.
+- Cross-bay trip: a binary variable indicating whether the trip t in tour l for individual i is a cross-bay trip.
 
 Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables are independent of each other for each utility equation.
 Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:BIKE_causal_2} illustrate the causal graphs with ``interacting'' explanatory variables.
