@@ -18,18 +18,20 @@ and pitfalls of this approach for generating accurate model estimates.
 \subsection{Latent Variable Models}
 \label{intro-latent-models}
 % TODO: Mechanics of how latent variable models control for unobserved confounding.
-Latent variables have been used time and again in different applications of statistical and econometric models in different fields, ranging from epidemiology to transportation.
-A latent variable is defined as a covariate not directly observed about subjects in the sample.
-Examples of these variables include measurements about happiness, lifestyle, economic expectation, 
-morale, among others in many different fields.
+Latent confounders are a special case of latent variables.
+Latent variables include both unobserved and not inherently unobserved variables.
+Examples of the former include measurements about happiness, lifestyle, economic expectation, morale, among many others.
+Examples of the latter include measurement errors (such as inexact measurements of key variables, data entry errors, or measurement inaccuracy), missing data, survey item non-response, among other possible examples.
 
 Latent variable models are based on the assumption that observed variables are independent conditional on latent variables.
-Examples of these models include Integrated Choice and Latent Variable Models, Generalized Linear Latent and Mixed Models,
-Factor Analysis Models, and Latent Class Models.
+Examples of these models include ICLV, Generalized Linear Latent and Mixed Models (GLMM; including mixed logit models), Factor Analysis Models, and Latent Class Models.
+Latent variable models have been used in multiple instances in the literature to address issues of latent confounding (see \citep{rosenbaum_rubin_83}, \citep{Liu2013}, and \citep{jung_etal_2020}).
 
-Latent variable models usually rely on collecting indicator/proxy data to infer the levels of latent variable for individuals in a certain sample.
-The collection of this data is not always easy or even feasible, mainly due to potential sensitivity of subjects towards some attitudinal questions
-This makes it difficult for researchers to collect necessary information that allows for controlling for unobserved factors in models. 
+ICLV models are an example of latent variable models that have been used in the transportation literature.
+ICLVs do a good job in addressing latent confounding.
+However, these models usually rely on collecting indicator/proxy data to infer the levels of latent variable for individuals in a certain sample.
+Unfortunately, the collection of this data is not always easy or even feasible, mainly due to potential sensitivity of subjects towards some attitudinal questions.
+This makes it difficult for researchers to collect necessary information that allows for controlling for unobserved confounders in models. 
 
 \subsection{Examples of confounding}
 \label{sec:confounding-examples}
