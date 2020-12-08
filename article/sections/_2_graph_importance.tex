@@ -1,14 +1,15 @@
 \section{Perils of disregard}
 \label{sec:graph-importance}
 
-As stated in \ref{sec:intro}, the development of transportation demand models aims at evaluating the impact of policies on a certain
+As stated in Section \ref{sec:intro}, the development of transportation demand models aims to evaluate the impact of policies on a certain
 transportation demand related outcome. As an example, consider the proposals from the following fictitious scenarios:
-- Based on input from the public, the Department of Transportation (DOT) of  is considering implementing a new parking policy.
-This proposed policy would put in place pricing changes and parking restrictions that would discourage individuals from parking in the central business district.
-The DOT (and its constituents) believes that this policy would encourage people to use more active transportation modes (e.g: walking, biking, etc..).
-- A certain DOT is considering constructing a streetcar (trolley, tram) line in a low/mid-income area in its jurisdiction.
-Citing examples from other cities and countries, the DOT claims that the new streetcar line will create more transit oriented
-developments and increase economic activity in the areas surrounding the proposed project.
+\begin{itemize}
+ \item Based on input from the public, the Department of Transportation (DOT) of  is considering implementing a new parking policy.
+ This proposed policy would put in place pricing changes and parking restrictions that would discourage individuals from parking in the central business district.
+ The DOT (and its constituents) believes that this policy would encourage people to use more active transportation modes (e.g: walking, biking, etc..).
+ \item A certain DOT is considering constructing a streetcar (trolley, tram) line in a low/mid-income area in its jurisdiction.
+ Citing examples from other cities and countries, the DOT claims that the new streetcar line will create more transit oriented developments and increase economic activity in the areas surrounding the proposed project.
+ \end{itemize}
 
 %% TODO: Present an example or two of real life project proposals?
 
@@ -31,17 +32,16 @@ Researchers and practitioners have made use of DAGs in fields ranging from medic
 Likewise, as in the fields presented above, DAGs could prove useful in addressing transportation policy questions, similar to the ones presented above.
 \citet{brathwaite_2018_causal} have proposed a framework illustrating how practitioners and researchers can use DAGs
  to answer such transportation modeling questions in a causal context.
-However, \citet{brathwaite_2018_causal} have not shown an empirical application of their framework and how it results
+However, \citet{brathwaite_2018_causal} did not show an empirical application of their framework and how it results
  in different conclusions when compared to traditional modeling approaches.
 
 In this section, we will present an example illustrating the importance of using DAGs in transportation demand modeling efforts.
 Specifically, we will illustrate how different assumptions about the data generating process result in different conclusions.
 To make our point, we build upon \citet{brathwaite_2018_causal}.
 Here, we present an empirical exercise using a simplified transportation modeling problem.
-Before going any further, we note that this example is
-illustrative, and it does not reflect all complexities in a typical transportation choice modeling problem.
-Indeed, our goal in this section is not to recover the causal effect of the proposed intervention.
-Instead, we aim to only show how different DAGs would result in different conclusions about the effect of the proposed intervention.
+Before going any further, we note that this example is illustrative, and it does not reflect all complexities in a typical transportation choice modeling problem.
+Indeed, it is not our primary goal in this section to recover the causal effect of the proposed intervention.
+Instead, we are most interested in showing how different DAGs would result in different conclusions about the effect of the proposed intervention.
 
 Let us assume that a company wants to reduce its workforce carbon footprint by moving its employees closer to their campus.
 We would like to forecast how such an intervention would change the share of employees driving to work.
@@ -88,7 +88,7 @@ We can describe the variables as follows:
 \end{itemize}
 
 Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables are independent of each other for each utility equation.
-Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:BIKE_causal_2} illustrate the causal graphs with ``interacting'' explanatory variables.
+Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:BIKE_causal_2} illustrate the causal graphs with dependent explanatory variables.
 Each of these graphs is based on the utility function of each mode in the multinomial logit model specified in \citet{brathwaite_asymmetric}.
 
 \begin{figure}
@@ -196,5 +196,5 @@ This difference shows the importance of considering the data generating process 
 The data generating process might not be easily distinguishable in the majority of situations, mainly due to the complexity of the real world.
 Therefore, constructing a causal graph that represents the data generating process as much as possible is not an easy task.
 To prepare readers to create causal graphs, the next section will provide a brief overview of them and their history in choice modelling.
-Then, Section \ref{sec:graph-construction} explores this topic and includes some guidance on how to build causal graphs representing the researchers beliefs about the data generating process.
+Then, Section \ref{sec:graph-construction} explores this topic and includes detailed guidance on how to build causal graphs representing the researchers beliefs about the data generating process.
 Section \ref{sec:graph-testing} follows up with guidance on how to test one's causal graphs against one's data.
