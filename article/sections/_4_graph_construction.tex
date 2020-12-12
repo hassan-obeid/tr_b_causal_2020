@@ -17,8 +17,13 @@ This means we will think through what is a likely generative model for all indiv
 Later in this section, we will devote time to thinking about how subgroups and individual heterogeneity may affect our causal graphs.
 
 Now, we add our first variable(s) to our graph, the outcome variable(s) of interest in our problem.
-Then, we list all the variables we believe to influence the outcome(s).
-We refer to these variables as our initial explanatory variables.
+Note that we should consider relations and dependencies between these outcomes, and we should draw these onto our graphs.
+Such inter-outcome dependencies may be of great relevance or even focus.
+Recall, for example, the case of activity-based modelers that was mentioned in Section \ref{sec:choice-graphs}.
+Similarly, medical researchers with data on multiple health measures or companies with multiple business metrics may all be interested in how the outcomes cause each other.
+
+After adding our outcomes to our graph, we list all the variables we believe to cause them.
+We refer to these influencing variables as our initial explanatory variables.
 
 Next, we iterate through these initial explanatory variables.
 For each current explanatory variable in the iteration, we think of variables that may modify the effect of the current explanatory variable on the outcome(s) of interest.
