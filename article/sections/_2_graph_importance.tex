@@ -53,24 +53,24 @@ For purposes of this exercise, we consider the Multinomial Logit model defined i
 
 The systematic utility equations of the adopted multinomial logit model are specified as follows:
 \begin{align*}
-U_{\textrm{da}} &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_da}} \times \textrm{Cost\_per\_Distance}_{ \textrm{da} } \\
+\textrm{Utility} \left(\textrm{Drive Alone}\right) &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_drive_alone}} \times \textrm{Cost\_per\_Distance}\left(\textrm{da}\right) \\
     &\quad + \beta_{\textrm{autos}} \times \textrm{Number\_of\_Autos} \\
-U_{\textrm{sr2}} &= ASC_{\textrm{sr2}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
-    &\quad + \beta_{\textrm{cost\_per\_distance\_sr2}} \times \textrm{Cost\_per\_Distance}_{ \textrm{sr2} } + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
+\textrm{Utility} \left(\textrm{Shared Ride 2}\right) &= ASC_{\textrm{shared\_ride\_2}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
+    &\quad + \beta_{\textrm{cost\_per\_distance\_shared\_ride\_2}} \times \textrm{Cost\_per\_Distance}_{ \textrm{sr2} } + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
     &\quad + \beta_{\textrm{cross\_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{HH\_Size} \\
     &\quad + \beta_{\textrm{n\_kids\_hh}} \times \textrm{Number\_of\_kids} \\
-U_{\textrm{sr3+}} &= ASC_{\textrm{sr3+}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
+\textrm{Utility} \left(\textrm{Shared Ride 3+}\right) &= ASC_{\textrm{sr3+}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
     &\quad + \beta_{\textrm{cost\_per\_distance\_sr3+}} \times \textrm{Cost\_per\_Distance}_{\textrm{sr3+}} + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
     &\quad + \beta_{\textrm{cross\_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{HH\_Size} \\
     &\quad + \beta_{\textrm{n\_kids\_hh}} \times \textrm{Number\_of\_kids} \\
-U_{\textrm{WTW}} &= ASC_{\textrm{WTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
+\textrm{Utility} \left(\textrm{Walk-Transit-Walk}\right) &= ASC_{\textrm{WTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
     &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
-U_{\textrm{DTW}} &= ASC_{\textrm{DTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
+\textrm{Utility} \left(\textrm{Drive-Transit-Walk}\right) &= ASC_{\textrm{DTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
     &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
-U_{\textrm{WTD}} &= ASC_{\textrm{WTD}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
+\textrm{Utility} \left(\textrm{Walk-Tranist-Drive}\right) &= ASC_{\textrm{WTD}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
     &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
-U_{\textrm{Bike}} &= ASC_{\textrm{Bike}} + \beta_{\textrm{travel\_distance\_bike}} \times \textrm{Travel\_Distance} \\
-U_{\textrm{Walk}} &= ASC_{\textrm{Walk}} + \beta_{\textrm{travel\_distance\_walk}} \times \textrm{Travel\_Distance} \\
+\textrm{Utility} \left(\textrm{Bike}\right) &= ASC_{\textrm{Bike}} + \beta_{\textrm{travel\_distance\_bike}} \times \textrm{Travel\_Distance} \\
+\textrm{Utility} \left(\textrm{Walk}\right) &= ASC_{\textrm{Walk}} + \beta_{\textrm{travel\_distance\_walk}} \times \textrm{Travel\_Distance} \\
 \end{align*}
 
 For our purposes, we assume that there are no latent variables.
