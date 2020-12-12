@@ -54,7 +54,7 @@ For instance, consider how the presence of a bike lane influences bicycle mode c
 We hypothesize that an individual's subjective perception of safety is the primary (or sole) mediator through which bicycle lane presence influences mode choice.
 Accordingly, we add subjective perception of safety to our causal graph for travel mode choice.
 
-After considering the variables above we focus our attention on variables that complicate our analyses.
+After considering the variables above, we turn our attention to variables that complicate our analyses.
 To begin with, we think of confounding variables.
 The process is similar to how we generated effect modifying variables.
 We iterate through each of the explanatory, mediating, and effect modifying variables, thinking specifically of any variables that both cause the current variable in the iteration and cause the outcome variable(s).
@@ -62,6 +62,22 @@ We call these variables, which cause our outcome and current variables in the it
 As an example, consider a person's attitude towards environmental conservation.
 This attitude may cause both that individual's observed distance to their workplace (another explanatory variable) and that individual's choice of travel mode.
 Both in this example and in general, we should add such confounding variables to our causal graph.
+
+Next, we consider the effects of selection.
+As noted by \citet{greenland_2020_causal}, all datasets have a causal graph that implicitly conditions on a selection node.
+I.e., we only analyze data that has been selected to be a part of our dataset.
+We should therefore consider how all of the other nodes in our causal graph relate to the selection node.
+In particular, will we suffer any selection bias due to the outcomes influencing whether an observation is selected for inclusion in our dataset?
+Selection bias, if present, can cause our estimated causal effects to differ greatly from their population counterparts.
+This stems from systematic differences between the observations that have been selected into our dataset and the observations in our population of interest.
+For more details, see \citet{heckman_1979_sample} and \citet{hernan_2004_structural} as canonical references.
+
+Another universally implied yet only implicitly described element of one's causal graph is the prior data and code that led to one's dataset \citep[Pg.7]{greenland_2020_causal}.
+Presumably, prior data and potentially code-enabled-analysis influenced the sample design that led to your dataset.
+Perhaps some data transformations and code to implement those transformations was used to convert a raw dataset into the dataset being used for causal inference.
+And at all times, one uses computer programs to compute your reported results.
+In each case, the prior data is variable that influences your current data, and your code is computational (sub)graph that is implicit in your causal graph.
+These elements should perhaps be made explicit, and their influence on your causal effect estimates should definitely be assessed and reported.
 
 For the last set of variables, we should explicitly consider the role of time, even in research that may be cross-sectional due to the data that is available to us or due to the problem itself.
 In reality, how do we think our system evolves over time?
