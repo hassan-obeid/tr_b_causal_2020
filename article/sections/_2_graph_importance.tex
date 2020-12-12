@@ -48,6 +48,19 @@ We would like to forecast how such an intervention would change the share of emp
 We model this travel mode choice problem based on a dataset from \citet{brathwaite_asymmetric}.
 This dataset is based on the 2012 California Household Travel Survey, and it
 contains approximately 4000 home-based school or work tours made by approximately 3850 individuals in the California Bay area.
+The dataset includes the following eight travel modes:
+
+\begin{itemize}
+   \item Drive Alone: The individual uses a private vehicle to make the trip
+   \item Shared Ride 2: The individual shares an automobile ride with one more individual
+   \item Shared Ride 3+: The individual shares an automobile ride with two or more individuals
+   \item Walk-Transit-Walk: The individual uses transit, walking to their transit origin and from their transit destination to the final destination
+   \item Drive-Transit-Walk: The individual uses transit, driving to access transit and walking from a transit stop to their final destination
+   \item Walk-Transit-Drive: The individual uses transit, walking to access transit and driving from a transit stop to their final destination
+   \item Bike: The individual uses a bike to make the trip
+   \item Walk: The individual walks to make the trip
+\end{itemize}
+
 Readers interested in a more detailed description of the dataset can refer to \citet{brathwaite_asymmetric}.
 For purposes of this exercise, we consider the Multinomial Logit model defined in \citet{brathwaite_asymmetric} as the true outcome generating process.
 
