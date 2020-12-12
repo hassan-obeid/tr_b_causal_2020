@@ -189,6 +189,7 @@ We repeat this simulation process several times and recover the choice probabili
 For our purposes, we focus on car-centric modes (Drive alone, Shared ride with another person,
 and a shared ride with two or more individuals).
 We compute the difference in mode choice probabilities from different models based on the two constructed DAGs.
+Readers interested in exploring the details of our simulation exercise can refer to the GitHub repository \citep{brathwaite_etal_2020}.
 
 
 
@@ -201,7 +202,7 @@ Figure \ref{fig:histogram_probability} highlights the bias between the estimated
 This plotted difference shows the importance of using causal graphs in the estimation of treatment effects.
 This fact does not and should not take away from the importance of correctly specified outcome choice models.
 
-\begin{figure}
+\begin{figure}[h!]
    \centering
    \includegraphics[width=0.5\textwidth]{histogram_selection_on_obs.png}
    \caption{Histograms of the probability of choosing Car Centric Modes under Different Data Generating processes.}
