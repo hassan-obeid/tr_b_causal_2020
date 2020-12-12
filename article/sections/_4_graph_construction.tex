@@ -79,11 +79,14 @@ And at all times, one uses computer programs to compute your reported results.
 In each case, the prior data is variable that influences your current data, and your code is computational (sub)graph that is implicit in your causal graph.
 These elements should perhaps be made explicit, and their influence on your causal effect estimates should definitely be assessed and reported.
 
-For the last set of variables, we should explicitly consider the role of time, even in research that may be cross-sectional due to the data that is available to us or due to the problem itself.
+Next, we should explicitly consider the role of time, even in research that may be cross-sectional due to the data that is available to us or due to the problem itself.
 In reality, how do we think our system evolves over time?
 If we consider multiple observations of a given decision maker, how does that decision maker's observed variables at time $t$ partially cause future variables important to the context or outcome(s) for that decision maker at time $t' > t$?
 How do the actions of a decision maker $i$ at time $t$ partially cause the future context or outcomes of a decision maker $j$?
 We should add explicit nodes to our graph, subscripted or denoted by time, to show the cross-time causal relationships in our system.
+For in-depth discussion of time-related causal inference topics, see papers such as \citet{gill_2001_causal}, \citet{eichler_2007_granger}, and \citet{peters_2013_causal}.
+Please note that the literature on this topic is vast, and the cited authors are not at all exhaustive or representative of all papers in this space.
+Interested readers are encouraged to perform further literature searches on their own.
 
 At this point, we have added to our causal graph all the outcome, explanatory, effect modifying, mediating, confounding, and time-indexed variables that we believe are relevant for our problem.
 However, they are all disconnected nodes, i.e., singletons in the graph.
