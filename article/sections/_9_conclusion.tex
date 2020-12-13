@@ -2,14 +2,14 @@
 \label{sec:conclusion}
 
 Travel demand problems aim at forecasting the impact of proposed project and policies. These problems are causal in nature. 
-To our surprise, there has been very little mention of causal inference in the field of travel demand modeling.
+To date, choice modelers have not routinized the use of causal inference in the field of travel demand modeling.
 \citet{brathwaite_2018_causal} have documented this disconnect and presented an initial framework for addressing it.
 
-In this chapter, we build up on \citet{brathwaite_2018_causal} and highlight the importance of using causal graphs and 
-causal inference methods in transportation demand modeling efforts.
+In this chapter, we built upong their framework.
+We highlighted the importance of using causal graphs and causal inference methods in transportation demand modeling efforts and in choice modeling more generally.
 
 We presented a numerical exercise aiming to show the importance of  the data generating process in the estimation 
-of effects of interest resulting from external interventions. 
+of treatment effects from external interventions. 
 We showed, using the same outcome model, that different assumptions about the data generating processes could 
 lead to bias in estimates of the effect of interest.
 
@@ -17,11 +17,11 @@ Data generating processes can be illustrated effectively using DAGs as shown by 
 We have shown that DAGs help researchers and practitioners represent their assumptions about the data generating process. 
 
 We presented a process allowing researchers and practitioners to construct causal graphs based on their expert opinion of the problem at hand. 
-We also presented methods for testing the implications encoded in the the practitioners proposed causal graph. 
+We also presented methods for testing the implications encoded in the practitioner's proposed causal graph. 
 These implications might be either observed, latent, or both.
 
 Beyond testing the implications and assumptions encoded in a one's causal graph, we describe why causal discovery is important in discerning relationships between covariates one's data.
-We shortly presented several causal discovery algorithms used by
+We briefly presented several causal discovery algorithms used by
 other researchers in different fields. 
 We highlighted the use of one of these causal discovery algorithms on a simple example. 
 We showed that causal discovery methods help us test independence within our data, 
