@@ -126,6 +126,8 @@ Finally, we need to connect the variables in our graph.
    \item Draw arrows from the explanatory variables to the mediators, and then draw arrows from the mediators to the outcomes.
    \item Draw arrows from the confounders to the explanatory variables and mediators that they may cause.
    \item Draw arrows from the variables in time $t$ to the variables that they cause in time $t+1$.
+   \item Draw arrows from the variables that cause one's location in space to spatial variable nodes, and draw arrows to variables that are caused by one's location in space.
+   \item Draw arrows from all other nodes in one's graph to the selection node, based on which variables cause inclusion in one's dataset.
 \end{enumerate}
 After drawing in all arrows, we should now have a fully connected causal graph.
 Pause.
