@@ -88,11 +88,23 @@ For in-depth discussion of time-related causal inference topics, see papers such
 Please note that the literature on this topic is vast, and the cited authors are not at all exhaustive or representative of all papers in this space.
 Interested readers are encouraged to perform further literature searches on their own.
 
-At this point, we have added to our causal graph all the outcome, explanatory, effect modifying, mediating, confounding, and time-indexed variables that we believe are relevant for our problem.
-However, they are all disconnected nodes, i.e., singletons in the graph.
+Similarly, we will frequently want to consider the role of space.
+In the context of choice modelling, this includes questions such as ``how does a decision maker's existence in a particular geographical area shape their choices?''
+For example, consider multinational corporations where the business operates differently across state borders.
+Here, the borders associated with space directly causes a difference in the causal graph of how these businesses deliver their goods and services to customers.
+In other instances, one can consider space as a noisy proxy for unobserved confounders, such as cultural attitudes of a region's inhabitants \citep{paciorek_2010_importance}.
+Rooted in the causal problem of unobserved confounding, this results in known statistical issues for choice modellers such as spatial correlation of model residuals \citep{fleming_2004_techniques}.
+Fortunately, some progress has been made in dealing with such problems.
+For general discussion of recent techniques in causal inference for spatial-causal modeling to deal with such issues, see \citet{osama_2019_inferring}.
+
+At this point, we have added to our causal graph all the
+outcome, explanatory, effect modifying, mediating, confounding, selection, data/code, time-indexed, and space-indexed variables that we believe are relevant for our problem.
+However, many of these variables may be disconnected nodes, i.e., singletons in the graph.
 We now focus on pruning nodes from this graph, before drawing our final hypothesized connections.
 In particular, we focus on pruning ``post-outcome'' variables that are not part of the causal graph for future time periods or other observations.
 The reason for this is that conditioning on such post-outcome variables would bias our causal effect estimates.
+Our pruning exception is the selection variable which we have no choice but to condition on.
+It may unfortunately be a post-outcome.
 
 To remove the problematic variables, we iterate through each of the non-outcome variables in our graph, and we assess whether each variable is actually a result of the outcome (perhaps in combination with other variables in our graph).
 These post-outcome variables temporally follow the outcome variable(s) but do not cause variables in the causal graph for other observations.
