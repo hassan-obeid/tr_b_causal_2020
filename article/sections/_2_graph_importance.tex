@@ -5,8 +5,8 @@ As stated in Section \ref{sec:intro}, the development of transportation demand m
 transportation demand related outcome. As an example, consider the proposals from the following fictitious scenarios:
 \begin{itemize}
  \item Based on input from the public, the Department of Transportation (DOT) of  is considering implementing a new parking policy.
- This proposed policy would put in place pricing changes and parking restrictions that would discourage individuals from parking in the central business district.
- The DOT (and its constituents) believes that this policy would encourage people to use more active transportation modes (e.g: walking, biking, etc..).
+ This proposed policy would change prices and restrict parking to discourage individuals from parking in the central business district.
+ The DOT and its constituents believe that this policy would encourage people to use more active transportation modes (e.g., walking, biking, etc.).
  \item A certain DOT is considering constructing a streetcar (trolley, tram) line in a low/mid-income area in its jurisdiction.
  Citing examples from other cities and countries, the DOT claims that the new streetcar line will create more transit oriented developments and increase economic activity in the areas surrounding the proposed project.
  \end{itemize}
@@ -189,18 +189,18 @@ We repeat this simulation process several times and recover the choice probabili
 For our purposes, we focus on car-centric modes (Drive alone, Shared ride with another person,
 and a shared ride with two or more individuals).
 We compute the difference in mode choice probabilities from different models based on the two constructed DAGs.
-Readers interested in exploring the details of our simulation exercise can refer to the GitHub repository \citep{brathwaite_etal_2020}.
+Readers interested in exploring the details of our simulation exercise can refer to our GitHub repository \citep{brathwaite_etal_2020}.
 
 
 
 We then plot histograms of the computed differences between the average probability of an individual
 in our sample choosing a car centric mode before and after implementing a policy or intervention
 aimed at reducing travel distance.
-These differences are plotted under the following assumptions that the outcome model is the same in both scenarios and the only difference between the two scenarios is the set of variables affected by the proposed intervention.
-This difference in the set of variables affected by the proposed intervention is a result of the two different causal graphs representing each scenario.
-Figure \ref{fig:histogram_probability} highlights the bias between the estimated probability of an average individual choosing a car centric mode.
+These differences are plotted under the following assumptions: that the outcome model is the same in both scenarios and that the only difference between the two scenarios is the set of variables affected by the proposed intervention.
+This difference in the set of variables affected by the proposed intervention is a result of the two different causal graphs representing each scenario (Figures \ref{fig:IND_GRAPH} and \ref{fig:DA_causal_2}).
+Figure \ref{fig:histogram_probability} highlights the resulting bias between the estimated probability of an average individual choosing a car centric mode.
 This plotted difference shows the importance of using causal graphs in the estimation of treatment effects.
-This fact does not and should not take away from the importance of correctly specified outcome choice models.
+Of course, the importance of a correct causal graph does not and should not take away from the importance of correctly specified outcome choice models.
 
 \begin{figure}[h!]
    \centering
