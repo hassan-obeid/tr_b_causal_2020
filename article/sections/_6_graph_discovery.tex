@@ -67,7 +67,7 @@ Then, once we've identified elements that we think should or should not be prese
 Lastly, causal discovery can help us characterize our posterior uncertainty about the data-generating causal graph.
 They enable approximation of the posterior distribution over causal graphs, in at least two ways.
 One approach is to use a weighted likelihood bootstrap approximation \citep{newton_1994_approximate} to the posterior distribution over graphs.
-In this approach, one would first sample a vector of weights for the likelihood terms.
+In this approach, one would first sample a vector of sample weights for the likelihood terms.
 Then, one would use those weights in one's causal discovery algorithm to produce a single `sample' from the posterior approximation.
 
 %Randomize-then-optimize.
@@ -81,7 +81,7 @@ With these posterior approximation methods, we can generate causal graphs for al
 \begin{itemize}
    \item for criticism and inspiration,
    \item for distributional analyses of the causal graphs, and
-   \item for distributional analyses of one's causal effect estimates conditional on each sampled graph.\newline
+   \item for distributional analyses of one's causal effect estimates, conditional on each sampled graph.\newline
    I.e., how certain are we of any one causal graph?
 \end{itemize}
 
@@ -137,19 +137,20 @@ As noted in Section \ref{sec:testing-demonstration}, we suspect that our causal 
 Given that the PC algorithm assumes that we are free of unobserved confounding, our example allows us to observe how the algorithm behaves under violation of its assumptions.
 Does the algorithm fail gracefully and point towards violations of its assumptions, or does it return incorrect results with certainty?
 
-To begin, it helps to understand the general procedure of the PC algorithm. The algorithm uses all our observed variables to infer a skeleton of a causal graph.
+To begin, it helps to understand the the PC algorithm's general procedure.
+It uses all our observed variables to infer a skeleton of a causal graph.
 That is, the algorithm attempts to infer an undirected graph that denotes which variables relate to which other variables, ignoring the directionality of causation between them.
 Then, after inferring a skeleton, the algorithm attempts to orient the undirected edges as much as possible.
 Optimistically, we end up with a fully directed acyclic graph.
 In other cases, we recover a mix of directed and undirected edges, denoting a MEC of graphs with the same independence properties.
 In the final case, we recover an undirected causal graph.
 This corresponds to the situation where we cannot infer which objects cause which other objects.
-We merely know that given sets of objects relate to each other, not why this relationship exists.
+We merely know that given sets of objects relate to each other, not why these relationships exist.
 
 With these basics understood, we can now present the results of using the PC algorithm to infer the causal graph for the variables present in Figure \ref{fig:graph-for-testing}.
 For reference, the variables (travel time, travel cost, travel distance, number of automobiles in one's household, and the number of licensed drivers in one's household) are all thought to influence the utility of commuting by driving-alone.
 We care about the causal relationships between those explanatory variables because intervening on any one of these variables may cause downstream impacts on another explanatory variable.
-To make accurate causal inferences, we need to know and account for these differing pathways of influence on one's utility and mode choice when estimating the causal effect of interventions or treatments.
+As shown in Section \ref{sec:graph-importance}, to make accurate causal inferences, we need to know and account for these differing pathways of influence on one's utility and mode choice.
 Causal discovery helps us discover these differing pathways of influence by generating plausible causal graphs for our datasets.
 
 \begin{figure}
@@ -202,7 +203,7 @@ Finally, natural experiments are instances where our system is subject to non-ra
 Sometimes, these natural experiments take the form of a policy that we apply uniformly across our system.
 For example, imagine a country-wide change in immigration policy that affects the supply of employees into the country, when one is analyzing firm success.
 In other instances, the interventions affect specific individuals.
-For instance, rounding prices up or down to the nearest dollar allocates people with a ``true price'' of $2.51 to a $3.00 treatment, and it allocates people with a ``true price'' of $2.49 to a $2.00 treatment.
+For instance, rounding prices up or down to the nearest dollar allocates people with a ``true price'' of \$2.51 to a \$3.00 treatment, and it allocates people with a ``true price'' of \$2.49 to a \$2.00 treatment.
 This treatment allocation is not random, but perhaps there are ways it is ``as good as random'' thus permitting us to treat it similarly to a formal experiment.
 
 In making use of planned, unplanned, and natural experiments, there are roughly two types of causal discovery algorithms.
