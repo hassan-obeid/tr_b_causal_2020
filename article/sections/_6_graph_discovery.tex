@@ -137,7 +137,7 @@ As noted in Section \ref{sec:testing-demonstration}, we suspect that our causal 
 Given that the PC algorithm assumes that we are free of unobserved confounding, our example allows us to observe how the algorithm behaves under violation of its assumptions.
 Does the algorithm fail gracefully and point towards violations of its assumptions, or does it return incorrect results with certainty?
 
-To begin, it helps to understand the the PC algorithm's general procedure.
+To begin, it helps to understand the PC algorithm's general procedure.
 It uses all our observed variables to infer a skeleton of a causal graph.
 That is, the algorithm attempts to infer an undirected graph that denotes which variables relate to which other variables, ignoring the directionality of causation between them.
 Then, after inferring a skeleton, the algorithm attempts to orient the undirected edges as much as possible.
