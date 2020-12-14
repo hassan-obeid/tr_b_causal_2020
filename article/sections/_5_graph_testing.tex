@@ -35,8 +35,8 @@ The following papers have all proposed and implemented such an idea: \citet{burk
 For conditional independences, the crux of the approach is to predict $Y$ based on $X$ and $Z$.
 Then, compare against a prediction of $Y$ based on a resampled value of $X$ and the original $Z$.
 If $Y$ is mean-independent of $X$ given $Z$, i.e. $E \left[ Y \mid X, Z \right] = E\left[ Y \mid Z \right]$, then the predictive power of a model with resampled $X$ should resemble the predictive power of a model with the original $X$.
-After all, in both cases, the conditional expectation of $Y$ is independent of one's $X$ values (real or resampled).
-When assessing marginal independencies, one removes $Z$ from the models for the expectation of $Y$ and proceeds as described.
+After all, in both cases, the conditional expectation of $Y$ is independent of our $X$ values (real or resampled).
+When assessing marginal independencies, we removes $Z$ from the models for the expectation of $Y$ and proceed as described.
 
 Note that as with the case of testing distributional independence, testing mean independence still requires researchers to make choices.
 First, we have to select models for $E \left[ Y \mid X, Z \right]$ and $E\left[ Y \mid Z \right]$, respectively, for testing conditional and marginal mean-independence.
