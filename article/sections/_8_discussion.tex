@@ -1,0 +1,86 @@
+\section{Discussion}
+\label{sec:discussion}
+
+In this chapter, we've focused on why causal graphs are important, how to create them, how to test them, and on how to use them in applied problems with latent confounding.
+Our latent confounding example showed that statistical inference of our models' parameters may still be a challenge, even with a correct causal graph.
+Such challenges lead us to the following set of post-graph-construction topics:
+\begin{itemize}
+   \item model estimation
+   \item model checking
+   \item experimental design
+   \item experiment analysis
+   \item decision analysis
+\end{itemize}
+To us, each item above is important for getting credible results from our analysis and for maximizing our interventions' benefits.
+Accordingly, even though we will neglect details due to space and time constraints, we briefly discuss these topics below.
+
+Perhaps most obviously, after creating and testing a causal graph, we will use it to estimate the effects of our interventions.
+To compute our effect estimates, we will need to evaluate statements such as the probability of a particular node taking a given value, conditional on the values of that node's parents.
+These probabilities will come from our estimated models, so model estimation is critically important to our effect estimation.
+Thankfully, this is the part of causal inference that choice \textit{modellers} are most familiar with.
+For instance, \citet{kostic_2020_uncovering} first use the PC and GES causal discovery algorithms to generate a causal graph, then they test the graph qualitatively, and finally they estimate models corresponding to this causal graph.
+As another example, \citet{garrido_2020_estimating} start from where we end: at a known (or selected) causal graph.
+They then use neural network density estimators to model the necessary probabilities for estimating one's causal effects of interest.
+
+Next, after estimating the models for our causal graph but before interpreting or using our results, we should check our entire system of models.
+Here, there are multiple, complementary ways of performing these diagnostics.
+We can check our models separately, jointly, or in subsets.
+For thoroughness' sake, we can even perform all these checks instead of one kind.
+
+From a disaggregate perspective, we can consider a sequential application of model checking exercises, one per estimated model.
+Ideally, each model checking process will include the use of visual diagnostics, as (for example) described in \citet{brathwaite_2018_check}.
+Alternatively, we can check subsets of models together instead of checking one model at a time.
+For example, \citet{tran_2016_model} jointly check their models for all variables that their intervention will set (i.e. the treatment assignment variables), and then they separately check their outcome variable models.
+Finally, we can check all our models jointly by defining global diagnostic measures over all nodes in our causal graph.
+See \citet{williamson_2013_model} for a demonstration.
+
+Following model diagnostics, we are ready to use our models and causal graph to inform real interventions.
+These interventions can come in two kind: an experiment or a ``full-scale'' implementation of one's policy.
+If our intervention is experimental, then we are likely interested in one of two aims.
+We either want to decide between one or more treatment options, or we want to learn about our system, though not necessarily to make a decision.
+In both cases, however, we pay great attention to the design of our experiments.
+
+When experimenting to make decisions, such as whether to launch a given treatment or not, we pay extra attention to the size of our experiment.
+Specifically, we want our experiment's sample size to be large enough such that after we update our beliefs using the experimental data, that we have at least our minimum desired probability of making the correct decision.
+The decision can be to declare the effect of a treatment statistically different from zero, but more frequently, the decision will be more fundamental such as ``implement treatment A.''
+For thorough explanations of how to conceptualize and design experiments in a bayesian, model-based setting, see \citet{chaloner_1995_bayesian} and \citet{wang_2002_simulation}.
+For examples and guidance on how to use one's causal graph structure to guide the general design of one's experiment, beyond sample size, see \citet{madrigal_2007_cluster}.
+There, the structure of one's causal graph is used to inform general design decisions such as the clustered allocation of individuals to treatment, and the experimental design is itself analyzed graphically.
+Additionally, note the relations to reinforcement learning where an agent has to perform experiments in order to discover the action/intervention that will maximize her expected, counterfactual reward.
+In this context, \citet{lee_2018_structural} have shown that designing our experiments without guidance from one's causal model is generally suboptimal, and that we can achieve optimality by leveraging our causal graph to design our experimentation plan.
+
+Now, let's transition from experimentation for decision making to consider experimentation for learning.
+Imagine that we are at a transportation network company and that we are running a pricing experiment to learn about price elasticities of our customers.
+Here, there is no immediate decision being made, but we learn about an edge in our causal graph: the edge from price of a trip (treatment) to purchase of the ride (outcome).
+In other cases, we may experiment to learn not just about the strength of an edge, but about the presence of edges and the structure of the graph more generally.
+For example, we may wish to remove residual ambiguity from a causal discovery process that outputs a Markov Equivalence Class of graphs instead of a single causal DAG.
+In these situations, we are interested in optimally designing an experiment (or series of experiments) to learn a causal graph (or its properties).
+We are further interested in how we can leverage potentially multiple experimental datasets to improve our causal graphs.
+For a review of the literature on experimentation for learning and construction/refinement of a preliminary causal graph, see \citet[Sec. 3.1.2]{kalisch_2014_causal}.
+For more recent approaches in this vein, see works such as \citet{triantafillou_2015_constraint, kocaoglu_2017_experimental, brouillard_2020_differentiable, rantanen_2020_learning}.
+
+Finally, after we have run any experiments that we are interested in, we still must decide how to intervene in our population.
+Three major types of questions come to mind immediately:
+\begin{enumerate}
+   \item Should we launch the treatment(s) at all?
+   \item Should we launch the treatments to everyone?
+   \item How should the treatments be dispersed/implemented?
+\end{enumerate}
+
+After updating our posterior beliefs with the experimental data, we'll want to analyze and come to a conclusion about launching our treatment(s).
+In particular, we will wish to determine the expected distribution of impacts under each alternative decision.
+Here, \citet{manski_2019_treatment} should provide the basic idioms of thought and pointers to the larger literature on treatment choice from a decision theoretic perspective.
+
+Next, if we've decided to launch the treatments, we come to the question of who should receive the treatment(s)?
+Everyone?
+A select few?
+Are there certain subgroups that should receive the treatment but not others?
+These questions fundamentally revolve around the level and nature of heterogeneity in treatment effects.
+We will, with good reason, want to search for evidence of heterogeneity and characterize it if found.
+In doing so, we should consult articles such as \citet{pearl_2017_detecting} and \citet{webster_2020_subgroup} for guidance on how to perform one's subgroup analysis in light of one's causal graph.
+This should help us avoid drawing incorrect conclusions or misinterpreting our analyses.
+
+Thirdly, we will need to answer logistical questions about the levels and the frequency of treatment.
+With regard to choosing the levels of (possibly continuous and multiple) treatments, recent work on causal bayesian optimization represents the state of the art in this area \citep{aglietti_2020_causal}.
+Moreover, the entire field of reinforcement learning focuses on running experiments and learning from past observations to determine the treatment arms/levels that will maximize one's reward (however we define it).
+Accordingly, we stand to gain much by consulting the work on and principles from causal reinforcement learning (c.f. \citet{bareinboim_2015_bandits}) when choosing our optimal treatment plan.

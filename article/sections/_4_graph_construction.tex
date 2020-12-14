@@ -17,12 +17,17 @@ This means we will think through what is a likely generative model for all indiv
 Later in this section, we will devote time to thinking about how subgroups and individual heterogeneity may affect our causal graphs.
 
 Now, we add our first variable(s) to our graph, the outcome variable(s) of interest in our problem.
-Then, we list all the variables we believe to influence the outcome(s).
-We refer to these variables as our initial explanatory variables.
+Note that we should consider relations and dependencies between these outcomes, and we should draw these onto our graphs.
+Such inter-outcome dependencies may be of great relevance or even focus.
+Recall, for example, the case of activity-based modelers that was mentioned in Section \ref{sec:choice-graphs}.
+Similarly, medical researchers with data on multiple health measures or companies with multiple business metrics may all be interested in how the outcomes cause each other.
+
+After adding our outcomes to our graph, we list all the variables we believe to cause them.
+We refer to these influencing variables as our initial explanatory variables.
 
 Next, we iterate through these initial explanatory variables.
 For each current explanatory variable in the iteration, we think of variables that may modify the effect of the current explanatory variable on the outcome(s) of interest.
-We refer to these variables as effect modifiers\footnote{Note, effect modifiers and confounders are easily confused. Both variables cause the outcome. The difference is that effect modifiers do not cause the explanatory / treatment variables. Confounders do.}.
+We refer to these variables as effect modifiers\footnote{Note, effect modifiers and confounders are easily confused. Both variables cause the outcome. The difference is that effect modifiers do not cause the explanatory / treatment variables. Confounders do. For discussion and classification of the different types of effect modification, based on one's causal graph, see \citet{vanderweele_2007_four}}.
 Note that some effect modifiers may be a part of our list of initial explanatory variables.
 For any effect modifiers that we think of, outside of the list of initial explanatory variables, we add them to our causal graph.
 
@@ -50,25 +55,57 @@ For instance, consider how the presence of a bike lane influences bicycle mode c
 We hypothesize that an individual's subjective perception of safety is the primary (or sole) mediator through which bicycle lane presence influences mode choice.
 Accordingly, we add subjective perception of safety to our causal graph for travel mode choice.
 
-Coming to our second to last category of variables, we think of confounding variables.
+After considering the variables above, we turn our attention to variables that complicate our analyses.
+To begin with, we think of confounding variables.
 The process is similar to how we generated effect modifying variables.
 We iterate through each of the explanatory, mediating, and effect modifying variables, thinking specifically of any variables that both cause the current variable in the iteration and cause the outcome variable(s).
-We call these variables, which cause our outcome and current variables in the iteration, confounding variables.
+We call these variables, which cause our outcome and current variables in the iteration, confounding variables \citep{elwert_2013_graphical, greenland_1999_confounding}.
 As an example, consider a person's attitude towards environmental conservation.
 This attitude may cause both that individual's observed distance to their workplace (another explanatory variable) and that individual's choice of travel mode.
 Both in this example and in general, we should add such confounding variables to our causal graph.
 
-For the last set of variables, we should explicitly consider the role of time, even in research that may be cross-sectional due to the data that is available to us or due to the problem itself.
+Next, we consider the effects of selection.
+As noted by \citet{greenland_2020_causal}, all datasets have a causal graph that implicitly conditions on a selection node.
+I.e., we only analyze data that has been selected to be a part of our dataset.
+We should therefore consider how all of the other nodes in our causal graph relate to the selection node.
+In particular, will we suffer any selection bias due to the outcomes influencing whether an observation is selected for inclusion in our dataset?
+Selection bias, if present, can cause our estimated causal effects to differ greatly from their population counterparts.
+This stems from systematic differences between the observations that have been selected into our dataset and the observations in our population of interest.
+For more details, see \citet{heckman_1979_sample} and \citet{hernan_2004_structural} as canonical references.
+
+Another universally implied yet only implicitly described element of one's causal graph is the prior data and code that led to one's dataset \citep[Pg.7]{greenland_2020_causal}.
+Presumably, prior data and potentially code-enabled-analysis influenced the sample design that led to your dataset.
+Perhaps some data transformations and code to implement those transformations was used to convert a raw dataset into the dataset being used for causal inference.
+And at all times, one uses computer programs to compute your reported results.
+In each case, the prior data is variable that influences your current data, and your code is computational (sub)graph that is implicit in your causal graph.
+These elements should perhaps be made explicit, and their influence on your causal effect estimates should definitely be assessed and reported.
+
+Next, we should explicitly consider the role of time, even in research that may be cross-sectional due to the data that is available to us or due to the problem itself.
 In reality, how do we think our system evolves over time?
 If we consider multiple observations of a given decision maker, how does that decision maker's observed variables at time $t$ partially cause future variables important to the context or outcome(s) for that decision maker at time $t' > t$?
 How do the actions of a decision maker $i$ at time $t$ partially cause the future context or outcomes of a decision maker $j$?
 We should add explicit nodes to our graph, subscripted or denoted by time, to show the cross-time causal relationships in our system.
+For in-depth discussion of time-related causal inference topics, see papers such as \citet{gill_2001_causal}, \citet{eichler_2007_granger}, and \citet{peters_2013_causal}.
+Please note that the literature on this topic is vast, and the cited authors are not at all exhaustive or representative of all papers in this space.
+Interested readers are encouraged to perform further literature searches on their own.
 
-At this point, we have added to our causal graph all the outcome, explanatory, effect modifying, mediating, confounding, and time-indexed variables that we believe are relevant for our problem.
-However, they are all disconnected nodes, i.e., singletons in the graph.
+Similarly, we will frequently want to consider the role of space.
+In the context of choice modelling, this includes questions such as ``how does a decision maker's existence in a particular geographical area shape their choices?''
+For example, consider multinational corporations where the business operates differently across state borders.
+Here, the borders associated with space directly causes a difference in the causal graph of how these businesses deliver their goods and services to customers.
+In other instances, one can consider space as a noisy proxy for unobserved confounders, such as cultural attitudes of a region's inhabitants \citep{paciorek_2010_importance}.
+Rooted in the causal problem of unobserved confounding, this results in known statistical issues for choice modellers such as spatial correlation of model residuals \citep{fleming_2004_techniques}.
+Fortunately, some progress has been made in dealing with such problems.
+For general discussion of recent techniques in causal inference for spatial-causal modeling to deal with such issues, see \citet{osama_2019_inferring}.
+
+At this point, we have added to our causal graph all the
+outcome, explanatory, effect modifying, mediating, confounding, selection, data/code, time-indexed, and space-indexed variables that we believe are relevant for our problem.
+However, many of these variables may be disconnected nodes, i.e., singletons in the graph.
 We now focus on pruning nodes from this graph, before drawing our final hypothesized connections.
 In particular, we focus on pruning ``post-outcome'' variables that are not part of the causal graph for future time periods or other observations.
 The reason for this is that conditioning on such post-outcome variables would bias our causal effect estimates.
+Our pruning exception is the selection variable which we have no choice but to condition on.
+It may unfortunately be a post-outcome.
 
 To remove the problematic variables, we iterate through each of the non-outcome variables in our graph, and we assess whether each variable is actually a result of the outcome (perhaps in combination with other variables in our graph).
 These post-outcome variables temporally follow the outcome variable(s) but do not cause variables in the causal graph for other observations.
@@ -90,6 +127,8 @@ Finally, we need to connect the variables in our graph.
    \item Draw arrows from the explanatory variables to the mediators, and then draw arrows from the mediators to the outcomes.
    \item Draw arrows from the confounders to the explanatory variables and mediators that they may cause.
    \item Draw arrows from the variables in time $t$ to the variables that they cause in time $t+1$.
+   \item Draw arrows from the variables that cause one's location in space to spatial variable nodes, and draw arrows to variables that are caused by one's location in space.
+   \item Draw arrows from all other nodes in one's graph to the selection node, based on which variables cause inclusion in one's dataset.
 \end{enumerate}
 After drawing in all arrows, we should now have a fully connected causal graph.
 Pause.
