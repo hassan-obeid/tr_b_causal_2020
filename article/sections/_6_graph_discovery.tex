@@ -109,6 +109,8 @@ These techniques proceed sequentially, in pairs of variables.
 For each considered pair, an edge may be added, removed, or reversed in direction.
 These changes are made greedily, so long as our scoring criterion improves.
 Most commonly, the scoring criterion is the Bayesian Information Criterion for the joint prediction of all variables in our dataset \citep{malinsky_2018_causal}.
+However, newer scoring criterions have been created with wider applicability than the BIC.
+See \citet{huang_2018_generalized} for details.
 
 To begin using a score-based algorithm, we start with a fully disconnected graph.
 To this graph, we add directed causal relationships to increase the score of the generative model that corresponds to our graph.
