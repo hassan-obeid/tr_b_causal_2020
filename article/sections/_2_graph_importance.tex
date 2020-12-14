@@ -209,14 +209,15 @@ Of course, the importance of a correct causal graph does not and should not take
    \label{fig:histogram_probability}
 \end{figure}
 
-We have shown in this simulation exercise how causal graphs can be helpful in avoiding biased causal effect inferences of proposed treatments or policies.
-Specifically, two situations highlight this fact; having mediating or confounding variables relative to the variable the proposed treatment intervenes on in our outcome model.
-In the case of mediating variables relative to the node the treatment intervenes on, we need to be careful about constructing our treatment effect estimator and make sure we have a total effect estimator instead of a natural direct effect estimator.
+We have shown in this simulation exercise how causal graphs can be helpful in avoiding biased causal effect inferences.
+Specifically, two situations highlight this fact; having mediating or confounding variables relative to the variable being intervened on in our outcome model.
+In the case of mediating variables relative to the node the treatment intervenes on, we need to be careful about constructing our treatment effect estimator.
+In particular, we need to ensure that we appropriately use total effect estimators instead of natural direct effect estimators.
 Enacting a certain treatment shows its effect through the mediating variable.
 Therefore, when ``changing'' the value of the intervention node, we need to make sure the values and distributions of any downstream nodes reflect this change.
-For more information on the mediating mechanism, please refer to work by \citet{pearl_2012}.
-In the case of confounding variables, it is important to consider the treatment assignment mechanism when building choice models.
-As \citep{hahn2020} show, a way for considering the treatment assignment mechanism is to estimate the propensity score of our sample and adjust for that in our outcome model.
+For more information on mediating mechanisms, please refer to work by \citet{pearl_2012} and references therein.
+In the case of confounding variables, we need to consider the treatment assignment mechanism when building choice models.
+As \citep{hahn2020} show, one way to account for the treatment assignment mechanism is to estimate the propensity score in our sample and adjust for that in our outcome model.
 
 In contrast to the example shown in this section, the data generating process might not be easily distinguishable in the majority of situations, mainly due to the complexity of the real world.
 Therefore, constructing a causal graph that represents the data generating process as much as possible is not an easy task.
