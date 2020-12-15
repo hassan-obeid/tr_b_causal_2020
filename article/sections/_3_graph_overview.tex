@@ -15,7 +15,9 @@ Interested readers can refer to \citet{pearl_causality_2000} for a thorough intr
 Consider the causal graph represented in Figure \ref{fig:simple-graph}.
 Suppose we're interested in the effect of a treatment Z on Y.
 What the graph in Figure \ref{fig:simple-graph} implies is that Z is
-independent of Y(Z) given X. In causal jargon, the mechanism by which the treatment Z was assigned is ignorable, once we control for covariates X.
+independent of Y(Z) given X.
+For more information on how to semantically parse a causal graph as just done, see \citet[Ch 11.1]{pearl_2009_causality}.
+Continuing with interpretation, in causal jargon, we say the mechanism by which the treatment Z was assigned is ignorable, once we control for covariates X.
 In such situations, it is sufficient to control for X to obtain an unbiased estimate of the causal effect of Z on Y.
 
 \begin{figure}[h!]
