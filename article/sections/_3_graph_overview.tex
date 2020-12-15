@@ -1,8 +1,8 @@
 \section{Overview of Causal Graphs}
 \label{sec:graph-overview}
-The previous section, \ref{sec:graph-importance}, motivated why the knowledge encoded in one's DAG is important. 
-This section gives a high level overview of what DAGs are and provides references for more thorough readings on the subject. 
-Causal diagrams and causal graphical models have been introduced by \citet{pearl_causality_1995} as a powerful tool for causal inference, especially in observational studies.
+The previous section, \ref{sec:graph-importance}, motivated why the knowledge encoded in one's DAG is important.
+This section gives a high level overview of what DAGs are and provides references for more thorough readings on the subject.
+Causal diagrams and causal graphical models have been introduced by \citet{pearl_1995_causal} as a powerful tool for causal inference, especially in observational studies.
 Perhaps one of the most important and useful features of causal
 graphs when dealing with causal inference problems is the clear illustration
 of the causal relationships between the variables.
@@ -15,7 +15,7 @@ Interested readers can refer to \citet{pearl_causality_2000} for a thorough intr
 Consider the causal graph represented in Figure \ref{fig:simple-graph}.
 Suppose we're interested in the effect of a treatment Z on Y.
 What the graph in Figure \ref{fig:simple-graph} implies is that Z is
-independent of Y(Z) given X. In causal jargon, the mechanism by which the treatment Z was assigned is ignorable, once we control for covariates X. 
+independent of Y(Z) given X. In causal jargon, the mechanism by which the treatment Z was assigned is ignorable, once we control for covariates X.
 In such situations, it is sufficient to control for X to obtain an unbiased estimate of the causal effect of Z on Y.
 
 \begin{figure}[h!]
@@ -44,7 +44,7 @@ Figure \ref{fig:simple-graph-confounded} illustrates this assumption in DAG form
    \label{fig:simple-graph-confounded}
 \end{figure}
 
-Figure \ref{fig:simple-graph-confounded} shows an indirect connection between Z and Y that goes through U. 
+Figure \ref{fig:simple-graph-confounded} shows an indirect connection between Z and Y that goes through U.
 Therefore, even if we condition on X, omitting U will yield biased results of the relationship between Z and Y, due to the variation in both Z and Y caused by U.
 The structural equations also show that the ignorability assumption of Z does not hold if we only control for X, and we risk obtaining biased estimates of the causal effect of Z on Y if we fail to account for U, sometimes referred to as a common cause.
 Even in this very simple example with only three or four variables, we gain an advantage in parsimony and expressiveness by using a causal graph to encode assumptions.
@@ -62,8 +62,8 @@ directed acyclic graph (DAG) that encodes an analyst's knowledge and belief
 about the data generation process of the problem at hand, can a specific
 causal effect be identified?
 As such, we emphasize that DAGs are great tools
-for a modeler to encode their assumptions about a problem, even though we will use more familiar statistical tools to actually infer/estimate a causal effects of interest. 
-This separation of identification and inference into two separate problems is often advocated for by Judea Pearl himself, emphasizing that whether a causal effect of interest is identifiable does not 
+for a modeler to encode their assumptions about a problem.
+Later on, we will use more familiar statistical tools to actually infer/estimate our causal effects of interest.
 
 \subsection{Prior Uses of Causal Graphs in Choice Modelling}
 \label{sec:choice-graphs}
