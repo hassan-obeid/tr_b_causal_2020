@@ -205,6 +205,19 @@ substitute confounder to control for.
    \label{fig:confounder-sensitivity}
 \end{figure}
 
+Given the algorithmic difficulties with accurately inferring latent confounders,
+we encourage analysts to investigate and experiment with alternative methods of
+coping with unobserved confounding.
+In particular, we advise researchers to conduct sensitivity analyses and to compute bounds for their treatment effects of interest.
+Sensitivity analyses estimate the strength of relationship between a latent confounder and one's treatment variables that is needed to invalidate one's results.
+Audiences are then able to judge whether it is plausible for a confounder of that strength to exist.
+For more information about and demonstration of this technique for dealing with latent confounding,
+see \citet{rosenbaum_1983_assessing}, \citet{liu_2013_introduction}, and \citet{jung_2020_bayesian}.
+For related literature and guidance on bounding one's treatment effects in the presence of latent confounding,
+see \citet{manski_1990_nonparametric}, \citet{richardson_2014_nonparametric}, and \citet{geiger_2014_estimating}.
+The crux of this research is that even with unobserved confounding, we can derive credible bounds for our treatment effects.
+This enables us to avoid the difficulties of trying to provide accurate point estimates via accurate reconstruction of the latent confounders.
+
 % \begin{figure}
 % \centering
 % \includegraphics[width=0.5\textwidth]{exa}
