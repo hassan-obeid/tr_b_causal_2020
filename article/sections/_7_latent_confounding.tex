@@ -38,21 +38,24 @@ This variable is subsequently expected not to lack ``balance'' across the treatm
 Accordingly, if we neglect the latent confounder as a source of variation in both our treatment and outcome variables,
 then we risk biasing our treatment effect estimates of interest.
 
-
-
 The problem of latent confounding and omitted variable bias is widely
 acknowledged in the transportation literature, and demand modelers can draw on
 a list of methods to account for confounding in some specific circumstances.
 Integrated choice and latent variable (ICLV) models are a way to account for
 the effect of unobserved attitudinal variables which may affect the selection
 of some individuals into some treatment level, as well as an outcome of
-interest. For example, a person's unobserved beliefs and attitudes towards
-being environmentally friendly may both affect whether she chooses to bike to
+interest. For example, a person's sociodemographics may partially cause her
+unobserved beliefs and attitudes towards being environmentally friendly.
+These unobserved attitudes may then affect both whether she chooses to bike to
 work, as well as whether she lives close to bike infrastructure.
-Failing to account for these attitudes may bias our observational study
+In this case, the latent variable is both a mediator of sociodemographics and
+the choice, as well as a confounder of bicycle infrastructure level and the
+choice.
+
+Here, failing to account for the latent attitudes may bias our observational study
 if we're interested in the effect on bicycle mode share from adding a bike lane.
 As a caveat, however, ICLV models rely on
-collecting attitudinal indicators typically obtained by conducting
+collecting attitudinal indicators, typically obtained by conducting
 additional surveys with a sample of the people. This may not be an option in
 many cases; for example, we may not be able to reach the individuals to conduct additional surveys with them.
 
