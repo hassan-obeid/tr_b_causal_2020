@@ -28,30 +28,29 @@ methods in the literature for how to do that, including post-stratification,
 multiple regression, propensity score methods, etc. It is when the
 confounding variable is unobserved that the problem becomes significantly
 more challenging.
+For an illustration, imagine we're interested in the effect of adding a bike on the mode share of bicycling in a given neighborhood.
+To estimate this effect, one strategy that a modeler may use is to develop a disaggregate mode choice model with a dummy variable for whether a bikelane exists between an individual's trip origin and destination, and then treating the coefficient on this variable as the causal effect of adding a bikelane on the log-odds of choosing to bike.
+The problem with such strategy is that individuals may self-select to live in an area where bicycle infrastructure exists because they have a preference for commuting by bike.
+In other words, if we define an additional variable to encode a person's latent inherent preference for biking, then this variable determines both a person's likelihood for living in an area with an existing bicycle infrastructure, as well as whether that person choose to bike.
+This variable is subsequently expected not to lack "balance" across the treatment and control groups; those who live near a bicycle lane are expected to have higher preference for biking than those who don't.
+Without accounting for this latent confounder, we risk getting very biased estimates
+of the effects of our treatment variable of interest, created by the
+induced variations by the confounder in both the treatment and the outcome
+variable.
 
-For an illustration, imagine we're interested in the effect of adding a bike lane on the mode share of bicycling in a given neighborhood.
-To estimate this effect, we might develop a disaggregate mode choice model with a dummy variable for whether a bike lane exists between an individual's trip origin and destination.
-We might then wish to treat the coefficient on this variable as the causal effect of adding a bike lane on the log-odds of choosing to bike.
-The problem with this strategy is that individuals may self-select to live in an area where bicycle infrastructure exists because they have a preference for commuting by bike.
-In other words, if we define an additional variable to encode a person's latent, inherent preference for biking, then this variable determines both a person's likelihood for living in an area with existing bicycle infrastructure and whether that person chooses to bike.
-This variable is subsequently expected not to lack ``balance'' across the treatment and control groups: those who live near a bicycle lane are expected to have higher preference for biking than those who don't.
-Accordingly, if we neglect the latent confounder as a source of variation in both our treatment and outcome variables,
-then we risk biasing our treatment effect estimates of interest.
 
 
-
-The problem of latent confounding and omitted variable bias is widely
+The problem of latent confounding and ommitted variable bias is widely
 acknowledged in the transportation literature, and demand modelers can draw on
-a list of methods to account for confounding in some specific circumstances.
+a list of method to account for confouding in some specific circumstances.
 Integrated choice and latent variable (ICLV) models are a way to account for
 the effect of unobserved attitudinal variables which may affect the selection
 of some individuals into some treatment level, as well as an outcome of
 interest. For example, a person's unobserved beliefs and attitudes towards
-being environmentally friendly may both affect whether she chooses to bike to
-work, as well as whether she lives close to bike infrastructure.
-Failing to account for these attitudes may bias our observational study
-if we're interested in the effect on bicycle mode share from adding a bike lane.
-As a caveat, however, ICLV models rely on
+being environmentelly friendly may both affect whether she chooses to bike to
+work, as well as whether she lives close to a bike infrastructure, which may
+bias our observational study if we're interested in the effect adding a
+bikelane has on the mode share of bicycles. Those methods, however, rely on
 collecting attitudinal indicators typically obtained by conducting
 additional surveys with a sample of the people. This may not be an option in
 many cases; for example, we may not be able to reach the individuals to conduct additional surveys with them.
@@ -65,10 +64,10 @@ many cases; for example, we may not be able to reach the individuals to conduct 
 One recent method that has been proposed to deal with the problem of latent
 confounding without the need to collect additional data is the deconfounder
 algorithm by \citet{wang_2019_blessings}. The method attempts to control for the
-confounding variable by estimating a ``substitute confounder'': a set of variables
+confounding variable by estimating a "substitute confounder": a set of variables
 that once controlled for, renders all variation in the treatment variables of
-interest exogenous. The process of applying the method can be stated simply.
-It proceeds as follows:
+interest exogenous. The process of applying the method is actually quite
+straightforward and simple. It proceeds as follows:
 \begin{itemize}
 	\item First, estimate the substitute confounder using any good latent variable
 	model the modeler chooses. The authors suggest estimating a factor model
@@ -84,11 +83,11 @@ It proceeds as follows:
 
 
 One main assumption of the deconfounder algorithm is that the data at hand
-should only have multi-cause confounders, thus the title of the paper, ``The
-blessings of multiple causes.'' In other words, this method works when all
+should only have multi-cause confounders, thus the title of the paper, "The
+blessings of multiple causes". In other words, this method works when all
 unobserved confounders affect multiple of the observed causes (or treatment
 variables) of interest, alongside the outcome. This assumption is weaker than
-the standard ignorability assumption, which requires the absence of both
+the one required for ignorability to hold, which requires the absence of both
 single cause and multi-cause confounders for accurate causal inferences.
 
 
@@ -107,7 +106,7 @@ We estimate three models:
 
 \begin{itemize}
 	\item Model 1: A multinomial logit with the correct original specification,
-	except we omit the travel distance variable in the specification without
+	except we ommit the travel distance variable in the specification without
 	trying to adjust for it. This model represents the worst case scenario
 	where a modeler ignores, or is unaware of, unobserved confounding.
 	\item Model 2: We use the deconfounder algorithm to try to recover the
@@ -181,14 +180,14 @@ deconfounder algorithm is very sensitive to small errors and misfits in the
 recovered confounder. Although method 3 returns a relatively good fit of the
 true confounder (based on the QQ plot), the adjusted coefficients on travel
 time and cost do not exhibit any reduction in the bias resulting from
-omitting the true confounder. Moreover, the coefficients on the recovered
+ommitting the true confounder. Moreover, the coefficients on the recovered
 confounder are highly insignificant. This raises questions about the
 usefulness of the deconfounder algorithm in practice. Limitations notwithstanding, it is
 important to point out that sensitivity to small errors and misfits is not only a by-product of the deconfounder
-algorithm itself. In fact, it is one of the built in characteristic of omitted
+algorithm itself. In fact, it is one of the built in characteristic of ommitted
 variable bias, and perhaps more broadly, the problem of error-in-variables in
 regression. To illustrate this, suppose we actually observe the true
-confounder variable, but with some white, random Gaussian noise. Figure \ref{fig:confounder-sensitivity}
+confounder variable, but with some white, random guassian noise. Figure \ref{fig:confounder-sensitivity}
 shows how the bias in the parameter of interest increases quickly as a
 function of the standard deviation of the random noise. This emphasizes the
 difficulty of recovering unbiased estimates in the presence latent confounders,
