@@ -1,7 +1,7 @@
 \section{Introduction}
 \label{sec:intro}
 
-In transportation, we often build models that are used for policy evaluation.
+In transportation, we often build models for policy evaluation.
 Specifically, we often use behavioral models to evaluate the impact of external interventions on travel outcomes. 
 These evaluations are excplicitly causal: we are interested in how the 
 system reacts to \textit{interventions}. 
@@ -10,10 +10,10 @@ developed, causality is often not considered. Furthermore, when
 causal concepts are accounted for, the process is done implicitly without a 
 formal framework. 
 
-This chapter is concerned with filling this gap. 
+This chapter aims to fill this gap. 
 Specifically, we focus on addressing the existing disconnect between the fields of travel demand modeling and causal inference. 
 The chapter is motivated by the current lack of use of methods and findings from 
-the causal inference literature in travel demand modeling. 
+the causal inference literature in travel demand modeling and choice modeling more broadly.
 
 While the field of transportation demand modeling could benefit greatly from 
 incorporating causal inference techniques, there are barriers that have slowed this integration. 
@@ -27,8 +27,8 @@ While these barriers complicate the efforts of demand modelers, there is still a
 incorporating causal inference techniques where appropriate and from contributing
 to the causal inference literature where it's lacking.
 
-The relevance of this topic now is motivated by the significant boost in the causal inference literature recently, both in the potential outcomes and the causal graphical modeling frameworks.
-The goal of this chapter is to formalize a workflow for approaching 
+This topic is even more relevant now because of the significant and recent boost in the causal inference literature, both in the potential outcomes and the causal graphical modeling frameworks.
+Leveraging these latest advances, the goal of this chapter is to formalize a workflow for approaching 
 transportation demand modeling problems from a causal perspective. 
 We will draw heavily on the use of directed acyclic graphs (DAGs) formalized by \citet{pearl_causality_2000} as a means of representing the modeler's knowledge and assumptions about a given problem. 
 The chapter will provide an overview of DAGs, the 
@@ -44,5 +44,5 @@ graph. This type of confounding creates variations in the outcome variable that 
 the confounded variables but are correlated with it, which biases the estimated 
 causal effects of those variables if nothing is done to account for the 
 confounding. 
-We focus on a recent technique to deal with latent confounding suggested by \citet{wang_2019_blessings} to address unobserved confounding when collecting additional data is not feasible. 
-We describe this problem in more details in section 7.
+In Section \ref{sec:latent-confounding}, we focus on a recent technique to deal with latent confounding suggested by \citet{wang_2019_blessings} to address unobserved confounding when collecting additional data is not feasible. 
+Finally, in Section \ref{sec:discussion}, we briefly discuss the many subsequent and important steps that are necessary for makign and benefitting from one's causal inferences.
