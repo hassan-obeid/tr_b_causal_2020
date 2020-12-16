@@ -1,20 +1,28 @@
+% Outline:
+% Overview
+% Confounding description
+% Latent Variable (and how to model them)
+% Deconfounder description
+% Deconfounder case study
+% Alternatives
 \section{Latent Confounding}
 \label{sec:latent-confounding}
 
 This section focuses on latent confounding in causal inference problems.
 As mentioned in Section \ref{sec:graph-construction},  latent confounders affect the treatment assignment of our causal variables of interest, as well as the outcome.
 While more complicated, this setup is the more realistic and typical case faced by demand modelers.
-We first go over a few examples of confounding in transportation analyses, explain
-the challenges that come with such cases, and present a few approaches to
-dealing with this issue, specifically the recent de-confounder technique of
-\citet{wang_2019_blessings}.
-We will show how directed acyclic graphs can
-help clarify one's reasoning regarding the number of
-confounders, the assumptions for which variables are confounded, and the models
-needed to estimate the causal effects.
-We do that using a simplified simulation scenario to investigate the usefulness
-and pitfalls of the deconfounder approach for generating accurate model estimates.
+We first go over a few examples of confounding in transportation analyses and explain
+the challenges that come with such cases.
+Next we will briefly review a few approaches to dealing with latent confounding.
 
+Then we focus specifically the recent de-confounder technique of \citet{wang_2019_blessings}.
+In particular, we conduct a case study and simulation using the deconfounder.
+Using data from \citet{brathwaite_asymmetric}, our case study shows how directed acyclic graphs can help clarify
+one's reasoning regarding the number of confounders,
+the assumptions for which variables are confounded,
+and the models needed to estimate the causal effects.
+Additionally, we use a simplified simulation scenario to investigate the usefulness
+and pitfalls of the deconfounder approach for generating accurate model estimates.
 
 \subsection{Examples of confounding}
 \label{sec:confounding-examples}
@@ -25,45 +33,57 @@ creating correlation between the treatment and the outcome that is not caused
 by the treatment variable itself. When the confounding variable (or variables) is
 observed, we can control for the confounding effect, and there exists many
 methods in the literature for how to do that, including post-stratification,
-multiple regression, propensity score methods, etc. It is when the
-confounding variable is unobserved that the problem becomes significantly
-more challenging.
+multiple regression, propensity score methods, g-computation, targeted maximum likelihood estimation, etc.
+It is when the confounding variable is unobserved that the problem becomes significantly more challenging.
 
 For an illustration, imagine we're interested in the effect of adding a bike lane on the mode share of bicycling in a given neighborhood.
 To estimate this effect, we might develop a disaggregate mode choice model with a dummy variable for whether a bike lane exists between an individual's trip origin and destination.
 We might then wish to treat the coefficient on this variable as the causal effect of adding a bike lane on the log-odds of choosing to bike.
 The problem with this strategy is that individuals may self-select to live in an area where bicycle infrastructure exists because they have a preference for commuting by bike.
 In other words, if we define an additional variable to encode a person's latent, inherent preference for biking, then this variable determines both a person's likelihood for living in an area with existing bicycle infrastructure and whether that person chooses to bike.
-This variable is subsequently expected not to lack ``balance'' across the treatment and control groups: those who live near a bicycle lane are expected to have higher preference for biking than those who don't.
+This latent variable is subsequently expected to lack ``balance'' across the treatment and control groups: those who live near a bicycle lane are expected to have higher preference for biking than those who don't.
 Accordingly, if we neglect the latent confounder as a source of variation in both our treatment and outcome variables,
 then we risk biasing our treatment effect estimates of interest.
 
-The problem of latent confounding and omitted variable bias is widely
-acknowledged in the transportation literature, and demand modelers can draw on
-a list of methods to account for confounding in some specific circumstances.
-Integrated choice and latent variable (ICLV) models are a way to account for
-the effect of unobserved attitudinal variables which may affect the selection
-of some individuals into some treatment level, as well as an outcome of
-interest. For example, a person's sociodemographics may partially cause her
-unobserved beliefs and attitudes towards being environmentally friendly.
-These unobserved attitudes may then affect both whether she chooses to bike to
-work, as well as whether she lives close to bike infrastructure.
-In this case, the latent variable is both a mediator of sociodemographics and
-the choice, as well as a confounder of bicycle infrastructure level and the
-choice.
+\subsection{Latent Variables}
+\label{sec:latent-variables}
+Latent confounders are a special case of latent variables, i.e. unobserved variables.
+These include both psychological constructs and physically missing observations.
+Psychological constructs include measurements about
+happiness, lifestyle, economic expectation, morale, among many others.
+Physically missing observations include measurement errors
+(such as inexact measurements of key variables, data entry errors, or measurement inaccuracy),
+missing data, survey item non-response, etc.
+
+To cope with these latent variables, modelers make parameterized assumptions about how the latent variables relate to the observed variables.
+Then, these parameters are inferred alongside the latent variables and used to estimate causal effects of interventions.
+% ICLV is spelled out since readers may not remember from section 3.
+Examples of such latent variable models include Integrated Choice and Latent Variable (ICLV), Generalized Linear Latent and Mixed Models (GLMM; including mixed logit models), Factor Analysis Models, and Latent Class Models.
+For specific examples of these models being used to address latent confounding, see \citet{louizos_2017_causal} and \citet{perrakis_2019_latent} for factor analysis and latent class modeling examples, respectively.
+
+From a choice modeling perspective, recall from Section \ref{sec:choice-graphs} that ICLV models have been used for decades.
+The same is true of GLMMs / mixed-logit models.
+These models address primarily address issues of latent mediation.
+For mixed logit models this is evident in specifications where observable variables such as socio-demographics (e.g. income) cause an unobservable preferences (e.g. price sensitivity) that then influences the choice.
+For ICLVs, recall Figure \ref{fig:example-graph-iclv} in Section \ref{sec:choice-graphs}.
+Despite their primary focus on mediation, these models dovetail with latent confounding in the following instances.
+
+Consider socio-demographic variables such as age.
+Age may be thought to influence a latent attitude of environmental friendliness.
+This latent attitude may then influence both whether one lives near bicycle infrastructure and what travel mode one chooses.
+In this case, the latent variable of environmental friendliness is a latent mediator of age and the travel choice.
+Simultaneously, the latent variable is a latent confounder of bicycle infrastructure presence and travel choice.
 
 Here, failing to account for the latent attitudes may bias our observational study
 if we're interested in the effect on bicycle mode share from adding a bike lane.
-As a caveat, however, ICLV models rely on
-collecting attitudinal indicators, typically obtained by conducting
-additional surveys with a sample of the people. This may not be an option in
-many cases; for example, we may not be able to reach the individuals to conduct additional surveys with them.
-
+However, we could use an ICLV model to both address latent mediation and latent confounding.
+For estimation, ICLV models usually rely on collecting indicator/proxy data to infer the levels of latent variable for individuals in a certain sample.
+Unfortunately, the collection of this data is not always easy or even feasible.
+For example, there may be sensitivity of individuals towards some attitudinal questions, or we may not be able to reach the individuals to conduct additional surveys with them.
+This makes it difficult for researchers to collect necessary information that allows for controlling for unobserved confounders in models.
 
 \subsection{The deconfounder algorithm}
 \label{sec:deconfounder-algo}
-
-
 
 One recent method that has been proposed to deal with the problem of latent
 confounding without the need to collect additional data is the deconfounder
@@ -162,22 +182,6 @@ observed covariates. Please refer to Section \ref{sec:graph-construction} for ho
    \label{fig:qq-plot-method-3}
 \end{figure}
 
-% \begin{figure}
-% \centering
-% \begin{minipage}{.5\textwidth}
-%   \centering
-%   \includegraphics[width=.4\linewidth]{qq-plot-method-2.png}
-%   \captionof{figure}{QQ plot of true confounder against recovered confounder using all covariates}
-%   \label{fig:qq-plot-method-2}
-% \end{minipage}%
-% \begin{minipage}{.5\textwidth}
-%   \centering
-%   \includegraphics[width=.4\linewidth]{qq-plot-method-3.png}
-%   \captionof{figure}{QQ plot of true confounder against recovered confounder using only confounded covariates}
-%   \label{fig:qq-plot-method-3}
-% \end{minipage}
-% \end{figure}
-
 
 Additionally, and perhaps most importantly, the effectiveness of the
 deconfounder algorithm is very sensitive to small errors and misfits in the
@@ -205,6 +209,8 @@ substitute confounder to control for.
    \label{fig:confounder-sensitivity}
 \end{figure}
 
+\subsection{Alternatives}
+\label{sec:deconfounder-alternatives}
 Given the algorithmic difficulties with accurately inferring latent confounders,
 we encourage analysts to investigate and experiment with alternative methods of
 coping with unobserved confounding.
@@ -217,10 +223,3 @@ For related literature and guidance on bounding one's treatment effects in the p
 see \citet{manski_1990_nonparametric}, \citet{richardson_2014_nonparametric}, and \citet{geiger_2014_estimating}.
 The crux of this research is that even with unobserved confounding, we can derive credible bounds for our treatment effects.
 This enables us to avoid the difficulties of trying to provide accurate point estimates via accurate reconstruction of the latent confounders.
-
-% \begin{figure}
-% \centering
-% \includegraphics[width=0.5\textwidth]{exa}
-% \caption{Sensitivity of causal effect to random noise added to the confounder}
-% \label{fig:confounder-sensitivity}
-% \end{figure}
