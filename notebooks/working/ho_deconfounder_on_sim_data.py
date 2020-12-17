@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: ipynb,py
+#     formats: ipynb,py:light
 #     text_representation:
 #       extension: .py
 #       format_name: light
@@ -12,6 +12,8 @@
 #     language: python
 #     name: python3
 # ---
+
+# +
 # # Purpose
 #
 # The purpose of this notebook is to investigate the effectiveness of the deconfounder algorithm (Blei et. al, 2018) in adjusting for unobserved confounding. We use a simulated mode choice data where travel distance linearly confounds both travel time and travel cost. We then mask the travel distance data and treat it as an unobserved variable.
@@ -37,13 +39,11 @@ import pandas as pd
 import pylogit as cm
 from causalgraphicalmodels import CausalGraphicalModel
 from causalgraphicalmodels import StructuralCausalModel
-from factor_models import *
-from util import *
 
-# Third party modules
-# Local modules
-
+import factor_models as fm
+import util
 # -
+
 
 # ## Useful function
 
@@ -176,7 +176,9 @@ mnl_names["num_kids"] = ["Number of Kids in Household (Shared Ride 2 & 3+)"]
 # +
 ## Return the variables of each utility specification
 
-spec_dic = specifications(mnl_specification=mnl_specification, num_modes=8)
+spec_dic = util.specifications(
+    mnl_specification=mnl_specification, num_modes=8
+)
 spec_dic
 # -
 
@@ -208,7 +210,7 @@ for i in data["mode_id"].unique():
         / data_mode_i[X_columns].std()
     )
 
-    confounders, holdouts, holdoutmasks, holdoutrow = confounder_ppca(
+    confounders, holdouts, holdoutmasks, holdoutrow = fm.confounder_ppca(
         holdout_portion=0.2, X=X, latent_dim=latent_dim
     )
 
@@ -245,7 +247,7 @@ for i in data["mode_id"].unique():
         / data_mode_i[confounded_variables].std()
     )
 
-    confounders, holdouts, holdoutmasks, holdoutrow = confounder_ppca(
+    confounders, holdouts, holdoutmasks, holdoutrow = fm.confounder_ppca(
         holdout_portion=0.2, X=X, latent_dim=latent_dim
     )
 
@@ -258,14 +260,14 @@ for i in data["mode_id"].unique():
 # ## Adding confounders to original DF
 
 # +
-data["recovered_confounder_model_2"] = add_confounders_to_df(
+data["recovered_confounder_model_2"] = util.add_confounders_to_df(
     data,
     confounder_vectors=confounder_vectors,
     mode_ids=[1, 2, 3],
     suffix="_method_2",
 )
 
-data["recovered_confounder_model_3"] = add_confounders_to_df(
+data["recovered_confounder_model_3"] = util.add_confounders_to_df(
     data,
     confounder_vectors=confounder_vectors_2,
     mode_ids=[1, 2, 3],
@@ -310,8 +312,8 @@ y = data_da["recovered_confounder_model_3"].to_list()
 ax.scatter(np.sort(x), np.sort(y))
 ax.set_xlabel("True Confounder")
 ax.set_ylabel("Recovered Confounder using only confounder covariates")
-
 # -
+
 
 # ## True Model
 
@@ -476,10 +478,10 @@ mnl_model_causal_2.get_statsmodels_summary()
 
 # ## Compare estimates on travel time and cost
 
-results_as_html_true = create_comparison_tables(mnl_model)
-results_as_html_noncausal = create_comparison_tables(mnl_model_noncausal)
-results_as_html_method_2 = create_comparison_tables(mnl_model_causal_1)
-results_as_html_method_3 = create_comparison_tables(mnl_model_causal_2)
+results_as_html_true = util.create_comparison_tables(mnl_model)
+results_as_html_noncausal = util.create_comparison_tables(mnl_model_noncausal)
+results_as_html_method_2 = util.create_comparison_tables(mnl_model_causal_1)
+results_as_html_method_3 = util.create_comparison_tables(mnl_model_causal_2)
 
 
 # +
@@ -527,3 +529,4 @@ results_comparison.plot.bar(
     ax=ax,
 )
 # -
+
