@@ -185,12 +185,20 @@ observed covariates. Please refer to Section \ref{sec:graph-construction} for ho
 
 Additionally, and perhaps most importantly, the effectiveness of the
 deconfounder algorithm is very sensitive to small errors and misfits in the
-recovered confounder. Although method 3 returns a relatively good fit of the
+recovered confounder.
+This can be seen in three ways.
+First, although method 3 returns a relatively good fit of the
 true confounder (based on the QQ plot), the adjusted coefficients on travel
 time and cost do not exhibit any reduction in the bias resulting from
-omitting the true confounder. Moreover, the coefficients on the recovered
-confounder are highly insignificant. This raises questions about the
-usefulness of the deconfounder algorithm in practice. Limitations notwithstanding, it is
+omitting the true confounder.
+Second, the time and cost coefficient estimates
+recovered using the actual confounder values are outside of confidence intervals
+of the estimates using any of models 1, 2, or 3.
+The deconfounder-powered estimates are certain in their incorrectness.
+Third, the coefficients on the recovered confounder are highly insignificant.
+This raises questions about the usefulness of the deconfounder algorithm in practice.
+
+Limitations notwithstanding, it is
 important to point out that sensitivity to small errors and misfits is not only a by-product of the deconfounder
 algorithm itself. In fact, it is one of the built in characteristic of omitted
 variable bias, and perhaps more broadly, the problem of error-in-variables in
