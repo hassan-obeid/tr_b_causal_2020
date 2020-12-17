@@ -6,7 +6,7 @@ transportation demand related outcome. As an example, consider the proposals fro
 \begin{itemize}
  \item Based on input from the public, the Department of Transportation (DOT) of  is considering implementing a new parking policy.
  This proposed policy would change prices and restrict parking to discourage individuals from parking in the central business district.
- The DOT and its constituents believe that this policy would encourage people to use more active transportation modes (e.g., walking, biking, etc.).
+ The DOT and its constituents believe that this policy would encourage people to use more active transportation modes (e.g., walking, biking, etc.) and cause them to drive less.
  \item A certain DOT is considering constructing a streetcar (trolley, tram) line in a low/mid-income area in its jurisdiction.
  Citing examples from other cities and countries, the DOT claims that the new streetcar line will create more transit oriented developments and increase economic activity in the areas surrounding the proposed project.
  \end{itemize}
@@ -20,23 +20,19 @@ active transportation modes in the central business district and that constructi
 cause more transit oriented developments and economic activity.
 
 Policymakers base their analyses and conclusions on hypotheses or beliefs of how the world operates.
-In other words, the data analysis is based on a certain belief about the data generating process.
-However, policymakers often do not present their beliefs about such data generating process.
+In other words, the data analysis is based on specific beliefs about the data generating process.
+However, policymakers often do not present these beliefs in a clear and concise manner.
 As a result, these proposals maintain an obscure representation of how the policy or project will achieve their desired goals.
 
 DAGs allow one to clearly encode their assumptions about the data generating process and the problem at hand.
 Researchers and practitioners have made use of DAGs in fields ranging from medicine and epidemiology (\citet{shrier_platt_2008}, \citet{sung_2011}) to economics (\citet{white2011causal}) and have found them to be practical.
 
-%% TODO: maybe insert some references of where DAGs were used?.
+Likewise, DAGs could prove useful in addressing transportation policy questions.
+\citet{brathwaite_2018_causal} have proposed a framework illustrating how practitioners and researchers can use DAGs to answer such transportation modeling questions in a causal context.
+However, \citet{brathwaite_2018_causal} did not show an empirical application of their framework and how it results in different conclusions when compared to traditional modeling approaches.
 
-Likewise, as in the fields presented above, DAGs could prove useful in addressing transportation policy questions, similar to the ones presented above.
-\citet{brathwaite_2018_causal} have proposed a framework illustrating how practitioners and researchers can use DAGs
- to answer such transportation modeling questions in a causal context.
-However, \citet{brathwaite_2018_causal} did not show an empirical application of their framework and how it results
- in different conclusions when compared to traditional modeling approaches.
-
-In this section, we will present an example illustrating the importance of using DAGs in transportation demand modeling efforts.
-Specifically, we will illustrate how different assumptions about the data generating process result in different conclusions.
+In this section, we will present an example illustrating the importance of using DAGs in transportation demand modeling.
+Specifically, we will illustrate how different assumptions about the data generating process result in different conclusions, even while assuming the same outcome model.
 To make our point, we build upon \citet{brathwaite_2018_causal}.
 Here, we present an empirical exercise using a simplified transportation modeling problem.
 Before going any further, we note that this example is illustrative, and it does not reflect all complexities in a typical transportation choice modeling problem.
@@ -62,7 +58,7 @@ The dataset includes the following eight travel modes:
 \end{itemize}
 
 Readers interested in a more detailed description of the dataset can refer to \citet{brathwaite_asymmetric}.
-For purposes of this exercise, we consider the Multinomial Logit model defined in \citet{brathwaite_asymmetric} as the true outcome generating process.
+For purposes of this exercise, we consider the Multinomial Logit model defined in \citet{brathwaite_asymmetric} as the true outcome generating model.
 
 The systematic utility equations of the adopted multinomial logit model are specified as follows:
 \begin{equation*}
@@ -94,17 +90,19 @@ The variables were chosen based on the specification of the MNL model outlined b
 We can describe the variables as follows:
 
 \begin{itemize}
-  \item Total Travel Distance: is the total travel distance for individual i and mode j, for all available modes for individual i during trip t of tour l.
-  \item Total Travel Cost: is the travel cost in dollars for individual i and mode j, for all available modes for individual i during trip t of tour l.
-  \item Total travel time: is the travel time in minutes for individual i and mode j, for all available modes for individual i during trip t tour l.
-  \item Number of Autos: is the number of automobiles owned by individual i's household.
+  \item Total Travel Distance: the total travel distance for individual i and mode j, for all available modes for individual i during trip t of tour l.
+  \item Total Travel Cost: the travel cost in dollars for individual i and mode j, for all available modes for individual i during trip t of tour l.
+  \item Total travel time: the travel time in minutes for individual i and mode j, for all available modes for individual i during trip t tour l.
+  \item Number of Autos: the number of automobiles owned by individual i's household.
   \item Number of Licensed Drivers: is the number of licensed drives in individual i's household.
-  \item Number of Kids: is the number of kids in individual i's household.
-  \item Cross-bay trip: is a binary variable indicating whether the trip t in tour l for individual i is a cross-bay trip.
+  \item Number of Kids: the number of kids in individual i's household.
+  \item Cross-bay trip: a binary variable indicating whether the trip t in tour l for individual i is a cross-bay trip.
 \end{itemize}
 
 Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables are independent of each other for each utility equation.
-Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:BIKE_causal_2} illustrate the causal graphs with dependent explanatory variables.
+This DAG represent a scenario where an analyst only modifies variables in their dataset that are directly impacted by the proposed intervention, without considering the different relationships between these variables and other explanatory variables in the dataset.
+Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:BIKE_causal_2} illustrate the causal graphs with ``dependent'' explanatory variables.
+For our purposes, we assume that these DAGs represent the ``true'' data generating process, where several variables affect each other.
 Each of these graphs is based on the utility function of each mode in the multinomial logit model specified in \citet{brathwaite_asymmetric}.
 
 \begin{figure}
@@ -176,13 +174,13 @@ Using the setup described above, we conduct our simulation exercise as follows:
 \item We build a DAG (Figure \ref{fig:IND_GRAPH}) where we assume all explanatory variables are independent of each other.
 \item We simulate data based on this graph and generate outcomes based on a chosen ``true'' multinomial logit model.
 \item We predict outcomes based on the mode choice model.
-\item We apply the do-operator \citet{pearl_causality_2000} to our simulated data to reduce the travel distance for all individuals in the dataset. This emulates a company's decision to move its employees closer to campus.
+\item We apply the do-operator \citet{pearl_causality_2000} to our simulated data by reducing the travel distance for all individuals in the dataset. This emulates a company's decision to move its employees closer to campus.
 \item We predict new outcomes based on the mode choice model.\newline
 \item We build a different DAG (Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}) for each utility function based on assumptions of how explanatory variables interact and influence the outcome.
 \item We use the real dataset to estimate the relationships between different variables outlined in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
 \item We simulate data for variables without parent nodes in Figure Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2} and we use the estimated relationships from step 6 to simulate the remaining explanatory variables.
 \item We then use the choice model to simulate outcome choices based on data simulated for Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
-\item We apply the do-operator, as above, to reduce the travel distance for all individuals in the dataset and to emulate a company's decision to move its employees closer to campus.
+\item We apply the do-operator, as above, by reducing the travel distance for all individuals in the dataset and to emulate a company's decision to move its employees closer to campus.
 \item We use the estimated relationships for this causal graph to simulate all the explanatory variables in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}(namely the variables affected by travel distance).
 \item We use the estimated choice model to produce outcomes based on the simulated data from the previous step.
 
