@@ -25,7 +25,7 @@ However, policymakers often do not present these beliefs in a clear and concise 
 As a result, these proposals maintain an obscure representation of how the policy or project will achieve their desired goals.
 
 DAGs allow one to clearly encode their assumptions about the data generating process and the problem at hand.
-Researchers and practitioners have made use of DAGs in fields ranging from medicine and epidemiology (\citet{shrier_platt_2008}, \citet{sung_2011}) to economics (\citet{white2011causal}) and have found them to be practical.
+Researchers and practitioners have made use of DAGs in fields ranging from medicine and epidemiology (\citet{shrier_2008_reducing}, \citet{sung_2012_reducing}) to economics (\citet{white_2011_covariate}) and have found them to be practical.
 
 Likewise, DAGs could prove useful in addressing transportation policy questions.
 \citet{brathwaite_2018_causal} have proposed a framework illustrating how practitioners and researchers can use DAGs to answer such transportation modeling questions in a causal context.
@@ -216,9 +216,9 @@ In the case of mediating variables relative to the node the treatment intervenes
 In particular, we need to ensure that we appropriately use total effect estimators instead of natural direct effect estimators.
 Enacting a certain treatment shows its effect through the mediating variable.
 Therefore, when ``changing'' the value of the intervention node, we need to make sure the values and distributions of any downstream nodes reflect this change.
-For more information on mediating mechanisms, please refer to work by \citet{pearl_2012} and references therein.
+For more information on mediating mechanisms, please refer to work by \citet{pearl_2012_mediation} and references therein.
 In the case of confounding variables, we need to consider the treatment assignment mechanism when building choice models.
-As \citep{hahn2020} show, one way to account for the treatment assignment mechanism is to estimate the propensity score in our sample and adjust for that in our outcome model.
+As \citep{hahn_2020_bayesian} show, one way to account for the treatment assignment mechanism is to estimate the propensity score in our sample and adjust for that in our outcome model.
 
 In contrast to the example shown in this section, the data generating process might not be easily distinguishable in the majority of situations, mainly due to the complexity of the real world.
 Therefore, constructing a causal graph that represents the data generating process as much as possible is not an easy task.
