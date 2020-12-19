@@ -42,6 +42,7 @@ from causalgraphicalmodels import StructuralCausalModel
 
 import factor_models as fm
 import util
+
 # -
 
 
@@ -515,18 +516,52 @@ results_comparison["confounded variable"] = results_comparison.index
 # +
 fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(16, 9))
 
+results_comparison.columns = [
+    "True Coefficient",
+    "True Std. Error",
+    "Model 1 Coefficient",
+    "Model 1 Std. Error",
+    "Model 2 Coefficient",
+    "Model 2 Std. Error",
+    "Model 3 Coefficient",
+    "Model 3 Std. Error",
+    "confounded variable",
+]
+results_comparison["confounded variable"] = [
+    "Travel Time \n(Drive Alone)",
+    "Travel Time \n(SharedRide-2)",
+    "Travel Time \n(SharedRide-3+)",
+    "Travel Cost \n(Drive Alone)",
+    "Travel Cost \n(SharedRide-2)",
+    "Travel Cost \n(SharedRide-3+)",
+]
+
 results_comparison.plot.bar(
     x="confounded variable",
-    y=["coef_true", "coef_non_causal", "coef_method_2", "coef_method_3"],
+    y=[
+        "True Coefficient",
+        "Model 1 Coefficient",
+        "Model 2 Coefficient",
+        "Model 3 Coefficient",
+    ],
     yerr=results_comparison[
         [
-            "std err_true",
-            "std err_non_causal",
-            "std err_method_2",
-            "std err_method_3",
+            "True Std. Error",
+            "Model 1 Std. Error",
+            "Model 2 Std. Error",
+            "Model 3 Std. Error",
         ]
     ].T.values,
     ax=ax,
+    fontsize=14,
 )
-# -
 
+plt.xticks(rotation="0")
+
+ax.legend(loc="best", fontsize=14)
+
+fig.savefig(
+    "../../article/images/coefficient_bias_sec_7.png",
+    dpi=500,
+    bbox_inches="tight",
+)
