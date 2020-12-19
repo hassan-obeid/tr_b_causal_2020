@@ -439,3 +439,5 @@ results_comparison.plot.bar(x='confounded variable',
 plt.xticks(rotation='0')
 
 fig.savefig('../../article/images/coefficient_bias_sec_7.png')
+# -
+
