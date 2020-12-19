@@ -33,6 +33,7 @@ import os
 from collections import OrderedDict
 from functools import reduce
 
+import attr
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -290,14 +291,56 @@ data_da.plot.scatter("total_travel_distance", "recovered_confounder_model_3")
 # +
 # save plots for handbook of choice modeling
 
+@attr.s
+class RefCoords:
+    x: np.ndarray = attr.ib()
+    y: np.ndarray = attr.ib()
+
+
+def get_qq_ref_line(
+    xvals: np.ndarray, yvals: np.ndarray
+) -> RefCoords:
+    """
+    Returns the reference line (in format `xvals`, `yvals`) for the given
+    arguments un-normalized QQ-plot, based on the 25th and 75th percentiles.
+    """
+
+    percentile_25_x = np.percentile(xvals, 25)
+    percentile_75_x = np.percentile(xvals, 75)
+    percentile_25_y = np.percentile(yvals, 25)
+    percentile_75_y = np.percentile(yvals, 75)
+
+    slope = (
+        (percentile_75_y - percentile_25_y)
+        / (percentile_75_x - percentile_25_x)
+    )
+
+    min_x, max_x = np.min(xvals), np.max(xvals)
+    min_y = slope * (min_x - percentile_25_x) + percentile_25_y
+    max_y = slope * (max_x - percentile_75_x) + percentile_75_y
+
+    ref_xvals = np.ndarray([min_x, max_x])
+    ref_yvals = np.ndarray([min_y, max_y])
+    return RefCoords(x=ref_xvals, y=ref_yvals)
+
+
 fig, ax = plt.subplots(figsize=(12, 8))
 
 x = data_da["total_travel_distance"].to_list()
 y = data_da["recovered_confounder_model_2"].to_list()
 # Quantile-quantile plot
 ax.scatter(np.sort(x), np.sort(y))
-ax.set_xlabel("True Confounder")
-ax.set_ylabel("Recovered Confounder using all covariates")
+ref_line_values = get_qq_ref_line(x, y)
+ax.plot(
+    ref_line_values.x,
+    ref_line_values.y,
+    color="black",
+    linestyle="dashed",
+    label="Reference"
+)
+ax.set_xlabel("True Confounder", fontsize=13)
+ax.set_ylabel("Recovered Confounder using all covariates", fontsize=13)
+ax.legend(loc="best", fontsize=13)
 
 fig.save_fig("")
 
@@ -311,8 +354,19 @@ x = data_da["total_travel_distance"].to_list()
 y = data_da["recovered_confounder_model_3"].to_list()
 # Quantile-quantile plot
 ax.scatter(np.sort(x), np.sort(y))
-ax.set_xlabel("True Confounder")
-ax.set_ylabel("Recovered Confounder using only confounder covariates")
+ref_line_values = get_qq_ref_line(x, y)
+ax.plot(
+    ref_line_values.x,
+    ref_line_values.y,
+    color="black",
+    linestyle="dashed",
+    label="Reference"
+)
+ax.set_xlabel("True Confounder", fontsize=13)
+ax.set_ylabel(
+    "Recovered Confounder using only confounder covariates", fontsize=13
+)
+ax.legend(loc="best", fontsize=13)
 # -
 
 
@@ -553,12 +607,12 @@ results_comparison.plot.bar(
         ]
     ].T.values,
     ax=ax,
-    fontsize=14,
+    fontsize=13,
 )
 
 plt.xticks(rotation="0")
 
-ax.legend(loc="best", fontsize=14)
+ax.legend(loc="best", fontsize=13)
 
 fig.savefig(
     "../../article/images/coefficient_bias_sec_7.png",
