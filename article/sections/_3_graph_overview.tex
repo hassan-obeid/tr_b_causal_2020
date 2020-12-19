@@ -49,9 +49,12 @@ Figure \ref{fig:simple-graph-confounded} illustrates this assumption in DAG form
 Figure \ref{fig:simple-graph-confounded} shows an indirect connection between Z and Y that goes through U.
 Therefore, even if we condition on X, omitting U will yield biased results of the relationship between Z and Y, due to the variation in both Z and Y caused by U.
 The structural equations also show that the ignorability assumption of Z does not hold if we only control for X, and we risk obtaining biased estimates of the causal effect of Z on Y if we fail to account for U, sometimes referred to as a common cause.
-While the set of structural equations and the DAGs illustrate the same points in theory, one may rightfully argue that as the complexity of the problem increases, with many covariates available for the modeler to choose from, a graphical representation of the relationship between those covariates quickly becomes more intuitive and easier to follow. 
-More importantly, a graphical illustration of the modeler's assumptions reduces the toll of following those assumptions on the reader, which is key to avoiding the misuse of those models in real-world applications.
-This advantage of DAGs is of particular relevance in travel demand modeling applications, where the number of variables included in a typical model is large and highly intertwined. 
+While the set of structural equations and the DAGs illustrate the same points in theory, the clarity of structural equations scales poorly with a problem's complexity.
+As the number of covariates in one's causal system increases, a graphical representation of the relationship between those covariates quickly becomes more intuitive and easier to follow.
+More importantly, graphically illustrating our assumptions eases the communication of these assumptions to the reader.
+This communication is key to avoiding the misuse of our models in real-world applications.
+For example, consider travel demand modeling applications.
+Here, the communication advantage of DAGs is of particular relevance, as travel demand models typically involve many variables with complex interdependencies.
 
 Another benefit of DAGs is that they come with testable implications.
 Incorporating these tests in any causal analysis adds robustness and defensibility to one's study.
@@ -59,7 +62,7 @@ In section 5, we discuss these implications further, and we illustrate how to te
 
 Lastly, it is important to note that the graphical approach to causality focuses
 primarily on issues of identification of causal effects, as opposed to issues of estimation and inference. That is, given a
-DAG that encodes an analyst's knowledge and assumptions about the data generation process of the problem at hand, one can determine algorithmically whether a causal effect of interest can be identified. 
+DAG that encodes an analyst's knowledge and assumptions about the data generation process of the problem at hand, one can determine algorithmically whether a causal effect of interest can be identified.
 As such, we emphasize that DAGs are great tools
 for a modeler to encode their assumptions about a problem.
 Later on, we will use more familiar statistical tools to actually infer/estimate our causal effects of interest.
