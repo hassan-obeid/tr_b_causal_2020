@@ -38,11 +38,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pylogit as cm
+import seaborn as sbn
 from causalgraphicalmodels import CausalGraphicalModel
 from causalgraphicalmodels import StructuralCausalModel
 
 import factor_models as fm
 import util
+
+sbn.set_style("white")
 
 # -
 
@@ -341,8 +344,12 @@ ax.plot(
 ax.set_xlabel("True Confounder", fontsize=13)
 ax.set_ylabel("Recovered Confounder using all covariates", fontsize=13)
 ax.legend(loc="best", fontsize=13)
-
-fig.save_fig("")
+sbn.despine()
+fig.savefig(
+    "../../article/images/qq-plot-method-2.pdf",
+    dpi=500,
+    bbox_inches="tight",
+)
 
 
 # +
@@ -367,6 +374,12 @@ ax.set_ylabel(
     "Recovered Confounder using only confounder covariates", fontsize=13
 )
 ax.legend(loc="best", fontsize=13)
+sbn.despine()
+fig.savefig(
+    "../../article/images/qq-plot-method-3.pdf",
+    dpi=500,
+    bbox_inches="tight",
+)
 # -
 
 
@@ -613,6 +626,7 @@ results_comparison.plot.bar(
 plt.xticks(rotation="0")
 
 ax.legend(loc="best", fontsize=13)
+sbn.despine()
 
 fig.savefig(
     "../../article/images/coefficient_bias_sec_7.png",
