@@ -48,6 +48,7 @@ import factor_models as fm
 import util
 
 sbn.set_style("white")
+
 # -
 
 
@@ -295,13 +296,9 @@ data_da = data[data["mode_id"] == 1]
 data_da.plot.scatter("total_travel_distance", "recovered_confounder_model_2")
 
 data_da.plot.scatter("total_travel_distance", "recovered_confounder_model_3")
-# -
-
-# %pdb on
 
 # +
 # save plots for handbook of choice modeling
-
 
 @attr.s
 class RefCoords:
@@ -309,7 +306,9 @@ class RefCoords:
     y: np.ndarray = attr.ib()
 
 
-def get_qq_ref_line(xvals: np.ndarray, yvals: np.ndarray) -> RefCoords:
+def get_qq_ref_line(
+    xvals: np.ndarray, yvals: np.ndarray
+) -> RefCoords:
     """
     Returns the reference line (in format `xvals`, `yvals`) for the given
     arguments un-normalized QQ-plot, based on the 25th and 75th percentiles.
@@ -320,8 +319,9 @@ def get_qq_ref_line(xvals: np.ndarray, yvals: np.ndarray) -> RefCoords:
     percentile_25_y = np.percentile(yvals, 25)
     percentile_75_y = np.percentile(yvals, 75)
 
-    slope = (percentile_75_y - percentile_25_y) / (
-        percentile_75_x - percentile_25_x
+    slope = (
+        (percentile_75_y - percentile_25_y)
+        / (percentile_75_x - percentile_25_x)
     )
 
     min_x, max_x = np.min(xvals), np.max(xvals)
@@ -644,5 +644,3 @@ fig.savefig(
     dpi=500,
     bbox_inches="tight",
 )
-# -
-
