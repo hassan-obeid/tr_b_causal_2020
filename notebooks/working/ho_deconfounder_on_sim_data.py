@@ -48,7 +48,6 @@ import factor_models as fm
 import util
 
 sbn.set_style("white")
-
 # -
 
 
@@ -61,9 +60,9 @@ file_name = "simulated_long_format_bike_data.csv"
 
 SEED = 1197
 np.random.seed(SEED)
-tf.random.set_seed(SEED)
+tf.random.set_random_seed(SEED)
 
-data = pd.read_csv(PATH + file_name)
+data = pd.read_csv(PATH / file_name)
 data = data.drop("Unnamed: 0", axis=1)
 data.columns
 
@@ -296,9 +295,13 @@ data_da = data[data["mode_id"] == 1]
 data_da.plot.scatter("total_travel_distance", "recovered_confounder_model_2")
 
 data_da.plot.scatter("total_travel_distance", "recovered_confounder_model_3")
+# -
+
+# %pdb on
 
 # +
 # save plots for handbook of choice modeling
+
 
 @attr.s
 class RefCoords:
@@ -306,9 +309,7 @@ class RefCoords:
     y: np.ndarray = attr.ib()
 
 
-def get_qq_ref_line(
-    xvals: np.ndarray, yvals: np.ndarray
-) -> RefCoords:
+def get_qq_ref_line(xvals: np.ndarray, yvals: np.ndarray) -> RefCoords:
     """
     Returns the reference line (in format `xvals`, `yvals`) for the given
     arguments un-normalized QQ-plot, based on the 25th and 75th percentiles.
@@ -319,17 +320,16 @@ def get_qq_ref_line(
     percentile_25_y = np.percentile(yvals, 25)
     percentile_75_y = np.percentile(yvals, 75)
 
-    slope = (
-        (percentile_75_y - percentile_25_y)
-        / (percentile_75_x - percentile_25_x)
+    slope = (percentile_75_y - percentile_25_y) / (
+        percentile_75_x - percentile_25_x
     )
 
     min_x, max_x = np.min(xvals), np.max(xvals)
     min_y = slope * (min_x - percentile_25_x) + percentile_25_y
     max_y = slope * (max_x - percentile_75_x) + percentile_75_y
 
-    ref_xvals = np.ndarray([min_x, max_x])
-    ref_yvals = np.ndarray([min_y, max_y])
+    ref_xvals = np.array([min_x, max_x])
+    ref_yvals = np.array([min_y, max_y])
     return RefCoords(x=ref_xvals, y=ref_yvals)
 
 
@@ -345,7 +345,7 @@ ax.plot(
     ref_line_values.y,
     color="black",
     linestyle="dashed",
-    label="Reference"
+    label="Reference",
 )
 ax.set_xlabel("True Confounder", fontsize=13)
 ax.set_ylabel("Recovered Confounder using all covariates", fontsize=13)
@@ -373,7 +373,7 @@ ax.plot(
     ref_line_values.y,
     color="black",
     linestyle="dashed",
-    label="Reference"
+    label="Reference",
 )
 ax.set_xlabel("True Confounder", fontsize=13)
 ax.set_ylabel(
@@ -609,10 +609,15 @@ results_comparison["confounded variable"] = [
     "Travel Cost \n(SharedRide-3+)",
 ]
 
+x_column = "confounded variable"
+
+results_comparison.rename(
+    columns={"True Coefficient": "True Confounder Coefficient"}, inplace=True
+)
 results_comparison.plot.bar(
-    x="confounded variable",
+    x=x_column,
     y=[
-        "True Coefficient",
+        "True Confounder Coefficient",
         "Model 1 Coefficient",
         "Model 2 Coefficient",
         "Model 3 Coefficient",
@@ -630,7 +635,7 @@ results_comparison.plot.bar(
 )
 
 plt.xticks(rotation="0")
-
+ax.set_xlabel(x_column, fontsize=13)
 ax.legend(loc="best", fontsize=13)
 sbn.despine()
 
@@ -639,3 +644,5 @@ fig.savefig(
     dpi=500,
     bbox_inches="tight",
 )
+# -
+
