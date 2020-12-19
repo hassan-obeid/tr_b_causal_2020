@@ -48,10 +48,13 @@ jobs:
           make install
 
       # Step 4: Run the project's workflow
+      # Note we've left out the step for running Hassan's notebooks because
+      # calculation of the hessian for the 3 choice models in
+      # ho_deconfounder_on_sim_data.py is too memory intensive (needs ~23 GB).
+      # python notebooks/final/7.0-mab-selection-on-observables-final.py
       - name: Run project workflow
         shell: bash -l {0}
         run: |
           python notebooks/final/7.0-mab-selection-on-observables-final.py
-          python notebooks/working/ho_deconfounder_on_sim_data.py
           make imagedir
           python article/compile_article.py
