@@ -154,10 +154,7 @@ We estimate three models:
 We compare both the coefficient estimates on travel time and cost from
 each of those three models to the true estimates used in the simulation.
 We also compare the distribution of the recovered substitute confounder under each of
-models 2 and 3 to the true confounder. The main findings of this exercise are the following:
-
-
-Using the true variables believed to be confounded (i.e. method 3 where only
+models 2 and 3 to the true confounder. The main findings of this exercise are the following: using the true variables believed to be confounded (i.e. method 3 where only
 travel time and cost are used to recover the confounder) leads to a better
 recovery of the true confounder. Figure \ref{fig:qq-plot-method-2} and \ref{fig:qq-plot-method-3} show a QQ plot of the true
 and recovered confounders under models 2 and 3 respectively. Looking at those
@@ -166,6 +163,15 @@ confounder under method 3 is closer to that of the true confounder than method
 2. This suggests that it may be better to run the deconfounder algorithm based
 on a hypothesized causal graph, rather than just running it on all the
 observed covariates. Please refer to Section \ref{sec:graph-construction} for how to build plausible causal graphs.
+
+
+
+\begin{figure}
+   \centering
+   \includegraphics[width=0.5\textwidth]{coefficient_bias_sec_7.png}
+   \caption{Bias in coefficient estimates on the confounded variables}
+   \label{fig:bias-plot}
+\end{figure}
 
 
 \begin{figure}
@@ -186,17 +192,19 @@ observed covariates. Please refer to Section \ref{sec:graph-construction} for ho
 Additionally, and perhaps most importantly, the effectiveness of the
 deconfounder algorithm is very sensitive to small errors and misfits in the
 recovered confounder.
-This can be seen in three ways.
+Figure \ref{fig:bias-plot} shows the estimated coefficients in each of models 1, 2, and 3, as well as the true coefficients on travel time and travel cost, our confounded variables of interest.
 First, although method 3 returns a relatively good fit of the
 true confounder (based on the QQ plot), the adjusted coefficients on travel
-time and cost do not exhibit any reduction in the bias resulting from
+time and cost do not exhibit any significant reduction in the bias resulting from
 omitting the true confounder.
-Second, the time and cost coefficient estimates
-recovered using the actual confounder values are outside of confidence intervals
-of the estimates using any of models 1, 2, or 3.
-The deconfounder-powered estimates are certain in their incorrectness.
-Third, the coefficients on the recovered confounder are highly insignificant.
+Additionally, the confidence intervals on those coefficients do not cover the mean value of the true coefficients; the deconfounder-powered estimates are certain in their incorrectness.
 This raises questions about the usefulness of the deconfounder algorithm in practice.
+
+% Second, the time and cost coefficient estimates
+% recovered using the actual confounder values are outside of confidence intervals
+% of the estimates using any of models 1, 2, or 3.
+% The deconfounder-powered estimates are certain in their incorrectness.
+% Third, the coefficients on the recovered confounder are highly insignificant.
 
 Limitations notwithstanding, it is
 important to point out that sensitivity to small errors and misfits is not only a by-product of the deconfounder
