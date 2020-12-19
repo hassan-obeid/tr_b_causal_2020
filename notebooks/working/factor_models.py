@@ -1,28 +1,10 @@
 # +
-import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from causalgraphicalmodels import CausalGraphicalModel, StructuralCausalModel
-import pylogit
-from collections import OrderedDict
-import pylogit as cm
-from functools import reduce
-import statsmodels.api as sm
-import statsmodels.formula.api as smf
-from math import ceil
-
-from IPython import display
-import seaborn as sns
-
-import numpy as np
 import numpy.random as npr
-import pandas as pd
 import tensorflow as tf
 import tensorflow_probability as tfp
-import statsmodels.api as sm
-
 from tensorflow_probability import edward2 as ed
-from sklearn.datasets import load_breast_cancer
 from pandas.plotting import scatter_matrix
 from scipy import sparse, stats
 from sklearn.model_selection import train_test_split
@@ -35,24 +17,10 @@ matplotlib.rcParams.update({'font.sans-serif' : 'Helvetica',
                             'xtick.labelsize' : 6,
                             'ytick.labelsize' : 6,
                             'axes.titlesize' : 10})
-import matplotlib.pyplot as plt
-
-import seaborn as sns
-color_names = ["windows blue",
-               "amber",
-               "crimson",
-               "faded green",
-               "dusty purple",
-               "greyish"]
-colors = sns.xkcd_palette(color_names)
-sns.set(style="white", palette=sns.xkcd_palette(color_names), color_codes = False)
 
 
-from factor_models import *
 
 
-import os
-os.listdir('.')
 
 """
 References: Blei et al 2018 (https://github.com/blei-lab/deconfounder_tutorial) 
