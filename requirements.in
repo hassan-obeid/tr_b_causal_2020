@@ -8,6 +8,7 @@ flake8
 flit
 jupyterlab
 jupytext
+lxml
 papermill
 pip-tools
 pipreqs
