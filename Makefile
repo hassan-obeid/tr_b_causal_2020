@@ -35,11 +35,18 @@ imagedir : plots graphs
 	cp reports/figures/latent-drivers-vs-num-autos.pdf article/images/latent-drivers-vs-num-autos.pdf
 	cp reports/figures/discovery-example-graph.pdf article/images/discovery-example-graph.pdf
 
-## article     : Compile the handbook chapter
+## article     : Compile the handbook chapter.
 .PHONY : article
 article : imagedir
 	python article/compile_article.py
 
+## project     : Execute all files for the project and compile it.
+.PHONY : project
+project : article
+	python notebooks/final/7.0-mab-selection-on-observables-final.py
+	python notebooks/working/ho_deconfounder_on_sim_data.py
+
+## help        : Documentation for make targets.
 .PHONY : help
 help : Makefile
 	@sed -n 's/^##//p' $<
