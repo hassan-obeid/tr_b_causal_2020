@@ -38,6 +38,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pylogit as cm
+import pyprojroot
 import seaborn as sbn
 from causalgraphicalmodels import CausalGraphicalModel
 from causalgraphicalmodels import StructuralCausalModel
@@ -54,7 +55,7 @@ sbn.set_style("white")
 
 # ## Analysis
 
-PATH = "../../data/raw/"
+PATH = pyprojroot.here("data/raw/")
 file_name = "simulated_long_format_bike_data.csv"
 
 data = pd.read_csv(PATH + file_name)
@@ -346,7 +347,7 @@ ax.set_ylabel("Recovered Confounder using all covariates", fontsize=13)
 ax.legend(loc="best", fontsize=13)
 sbn.despine()
 fig.savefig(
-    "../../article/images/qq-plot-method-2.pdf",
+    str(pyprojroot.here("article/images/qq-plot-method-2.pdf")),
     dpi=500,
     bbox_inches="tight",
 )
@@ -376,7 +377,7 @@ ax.set_ylabel(
 ax.legend(loc="best", fontsize=13)
 sbn.despine()
 fig.savefig(
-    "../../article/images/qq-plot-method-3.pdf",
+    str(pyprojroot.here("article/images/qq-plot-method-3.pdf")),
     dpi=500,
     bbox_inches="tight",
 )
@@ -629,7 +630,7 @@ ax.legend(loc="best", fontsize=13)
 sbn.despine()
 
 fig.savefig(
-    "../../article/images/coefficient_bias_sec_7.png",
+    str(pyprojroot.here("article/images/coefficient_bias_sec_7.png")),
     dpi=500,
     bbox_inches="tight",
 )
