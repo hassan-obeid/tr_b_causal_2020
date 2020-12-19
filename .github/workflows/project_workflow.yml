@@ -51,6 +51,7 @@ jobs:
       - name: Run project workflow
         shell: bash -l {0}
         run: |
+          python notebooks/final/7.0-mab-selection-on-observables-final.py
+          python notebook/working/ho_deconfounder_on_sim_data.py
           make imagedir
           python article/compile_article.py
-          python notebooks/final/7.0-mab-selection-on-observables-final.py
