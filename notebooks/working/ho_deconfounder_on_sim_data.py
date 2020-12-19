@@ -40,6 +40,7 @@ import pandas as pd
 import pylogit as cm
 import pyprojroot
 import seaborn as sbn
+import tensorflow as tf
 from causalgraphicalmodels import CausalGraphicalModel
 from causalgraphicalmodels import StructuralCausalModel
 
@@ -57,6 +58,10 @@ sbn.set_style("white")
 
 PATH = pyprojroot.here("data/raw/")
 file_name = "simulated_long_format_bike_data.csv"
+
+SEED = 1197
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
 
 data = pd.read_csv(PATH + file_name)
 data = data.drop("Unnamed: 0", axis=1)
