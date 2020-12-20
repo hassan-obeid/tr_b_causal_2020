@@ -13,14 +13,14 @@
 #     name: python3
 # ---
 
-# # Goal 
+# # Goal
 # The goal of this notebook is to investigate, using simulations, the effectiveness and usefuleness of the deconfounder approach to causal inference with latent confounding in recovering the true causal effects of variables. This approach was proposed by Blei et al. in 2018 (incert reference here)
 #
-# The flow of this notebook is as follows: 
-# - Simulate observations based on a confounded structure, where one variable confounds all but one of the other variables. 
-# - Simulate a continuous outcome based on a linear model, where we know the true causal effect of each variable. 
-# - Ommit the confounder from the dataframe, and attempt to recover it using factor models (PCA). 
-# - Check the recovered (substitute) confounder against the true confounder using scatter plots. 
+# The flow of this notebook is as follows:
+# - Simulate observations based on a confounded structure, where one variable confounds all but one of the other variables.
+# - Simulate a continuous outcome based on a linear model, where we know the true causal effect of each variable.
+# - Ommit the confounder from the dataframe, and attempt to recover it using factor models (PCA).
+# - Check the recovered (substitute) confounder against the true confounder using scatter plots.
 # - Re-estimate the outcome regression model, controlling for the substitute confounder instead of the true confounder, and compare the estimated coefficients on the other confounded variables against the ground truth
 
 # +
@@ -52,7 +52,7 @@ from sklearn.datasets import load_breast_cancer
 from pandas.plotting import scatter_matrix
 from scipy import sparse, stats
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression 
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score, roc_curve
 
 import matplotlib
@@ -82,22 +82,26 @@ os.listdir('.')
 # -
 
 # ## Specify the assumed causal graph of the data generation process
-# The causal graph below represents the true data generating process that we'll be using for simulation. Notice how the confounder affects variables a, b, d, e, and f, as well as the outcome y. 
+# The causal graph below represents the true data generating process that we'll be using for simulation. Notice how the confounder affects variables a, b, d, e, and f, as well as the outcome y.
 
 # +
+SEED = 10
+np.random.seed(SEED)
+tf.random.set_random_seed(SEED)
+
 data_generation_graph = CausalGraphicalModel(
     nodes=['a', 'b', 'c', 'confounder',
           'd',  'e', 'f', 'y'],
     edges=[
-        ("a", "y"), 
-        ("b", "y"), 
-        ("c", "y"), 
-        ("d", "y"), 
-        ("e", "y"), 
-        ("f", "y"), 
-        ("confounder", "y"), 
-        
-        
+        ("a", "y"),
+        ("b", "y"),
+        ("c", "y"),
+        ("d", "y"),
+        ("e", "y"),
+        ("f", "y"),
+        ("confounder", "y"),
+
+
         ("confounder", "a"),
         ("confounder", "b"),
 #         ("confounder", "c"),
@@ -106,10 +110,10 @@ data_generation_graph = CausalGraphicalModel(
         ("confounder", "f"),
 
 
-        
-        
-#         ("confounder", "y"), 
-#         ("confounder", "y"), 
+
+
+#         ("confounder", "y"),
+#         ("confounder", "y"),
     ]
 )
 
@@ -117,13 +121,13 @@ data_generation_graph = CausalGraphicalModel(
 data_generation_graph.draw()
 # -
 
-# ## Specifiy the paramteric relationship between the covariates. 
+# ## Specifiy the paramteric relationship between the covariates.
 #
 # This is where we specify the relationship between the variables in the Causal graph above. Specifically, we have an equation that relates each two connected nodes on the graph (so an equation for each edge).
 #
-# In the outcome model for y, the coefficient on each of the variables a, b, c, d, e and f represents it's $true$ causal effect. The coefficient on the confounder, however, does not represent its causal effect, because it has 5 decendents that are part of the outcome model. 
+# In the outcome model for y, the coefficient on each of the variables a, b, c, d, e and f represents it's $true$ causal effect. The coefficient on the confounder, however, does not represent its causal effect, because it has 5 decendents that are part of the outcome model.
 #
-# We are not ultimately interested in the causal effect of the confounder for this exercice, and instead are interested in the coefficients on each of its descendents. 
+# We are not ultimately interested in the causal effect of the confounder for this exercice, and instead are interested in the coefficients on each of its descendents.
 
 # +
 sample_size = 10000
@@ -133,7 +137,7 @@ confounder = np.random.normal(loc=20, scale = 10, size = sample_size)
 # +
 a = .3*confounder + np.random.normal(loc=10,scale=3,size=sample_size)
 b = -1*confounder + np.random.normal(loc=6,scale=3,size=sample_size)
-c = np.random.normal(loc=15,scale=3,size=sample_size) # + .5*confounder 
+c = np.random.normal(loc=15,scale=3,size=sample_size) # + .5*confounder
 d = .8*confounder + np.random.normal(loc=-10,scale=3,size=sample_size)
 e = .5*confounder + np.random.normal(loc=8,scale=3,size=sample_size)
 f= -.3*confounder + np.random.normal(loc=-12,scale=3,size=sample_size)
@@ -189,19 +193,19 @@ results_df_partial
 
 # ## Factor analysis: Is there evidence of latent factors?
 #
-# How do we go about checking for whether a confounder exists (in this example, we know that a confounder exist since we defined the data generating process, but in the real world, the data generating process is more often than now unknown to the analyst). 
+# How do we go about checking for whether a confounder exists (in this example, we know that a confounder exist since we defined the data generating process, but in the real world, the data generating process is more often than now unknown to the analyst).
 #
-# There are a multitude of tests and ways to go about answering this question. A simple, off-the-shelf check is the bartlett sphericity test, which essentially just compares the correlation matrix of our covariates to the identity matrix. This test is used to check whether our covariate space can be reduced to a lower-dimensional space of factors that explain the variation in our data. 
+# There are a multitude of tests and ways to go about answering this question. A simple, off-the-shelf check is the bartlett sphericity test, which essentially just compares the correlation matrix of our covariates to the identity matrix. This test is used to check whether our covariate space can be reduced to a lower-dimensional space of factors that explain the variation in our data.
 #
 # ### Tim, this would be a good place to add your other tests. I'm thinking of the bullet points below:
-# - We can hypothesize a causal graph, and run conditional independence tests. 
-# - Prior predictive checks? 
+# - We can hypothesize a causal graph, and run conditional independence tests.
+# - Prior predictive checks?
 
 # ## Fitting a factor model using 3 PCA variations.
 #
-# We fit three variations of PCA. This is not necessary indeed, but we wanted to see the robustness of our final estimates and their sensitivities to different variations of fitting the factor models. 
+# We fit three variations of PCA. This is not necessary indeed, but we wanted to see the robustness of our final estimates and their sensitivities to different variations of fitting the factor models.
 #
-# Notice that we use all of our X variables to fit the factor model (including variable c), consistent with the recommendation in Blei et al. 
+# Notice that we use all of our X variables to fit the factor model (including variable c), consistent with the recommendation in Blei et al.
 #
 #
 
@@ -233,15 +237,15 @@ holdout_gen_util = []
 
 for j in range(len(holdouts_req)):
     holdout_gen = np.zeros((n_rep,*(holdouts_req[j].shape)))
-    
+
     for i in range(n_rep):
         w_sample = npr.normal(confounder_req[j][0], confounder_req[j][1])
         z_sample = npr.normal(confounder_req[j][2], confounder_req[j][3])
-        
+
         data_dim_temp = holdouts_req[j].shape[1]
         latent_dim_temp = confounder_req[j][2].shape[1]
         num_datapoints_temp = holdouts_req[j].shape[0]
-        
+
         with ed.interception(replace_latents(w_sample, z_sample)):
             generate = ppca_model(
                 data_dim=data_dim_temp, latent_dim=latent_dim_temp,
@@ -252,10 +256,10 @@ for j in range(len(holdouts_req)):
 
         # look only at the heldout entries
         holdout_gen[i] = np.multiply(x_generated, holdoutmasks)
-        
+
     holdout_gen_util.append(holdout_gen)
-    
-    
+
+
 n_eval = 100 # we draw samples from the inferred Z and W
 obs_ll_per_zi_per_mode = []
 rep_ll_per_zi_per_mode = []
@@ -279,10 +283,10 @@ for mode in range(len(holdouts_req)):
     obs_ll_per_zi_per_mode.append(obs_ll_per_zi)
     rep_ll_per_zi_per_mode.append(rep_ll_per_zi)
 
-    
+
 pval_mode = []
 for mode in range(len(holdouts_req)):
-    pvals = np.array([np.mean(rep_ll_per_zi_per_mode[mode][:,i] < obs_ll_per_zi_per_mode[mode][i]) 
+    pvals = np.array([np.mean(rep_ll_per_zi_per_mode[mode][:,i] < obs_ll_per_zi_per_mode[mode][i])
                       for i in range(holdouts_req[mode].shape[0])])
     holdout_subjects = np.unique(holdoutrow)
     overall_pval = np.mean(pvals[holdout_subjects])
@@ -294,13 +298,11 @@ print("P-value, average: ", pval_mode)
 display.display(sns.kdeplot(pvals[holdout_subjects]))
 
 # +
-np.random.seed(10)
-
 num_subjects = 5
 fig, axes = plt.subplots(nrows = num_subjects, ncols=1, figsize = (10,20))
 
 for i, ax in zip(range(num_subjects), axes.flat):
-    subject_no = npr.choice(holdout_subjects) 
+    subject_no = npr.choice(holdout_subjects)
     sns.kdeplot(rep_ll_per_zi[:,subject_no], ax=ax).set_title("Predictive check for subject "+str(subject_no))
     ax.axvline(x=obs_ll_per_zi[subject_no], linestyle='--')
 
@@ -318,9 +320,9 @@ plt.axvline(x=overall_ll_obs, linestyle='--')
 overall_ll_est.shape
 
 # ## Visualizing the substitute confounder against the true confounder
-# Since we do know the values for the absolute confouder, we can actually in this case plot the recovered values against the true ones in a scatter plot and compare the fit. This is not possible in a real problem however, and we'll have to use the tests outlined in the previous sections (posterior predictive checks, etc.). 
+# Since we do know the values for the absolute confouder, we can actually in this case plot the recovered values against the true ones in a scatter plot and compare the fit. This is not possible in a real problem however, and we'll have to use the tests outlined in the previous sections (posterior predictive checks, etc.).
 #
-# We can see that the confounder values recovered are highly correlated with the true confounder, suggesting that we $successfully$ recovered the confounder. 
+# We can see that the confounder values recovered are highly correlated with the true confounder, suggesting that we $successfully$ recovered the confounder.
 
 # +
 df['confounder_PCA_SKLEARN'] = principalComponents[:,0]
@@ -334,7 +336,7 @@ df.plot(kind='scatter', x = 'confounder_PPCA', y = 'confounder')
 
 # ## Re-estimating regression with and without confounder
 #
-# Notice that the simulation was designed such that ommitting the confounder will flip the sign of the coefficient on $b$. When we add the confounder, estimated using any PCA variation, the coefficient on $b$ remains flipped. 
+# Notice that the simulation was designed such that ommitting the confounder will flip the sign of the coefficient on $b$. When we add the confounder, estimated using any PCA variation, the coefficient on $b$ remains flipped.
 #
 # In addition, the bias on the coefficient estimates on our variables of interest $a, b, d, e, and f$ did not necessarily decrease in a significant way. This is surprising, since the confounder we recovered does actually correlate very well with the true confounder. The next section explores the sensitivity of those coefficients to random noise added to the true confounder.
 
@@ -370,14 +372,14 @@ results_df_deconf
 
 # ## Adding random noise to the confounder and seeing how it affects the coefficients on the other variables
 #
-# Here, we simply create a new variable, which is the original confounder plus small random noise, and substitute the true confounder with the newly created confounder in the original regression to evaluate the sensitivity of the bias of our coefficients of interest to small random deviations from the true confounder. 
+# Here, we simply create a new variable, which is the original confounder plus small random noise, and substitute the true confounder with the newly created confounder in the original regression to evaluate the sensitivity of the bias of our coefficients of interest to small random deviations from the true confounder.
 #
-# We find that even with very small values of the random noise (mean of 0 and standard deviation of 0.2), we still get biased estimates of our effects of interest, especially on $b$. 
+# We find that even with very small values of the random noise (mean of 0 and standard deviation of 0.2), we still get biased estimates of our effects of interest, especially on $b$.
 
 # +
 """
 We add random noise from a normal distribution of mean zero. We control the spread of this distribution
-using the parameter 'coef', which represents the standard deviation of this normal distribution of the noise. 
+using the parameter 'coef', which represents the standard deviation of this normal distribution of the noise.
 """
 
 coef=0.2
@@ -432,6 +434,3 @@ fig.savefig(
     dpi=500,
     bbox_inches="tight"
 )
-# -
-
-
