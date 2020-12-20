@@ -216,7 +216,7 @@ IND_VARIABLES = [
 # TODO: verify whether all variables are needed
 # for each alternative
 ALT_VARYING_VARIABLES = {
-    u"total_travel_time": dict(
+    "total_travel_time": dict(
         [
             (1, "total_travel_time_drive_alone"),
             (2, "total_travel_time_shared_2"),
@@ -226,7 +226,7 @@ ALT_VARYING_VARIABLES = {
             (6, "total_travel_time_wtd"),
         ]
     ),
-    u"total_travel_cost": dict(
+    "total_travel_cost": dict(
         [
             (1, "total_travel_cost_drive_alone"),
             (2, "total_travel_cost_shared_2"),
@@ -236,7 +236,7 @@ ALT_VARYING_VARIABLES = {
             (6, "total_travel_cost_wtd"),
         ]
     ),
-    u"total_travel_distance": dict(
+    "total_travel_distance": dict(
         [
             (1, "total_travel_distance_drive_alone"),
             (2, "total_travel_distance_shared_2"),
@@ -559,7 +559,7 @@ causal_effects = pd.DataFrame(
 )
 
 for sim_size, number in zip(simulation_sizes, sim_number):
-    print("Simulation number", number, "is in progress...")
+    print(f"Simulation number {number} of {NUM_SIMULATIONS} is in progress...")
     print("Simulation size is", sim_size)
     print("------------------------------------------")
     print("Simulating data...")
