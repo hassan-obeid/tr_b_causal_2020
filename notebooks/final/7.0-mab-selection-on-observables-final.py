@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: ipynb,md
+#     formats: ipynb,py:light,md
 #     text_representation:
 #       extension: .py
 #       format_name: light
@@ -12,6 +12,8 @@
 #     language: python
 #     name: python3
 # ---
+
+# +
 # # Selection on Observables
 # ## Purpose
 # The purpose of this notebook is to illustrate an example of the workflow outlined in [Brathwaite and Walker (2017)](https://arxiv.org/abs/1706.07502). This simple application aims at highlighting the importance of causal structure in estimating causal effects of interest reflecting changes resulting from policy proposals. The basic idea is to show that when we control for intermediate variables of some variable of interest in a causal graph, we never recover the true causal parameter on the variable of interest.
@@ -49,14 +51,15 @@ from causal2020.observables.graphs import SHARED_3P_UTILITY
 from causal2020.observables.graphs import WALK_UTILITY
 from causal2020.observables.graphs import WTD_UTILITY
 from causal2020.observables.graphs import WTW_UTILITY
+from causal2020.observables.utils import is_notebook
 from causalgraphicalmodels import CausalGraphicalModel
 from checkrs.utils import simulate_choice_vector
 from pyprojroot import here
 
 # Third party libraries
 # Local libraries
-
 # -
+
 
 # # Set Notebook Parameters
 
@@ -77,6 +80,12 @@ SIMULATE_NODES_WIDE = open(
 SIMULATE_PERTURB = open(
     here("src/causal2020/observables/simperturb.py")
 ).read()
+
+# Path to storage location for plots with results
+TRUE_VS_NAIVE_PLOT_PATH = here("article/images/histogram_selection_on_obs.pdf")
+TRUE_VS_ESTIMATED_PLOT_PATH = here(
+    "reports/figures/historgram_true_vs_estimated_effects.pdf"
+)
 
 # +
 # Alternative id column from long format data
@@ -207,7 +216,7 @@ IND_VARIABLES = [
 # TODO: verify whether all variables are needed
 # for each alternative
 ALT_VARYING_VARIABLES = {
-    u"total_travel_time": dict(
+    "total_travel_time": dict(
         [
             (1, "total_travel_time_drive_alone"),
             (2, "total_travel_time_shared_2"),
@@ -217,7 +226,7 @@ ALT_VARYING_VARIABLES = {
             (6, "total_travel_time_wtd"),
         ]
     ),
-    u"total_travel_cost": dict(
+    "total_travel_cost": dict(
         [
             (1, "total_travel_cost_drive_alone"),
             (2, "total_travel_cost_shared_2"),
@@ -227,7 +236,7 @@ ALT_VARYING_VARIABLES = {
             (6, "total_travel_cost_wtd"),
         ]
     ),
-    u"total_travel_distance": dict(
+    "total_travel_distance": dict(
         [
             (1, "total_travel_distance_drive_alone"),
             (2, "total_travel_distance_shared_2"),
@@ -313,8 +322,11 @@ MNL_NAMES["total_travel_distance"] = [
     "Travel Distance, units:mi (Bike)",
 ]
 
-MNL_SPECIFICATION["cross_bay"] = [[2, 3]]
-MNL_NAMES["cross_bay"] = ["Cross-Bay Tour (Shared Ride 2 & 3+)"]
+MNL_SPECIFICATION["cross_bay"] = [1, [2, 3]]
+MNL_NAMES["cross_bay"] = [
+    "Cross-Bay Tour (Drive Alone)",
+    "Cross-Bay Tour (Shared Ride 2 & 3+)",
+]
 
 MNL_SPECIFICATION["household_size"] = [[2, 3]]
 MNL_NAMES["household_size"] = ["Household Size (Shared Ride 2 & 3+)"]
@@ -533,8 +545,11 @@ fitted_reg_wtd = reg.fit_alternative_regression(
 
 # ### Simulation Parameters
 
-simulation_sizes = np.random.randint(low=3000, high=4000, size=30)
-sim_number = np.arange(1, 31)
+# In general, we want 200 simulations, but if we're using this file as a python
+# script in a CI, use 30 simulations so the CI terminates quickly.
+NUM_SIMULATIONS = 200 if is_notebook() else 30
+simulation_sizes = np.random.randint(low=3000, high=4000, size=NUM_SIMULATIONS)
+sim_number = np.arange(1, 1 + NUM_SIMULATIONS)
 models_dictionary = defaultdict(dict)
 causal_effect_dictionary = {}
 perturb = 0.8
@@ -544,7 +559,7 @@ causal_effects = pd.DataFrame(
 )
 
 for sim_size, number in zip(simulation_sizes, sim_number):
-    print("Simulation number", number, "is in progress...")
+    print(f"Simulation number {number} of {NUM_SIMULATIONS} is in progress...")
     print("Simulation size is", sim_size)
     print("------------------------------------------")
     print("Simulating data...")
@@ -728,55 +743,80 @@ for number in sim_number:
 # We plot the distribution of the causal effects to show the bias in predicted outcomes based on the assumed causal graph.
 
 # +
+sns.set_style("white")
+
+FONTSIZE = 13
+HIST_ALPHA = 0.7
+
 plt.figure(figsize=(20, 10))
 sns.distplot(
-    causal_effects.true_effect, label="True Effect", kde=False, color="#005AB5"
+    causal_effects.true_effect,
+    label="True Effect",
+    kde=False,
+    color="#005AB5",
+    hist_kws={"alpha": HIST_ALPHA},
 )
 sns.distplot(
     causal_effects.naive_effect,
     label="Naive Effect",
     kde=False,
     color="#DC3220",
+    hist_kws={"alpha": HIST_ALPHA},
 )
 plt.title(
     "True Effect vs. Naive Effect",
-    fontdict={"fontsize": 14, "fontweight": "bold"},
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.ylabel(
     "Frequency",
     rotation=90,
     labelpad=5,
-    fontdict={"fontsize": 12, "fontweight": "bold"},
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.xlabel(
-    "Average Causal Effect", fontdict={"fontsize": 12, "fontweight": "bold"}
+    "Average Causal Effect",
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
-plt.legend(prop={"size": 14})
+plt.legend(prop={"size": FONTSIZE})
+sns.despine()
+plt.savefig(TRUE_VS_NAIVE_PLOT_PATH, dpi=500, bbox_inches="tight")
+if is_notebook():
+    plt.show()
 
 plt.figure(figsize=(20, 10))
 sns.distplot(
-    causal_effects.true_effect, label="True Effect", kde=False, color="#005AB5"
+    causal_effects.true_effect,
+    label="True Effect",
+    kde=False,
+    color="#005AB5",
+    hist_kws={"alpha": HIST_ALPHA},
 )
 sns.distplot(
     causal_effects.estimated_effect,
     label="Estimated Effect",
     kde=False,
     color="#994F00",
+    hist_kws={"alpha": HIST_ALPHA},
 )
 plt.title(
     "True Effect vs. Estimated Effect",
-    fontdict={"fontsize": 14, "fontweight": "bold"},
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.ylabel(
     "Frequency",
     rotation=90,
     labelpad=5,
-    fontdict={"fontsize": 12, "fontweight": "bold"},
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.xlabel(
-    "Average Causal Effect", fontdict={"fontsize": 12, "fontweight": "bold"}
+    "Average Causal Effect",
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
-plt.legend(prop={"size": 14})
+plt.legend(prop={"size": FONTSIZE})
+sns.despine()
+plt.savefig(TRUE_VS_ESTIMATED_PLOT_PATH, dpi=500, bbox_inches="tight")
+if is_notebook():
+    plt.show()
 # -
 
 # # Conclusion

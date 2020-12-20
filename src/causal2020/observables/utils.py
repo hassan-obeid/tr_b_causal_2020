@@ -103,3 +103,20 @@ def find_outliers(data, threshold=3.5):
     z_score = abs_dev / data_mad
     z_score[data == m] = 0
     return z_score < threshold
+
+
+def is_notebook() -> bool:
+    """
+    Determine if code is being executed from a Jupyter notebook.
+    Taken from https://stackoverflow.com/a/39662359
+    """
+    try:
+        shell = get_ipython().__class__.__name__
+        if shell == "ZMQInteractiveShell":
+            return True  # Jupyter notebook or qtconsole
+        elif shell == "TerminalInteractiveShell":
+            return False  # Terminal running IPython
+        else:
+            return False  # Other type (?)
+    except NameError:
+        return False  # Probably standard Python interpreter
