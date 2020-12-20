@@ -79,6 +79,12 @@ SIMULATE_PERTURB = open(
     here("src/causal2020/observables/simperturb.py")
 ).read()
 
+# Path to storage location for plots with results
+TRUE_VS_NAIVE_PLOT_PATH = here("article/images/histogram_selection_on_obs.pdf")
+TRUE_VS_ESTIMATED_PLOT_PATH = here(
+    "reports/figures/historgram_true_vs_estimated_effects.pdf"
+)
+
 # +
 # Alternative id column from long format data
 ALT_ID_COL = "mode_id"
@@ -734,55 +740,80 @@ for number in sim_number:
 # We plot the distribution of the causal effects to show the bias in predicted outcomes based on the assumed causal graph.
 
 # +
+sns.set_style("white")
+
+FONTSIZE = 13
+HIST_ALPHA = 0.7
+
 plt.figure(figsize=(20, 10))
 sns.distplot(
-    causal_effects.true_effect, label="True Effect", kde=False, color="#005AB5"
+    causal_effects.true_effect,
+    label="True Effect",
+    kde=False,
+    color="#005AB5",
+    hist_kws={'alpha': HIST_ALPHA},
 )
 sns.distplot(
     causal_effects.naive_effect,
     label="Naive Effect",
     kde=False,
     color="#DC3220",
+    hist_kws={'alpha': HIST_ALPHA},
 )
 plt.title(
     "True Effect vs. Naive Effect",
-    fontdict={"fontsize": 14, "fontweight": "bold"},
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.ylabel(
     "Frequency",
     rotation=90,
     labelpad=5,
-    fontdict={"fontsize": 12, "fontweight": "bold"},
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.xlabel(
-    "Average Causal Effect", fontdict={"fontsize": 12, "fontweight": "bold"}
+    "Average Causal Effect",
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
-plt.legend(prop={"size": 14})
+plt.legend(prop={"size": FONTSIZE})
+sns.despine()
+plt.savefig(TRUE_VS_NAIVE_PLOT_PATH, dpi=500, bbox_inches="tight")
+if is_notebook():
+    plt.show()
 
 plt.figure(figsize=(20, 10))
 sns.distplot(
-    causal_effects.true_effect, label="True Effect", kde=False, color="#005AB5"
+    causal_effects.true_effect,
+    label="True Effect",
+    kde=False,
+    color="#005AB5",
+    hist_kws={'alpha': HIST_ALPHA},
 )
 sns.distplot(
     causal_effects.estimated_effect,
     label="Estimated Effect",
     kde=False,
     color="#994F00",
+    hist_kws={'alpha': HIST_ALPHA}
 )
 plt.title(
     "True Effect vs. Estimated Effect",
-    fontdict={"fontsize": 14, "fontweight": "bold"},
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.ylabel(
     "Frequency",
     rotation=90,
     labelpad=5,
-    fontdict={"fontsize": 12, "fontweight": "bold"},
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.xlabel(
-    "Average Causal Effect", fontdict={"fontsize": 12, "fontweight": "bold"}
+    "Average Causal Effect",
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"}
 )
-plt.legend(prop={"size": 14})
+plt.legend(prop={"size": FONTSIZE})
+sns.despine()
+plt.savefig(TRUE_VS_ESTIMATED_PLOT_PATH, dpi=500, bbox_inches="tight")
+if is_notebook():
+    plt.show()
 # -
 
 # # Conclusion
