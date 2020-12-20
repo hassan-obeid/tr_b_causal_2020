@@ -22,11 +22,10 @@ import tensorflow_probability as tfp
 import statsmodels.api as sm
 
 from tensorflow_probability import edward2 as ed
-from sklearn.datasets import load_breast_cancer
 from pandas.plotting import scatter_matrix
 from scipy import sparse, stats
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression 
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix, classification_report, roc_auc_score, roc_curve
 
 import matplotlib
@@ -47,14 +46,8 @@ color_names = ["windows blue",
 colors = sns.xkcd_palette(color_names)
 sns.set(style="white", palette=sns.xkcd_palette(color_names), color_codes = False)
 
-
-from factor_models import *
-
-
-
-
 """
-References: Blei et al 2018 (https://github.com/blei-lab/deconfounder_tutorial) 
+References: Blei et al 2018 (https://github.com/blei-lab/deconfounder_tutorial)
 """
 
 
@@ -64,13 +57,13 @@ def confounder_ppca(X, latent_dim, holdout_portion):
     Function to estimate a substitute confounder using PPCA.
     Adopted from the deconfounder_tutorial.ipynb
     https://github.com/blei-lab/deconfounder_tutorial
-    
+
     Args:
         X: A numpy array or pandas dataframe of the original covariates
            dimension: (n x m)
         latent_dim: The number of latend factors to be estimated
         holdout_portion: Fraction of the data to be used as holdout
-        
+
     Returns:
         w_mean_inferred: (latent_dim x n) matrix
         w_std_inferred: (latent_dim x n) matrix
@@ -78,16 +71,16 @@ def confounder_ppca(X, latent_dim, holdout_portion):
                          dimension (n x latend_dim)
         z_std_inferred: std of substitute confounder
                          dimension (n x latend_dim)
-                         
+
         x_vad: (nxm) matrix with the heldout entries only and 0 elsewhere
         holdout_mask: sparse (nxm) matrix with 1 on the heldout entries and
                       0 elsewhere, s.t x_vad = X*holdout_mask
         holdout_rows: row indeces of the heldout entries
-    
-    
+
+
     """
-    
-    
+
+
     num_datapoints, data_dim = X.shape
 
     holdout_portion = holdout_portion
@@ -109,7 +102,7 @@ def confounder_ppca(X, latent_dim, holdout_portion):
                     scale=tf.ones([latent_dim, data_dim]),
                     name="w")  # parameter
         z = ed.Normal(loc=tf.zeros([num_datapoints, latent_dim]),
-                    scale=tf.ones([num_datapoints, latent_dim]), 
+                    scale=tf.ones([num_datapoints, latent_dim]),
                     name="z")  # local latent variable / substitute confounder
         x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
                     scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),
@@ -205,7 +198,7 @@ def confounder_ppca(X, latent_dim, holdout_portion):
             return rv_constructor(*rv_args, **rv_kwargs)
 
         return interceptor
-    
+
     return [w_mean_inferred, w_stddv_inferred, z_mean_inferred, z_stddv_inferred], x_vad, holdout_mask, holdout_row
 
 
@@ -214,7 +207,7 @@ def ppca_model(data_dim, latent_dim, num_datapoints, stddv_datapoints, holdout_m
                 scale=tf.ones([latent_dim, data_dim]),
                 name="w")  # parameter
     z = ed.Normal(loc=tf.zeros([num_datapoints, latent_dim]),
-                scale=tf.ones([num_datapoints, latent_dim]), 
+                scale=tf.ones([num_datapoints, latent_dim]),
                 name="z")  # local latent variable / substitute confounder
     x = ed.Normal(loc=tf.multiply(tf.matmul(z, w), 1-holdout_mask),
                 scale=stddv_datapoints * tf.ones([num_datapoints, data_dim]),

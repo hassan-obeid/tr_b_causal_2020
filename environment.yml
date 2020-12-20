@@ -11,6 +11,8 @@ dependencies:
   - pip
   # Ensure that pip-tools is installed somehow
   - pip-tools=5.4.0
+  # Ensure we can make tables
+  - lxml=4.6.2
   # Above, list any packages that MUST be installed via conda
   - pip:
     # Install all pip-installable packages
