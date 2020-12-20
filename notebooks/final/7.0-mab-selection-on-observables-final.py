@@ -1,7 +1,7 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: ipynb,md
+#     formats: ipynb,py:light,md
 #     text_representation:
 #       extension: .py
 #       format_name: light
@@ -12,6 +12,8 @@
 #     language: python
 #     name: python3
 # ---
+
+# +
 # # Selection on Observables
 # ## Purpose
 # The purpose of this notebook is to illustrate an example of the workflow outlined in [Brathwaite and Walker (2017)](https://arxiv.org/abs/1706.07502). This simple application aims at highlighting the importance of causal structure in estimating causal effects of interest reflecting changes resulting from policy proposals. The basic idea is to show that when we control for intermediate variables of some variable of interest in a causal graph, we never recover the true causal parameter on the variable of interest.
@@ -56,8 +58,8 @@ from pyprojroot import here
 
 # Third party libraries
 # Local libraries
-
 # -
+
 
 # # Set Notebook Parameters
 
@@ -322,7 +324,8 @@ MNL_NAMES["total_travel_distance"] = [
 
 MNL_SPECIFICATION["cross_bay"] = [1, [2, 3]]
 MNL_NAMES["cross_bay"] = [
-    "Cross-Bay Tour (Drive Alone)", "Cross-Bay Tour (Shared Ride 2 & 3+)",
+    "Cross-Bay Tour (Drive Alone)",
+    "Cross-Bay Tour (Shared Ride 2 & 3+)",
 ]
 
 MNL_SPECIFICATION["household_size"] = [[2, 3]]
@@ -751,14 +754,14 @@ sns.distplot(
     label="True Effect",
     kde=False,
     color="#005AB5",
-    hist_kws={'alpha': HIST_ALPHA},
+    hist_kws={"alpha": HIST_ALPHA},
 )
 sns.distplot(
     causal_effects.naive_effect,
     label="Naive Effect",
     kde=False,
     color="#DC3220",
-    hist_kws={'alpha': HIST_ALPHA},
+    hist_kws={"alpha": HIST_ALPHA},
 )
 plt.title(
     "True Effect vs. Naive Effect",
@@ -786,14 +789,14 @@ sns.distplot(
     label="True Effect",
     kde=False,
     color="#005AB5",
-    hist_kws={'alpha': HIST_ALPHA},
+    hist_kws={"alpha": HIST_ALPHA},
 )
 sns.distplot(
     causal_effects.estimated_effect,
     label="Estimated Effect",
     kde=False,
     color="#994F00",
-    hist_kws={'alpha': HIST_ALPHA}
+    hist_kws={"alpha": HIST_ALPHA},
 )
 plt.title(
     "True Effect vs. Estimated Effect",
@@ -807,7 +810,7 @@ plt.ylabel(
 )
 plt.xlabel(
     "Average Causal Effect",
-    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"}
+    fontdict={"fontsize": FONTSIZE, "fontweight": "bold"},
 )
 plt.legend(prop={"size": FONTSIZE})
 sns.despine()
