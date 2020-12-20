@@ -12,6 +12,7 @@ NODES_IND = [
     "Total Travel Distance",
     "Total Travel Time",
     "Total Travel Cost",
+    "Cross Bay Trip",
     "Number of Licensed Drivers",
     "Number of Autos",
     "Utility (Drive Alone)",
@@ -21,6 +22,7 @@ EDGES_IND = [
     ("Total Travel Distance", "Utility (Drive Alone)"),
     ("Total Travel Time", "Utility (Drive Alone)"),
     ("Total Travel Cost", "Utility (Drive Alone)"),
+    ("Cross Bay Trip", "Utility (Drive Alone)"),
     ("Number of Licensed Drivers", "Utility (Drive Alone)"),
     ("Number of Autos", "Utility (Drive Alone)"),
 ]
@@ -32,6 +34,7 @@ NODES_DA = [
     "Total Travel Distance",
     "Total Travel Time",
     "Total Travel Cost",
+    "Cross Bay Trip",
     "Number of Autos",
     "Number of Licensed Drivers",
     "Utility (Drive Alone)",
@@ -43,6 +46,7 @@ EDGES_DA = [
     ("Total Travel Distance", "Utility (Drive Alone)"),
     ("Total Travel Time", "Utility (Drive Alone)"),
     ("Total Travel Cost", "Utility (Drive Alone)"),
+    ("Cross Bay Trip", "Utility (Drive Alone)"),
     ("Number of Autos", "Utility (Drive Alone)"),
     ("Number of Licensed Drivers", "Utility (Drive Alone)"),
 ]

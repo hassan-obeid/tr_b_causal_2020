@@ -49,6 +49,7 @@ from causal2020.observables.graphs import SHARED_3P_UTILITY
 from causal2020.observables.graphs import WALK_UTILITY
 from causal2020.observables.graphs import WTD_UTILITY
 from causal2020.observables.graphs import WTW_UTILITY
+from causal2020.observables.utils import is_notebook
 from causalgraphicalmodels import CausalGraphicalModel
 from checkrs.utils import simulate_choice_vector
 from pyprojroot import here
@@ -313,8 +314,10 @@ MNL_NAMES["total_travel_distance"] = [
     "Travel Distance, units:mi (Bike)",
 ]
 
-MNL_SPECIFICATION["cross_bay"] = [[2, 3]]
-MNL_NAMES["cross_bay"] = ["Cross-Bay Tour (Shared Ride 2 & 3+)"]
+MNL_SPECIFICATION["cross_bay"] = [1, [2, 3]]
+MNL_NAMES["cross_bay"] = [
+    "Cross-Bay Tour (Drive Alone)", "Cross-Bay Tour (Shared Ride 2 & 3+)",
+]
 
 MNL_SPECIFICATION["household_size"] = [[2, 3]]
 MNL_NAMES["household_size"] = ["Household Size (Shared Ride 2 & 3+)"]
@@ -533,8 +536,11 @@ fitted_reg_wtd = reg.fit_alternative_regression(
 
 # ### Simulation Parameters
 
-simulation_sizes = np.random.randint(low=3000, high=4000, size=30)
-sim_number = np.arange(1, 31)
+# In general, we want 200 simulations, but if we're using this file as a python
+# script in a CI, use 30 simulations so the CI terminates quickly.
+NUM_SIMULATIONS = 200 if is_notebook() else 30
+simulation_sizes = np.random.randint(low=3000, high=4000, size=NUM_SIMULATIONS)
+sim_number = np.arange(1, 1 + NUM_SIMULATIONS)
 models_dictionary = defaultdict(dict)
 causal_effect_dictionary = {}
 perturb = 0.8
