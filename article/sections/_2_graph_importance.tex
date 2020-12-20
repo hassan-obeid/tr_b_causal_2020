@@ -171,22 +171,29 @@ Each of these graphs is based on the utility function of each mode in the multin
 Using the setup described above, we conduct our simulation exercise as follows:
 \begin{enumerate}
 
-\item We build a DAG (Figure \ref{fig:IND_GRAPH}) where we assume all explanatory variables are independent of each other.
-\item We simulate data based on this graph and generate outcomes based on a chosen ``true'' multinomial logit model.
-\item We predict outcomes based on the mode choice model.
-\item We apply the do-operator \citet{pearl_causality_2000} to our simulated data by reducing the travel distance for all individuals in the dataset. This emulates a company's decision to move its employees closer to campus.
-\item We predict new outcomes based on the mode choice model.\newline
-\item We build a different DAG (Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}) for each utility function based on assumptions of how explanatory variables interact and influence the outcome.
-\item We use the real dataset to estimate the relationships between different variables outlined in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
-\item We simulate data for variables without parent nodes in Figure Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2} and we use the estimated relationships from step 6 to simulate the remaining explanatory variables.
-\item We then use the choice model to simulate outcome choices based on data simulated for Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
-\item We apply the do-operator, as above, by reducing the travel distance for all individuals in the dataset and to emulate a company's decision to move its employees closer to campus.
-\item We use the estimated relationships for this causal graph to simulate all the explanatory variables in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}(namely the variables affected by travel distance).
-\item We use the estimated choice model to produce outcomes based on the simulated data from the previous step.
+   \item We build a DAG (Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}) for each utility function based on assumptions of how explanatory variables interact and influence the outcome.
+   \item We simulate data for variables without parent nodes in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
+   These simulations are based on these variables' marginal distributions in our dataset.
+   \item We use the real dataset to estimate the relationships between observed variables in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
+      \label{itm:sim-dag-estimation}
+   \item We use these estimated relationships to simulate the remaining explanatory variables.
+   \item We simulate outcomes based on a chosen ``true'' multinomial logit model specification and parameters.
+   \item We estimate the specified choice model using the simulated dataset.
+   \item We use the estimated model to predict baseline probabilities using the initial covariates.
+   \item We apply the do-operator \citet{pearl_causality_2000} to our simulated data by reducing the travel distance for all individuals in the dataset.
+   This emulates a company's decision to move its employees closer to campus.
+   \item We predict new probabilities based on the estimated choice model and reduced travel distances.
+   These new probabilities are used to estimate the treatment effect under the incorrect causal graph in Figure \ref{fig:IND_GRAPH}.
+   \item We simulate new travel time and travel cost values for our commuters based on the estimated relationships from Step \ref{itm:sim-dag-estimation}.
+   This completes the effect of applying the intervention, as with a total treatment effect estimator.
+   \item We predict probabilities based on the based on the estimated choice model and altered time, distance, and cost variables.
+   These probabilities are used to estimate the treatment effect under the correct causal graph in Figure \ref{fig:DA_causal_2}.
+   \item We predict probabilities based on the chosen parameters used to generate the outcomes and based on the altered time, distance, and cost variables.
+   These probabilities are used to calculate a ``true'' treatment effect.
+   \item We repeat this process multiple times, storing the three causal effect estimates on each iteration.
 
 \end{enumerate}
 
-We repeat this simulation process several times and recover the choice probability of all modes for all individuals.
 For our purposes, we focus on car-centric modes (Drive alone, Shared ride with another person,
 and a shared ride with two or more individuals).
 We compute the difference in mode choice probabilities from different models based on the two constructed DAGs.
