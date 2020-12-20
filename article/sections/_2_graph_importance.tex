@@ -174,7 +174,7 @@ Using the setup described above, we conduct our simulation exercise as follows:
    \item We build a DAG (Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}) for each utility function based on assumptions of how explanatory variables interact and influence the outcome.
    \item We simulate data for variables without parent nodes in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
    These simulations are based on these variables' marginal distributions in our dataset.
-   \item We use the real dataset to estimate the relationships between different variables outlined in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
+   \item We use the real dataset to estimate the relationships between observed variables in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
       \label{itm:sim-dag-estimation}
    \item We use these estimated relationships to simulate the remaining explanatory variables.
    \item We simulate outcomes based on a chosen ``true'' multinomial logit model specification and parameters.
@@ -183,18 +183,17 @@ Using the setup described above, we conduct our simulation exercise as follows:
    \item We apply the do-operator \citet{pearl_causality_2000} to our simulated data by reducing the travel distance for all individuals in the dataset.
    This emulates a company's decision to move its employees closer to campus.
    \item We predict new probabilities based on the estimated choice model and reduced travel distances.
-   These new probabilities are used to calculate the estimated treatment effect under the incorrect causal graph in Figure \ref{fig:IND_GRAPH}.
+   These new probabilities are used to estimate the treatment effect under the incorrect causal graph in Figure \ref{fig:IND_GRAPH}.
    \item We simulate new travel time and travel cost values for our commuters based on the estimated relationships from Step \ref{itm:sim-dag-estimation}.
-   This effects the full result of applying the intervention, as with a total treatment effect estimator.
+   This completes the effect of applying the intervention, as with a total treatment effect estimator.
    \item We predict probabilities based on the based on the estimated choice model and altered time, distance, and cost variables.
-   These probabilities are used to calculate the estimated treatment effect under the correct causal graph in Figure \ref{fig:DA_causal_2}.
+   These probabilities are used to estimate the treatment effect under the correct causal graph in Figure \ref{fig:DA_causal_2}.
    \item We predict probabilities based on the chosen parameters used to generate the outcomes and based on the altered time, distance, and cost variables.
    These probabilities are used to calculate a ``true'' treatment effect.
    \item We repeat this process multiple times, storing the three causal effect estimates on each iteration.
 
 \end{enumerate}
 
-We repeat this simulation process several times and recover the choice probability of all modes for all individuals.
 For our purposes, we focus on car-centric modes (Drive alone, Shared ride with another person,
 and a shared ride with two or more individuals).
 We compute the difference in mode choice probabilities from different models based on the two constructed DAGs.
