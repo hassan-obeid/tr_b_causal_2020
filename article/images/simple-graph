@@ -1,8 +1,0 @@
-digraph {
-	Z [label=Z shape=ellipse]
-	Y [label=Y shape=ellipse]
-	X [label=X shape=ellipse]
-	X -> Z
-	X -> Y
-	Z -> Y
-}
