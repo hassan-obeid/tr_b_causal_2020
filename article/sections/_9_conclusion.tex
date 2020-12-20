@@ -1,55 +1,51 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-Travel demand problems aim at forecasting the impact of proposed project and policies. These problems are causal in nature. 
-To date, choice modelers have not routinized the use of causal inference techniques in the field of travel demand modeling.
+Travel demand problems aim at forecasting the impact of proposed project and policies.
+These problems are causal in nature.
+To date, choice modellers have not routinized the use of causal inference techniques in the field of travel demand modeling.
 \citet{brathwaite_2018_causal} documented this disconnect and presented an initial framework for addressing it.
 
 In this chapter, we built upon their framework.
-We highlighted the importance of using causaal graphs and causal inference methods in transportation demand modeling efforts and in choice modeling more generally.
+We highlighted the importance of using causal graphs and causal inference methods in transportation demand modeling efforts and in choice modeling more generally.
 
-We presented a numerical exercise aiming to show the importance of the data generating process in the estimation 
-of treatment effects from external interventions. 
-We showed, using the same outcome model, that different assumptions about the data generating processes could 
-lead to bias in estimates of the effect of interest.
+We then presented a ``selection on observables'' simulation showing the importance of the data generating process in the estimation of treatment effects from external interventions.
+We showed, using correctly specified outcome models, that incorrect assumptions about one's data generating processes could lead to bias in estimates of one's treatment effect of interest.
 
-Data generating processes can be illustrated effectively using DAGs as shown by \citet{pearl_1995_causal}.
-We have shown that DAGs help researchers and practitioners represent their assumptions about the data generating process. 
-
-We presented a process for constructing causal graphs based on their expert opinion of the problem at hand. 
-We also presented methods for testing the implications encoded in a proposed causal graph. 
+To help avoid such pitfalls, we then discussed how data generating processes can be illustrated effectively using causal graphs as shown by \citet{pearl_1995_causal}.
+We went beyond using an existing graphs, and we presented a process for constructing causal graphs based on expert opinion of the problem at hand.
+To ensure these opinions are empirically supported, we also presented methods for testing the implications encoded in a proposed causal graph.
 These implications might be either observed, latent, or both.
 
-Beyond testing the implications and assumptions encoded in a causal graph, we describe why causal discovery is important in discerning relationships between one's covariates.
-We briefly presented several causal discovery algorithms used by
-researchers in different fields. 
-Following the review, we demonstrated the use of one of these causal discovery algorithms, the PC algorithm, on a simple example. 
-We showed that causal discovery methods help us test independence within our data, 
-develop a clearer picture about the uncertainty within the variables shown in the causal graph, 
-and expand the level and amount of tests performed on our data when compared to the tests implicated 
-by the structure of the researcher's proposed causal graph.
+Going further, we reviewed causal discovery methods for algorithmically creating causal graphs from data as opposed to depending solely on expert-opinion graphs.
+We described how causal discovery is helpful for discerning relationships between one's covariates.
+Then, we briefly presented several causal discovery algorithms used by researchers in different fields.
+Following the review, we demonstrated one of these causal discovery algorithms, the PC algorithm, on a simple example.
+We showed that causal discovery methods help us test independencies within our data,
+resolve ambiguities in our graphs,
+and characterize the uncertainty in our graph inferences and treatment effect estimates.
 
-We presented examples of latent confounding within the transportation demand modeling field and highlight 
-some examples of current methods aiming at addressing problems resulting from confounding in certain situations.
+Moving from inference to usage of causal graphs, we presented examples of latent confounding within the transportation demand modeling field.
+First, we highlighted some current methods for addressing latent confounding such as ICLV models.
+Noting their restrictive requirements for supplemental indicator data,
+we then presented a recently developed algorithm by \citet{wang_2019_blessings}
+that was designed to work wit just one's choice data.
+We used this model on the same example illustrated in the selection on observables simulations,
+and we highlight instances where it leads to a better recovery of a confounder in one's causal graph.
+We then show that while the deconfounder algorithm might be a promising step in the right direction,
+it still has some notable deficiencies.
+Specifically, we show that the deconfounder algorithm can be impractically sensitive to small errors in one's inferences.
 
-We present a recently developed algorithm by \citet{wang_2019_blessings} aiming to address the problems not 
-addressed by previously developed methods dealing with confounding. We use this model on the same example illustrated in
-the selection on observables simulations and highlight the instances where it leads to a better recovery of 
-a confounder in one's causal graph. 
+Given these issues, we then point out alternatives to the deconfounder that one may wish to investigate when dealing with latent confounding in one's analyses.
+Further, we review and give reference to the literature on the array of downstream issues to be dealt with in order to maximize the benefit from one's causal inference activities.
 
-We then show that while the deconfounder algorithm might be a promising step in the right direction, 
-it still has some notable deficiencies. More specifically, we show that the deconfounder algorithm shows 
-to be sensitive to small errors in one's data.
-
-Overall, we hope that this chapter has provided enough preliminary evidence to convince demand modelers of the importance of using causal diagrams in their analyses.
-Using DAGs will allow modelers to clearly outline their assumptions about their own problems and will allow them to track their analysis workflow more easily.
-Hopefully our chapter has provided choice modelers with preliminary knowledge (and additional references) on how to:
+Overall, we hope that this chapter has provided enough evidence to convince choice modellers of the importance of using causal graphs in their analyses.
+Ideally, readers will be motivated to step outside of their traditional analytical frameworks and use techniques presented across the causal inference literature.
+In doing so, we hope our chapter provides the necessary introductory knowledge (and additional references) on how to:
 \begin{itemize}
-    \item Construct causal graphs that fit their specific contexts
-    \item Test the robustness and credibility of produced causal graphs against available data
-    \item Make use of causal discovery techniques to further assess the robustness of the assumptions built into our causal graphs and make new causal graphs that are based on the data at hand
-    \item Characterize and assess one's options for dealing with latent variables in one's causal graph
+    \item construct causal graphs that fit their specific contexts,
+    \item test the robustness and credibility of produced causal graphs against available data,
+    \item make use of causal discovery techniques, and
+    \item characterize and assess one's options for dealing with latent variables in one's causal graph.
 \end{itemize}
-
-Ideally, this chapter has motivated demand modelers to step outside of their traditional analytical frameworks and use techniques presented across the causal inference literature.
-Moreso, we hope that this introduction will push demand modelers to adopt, contribute to, and advance the causal inference literature.
+If not already apparent, we think incorporating causal graphs into our work will help all of us more clearly outline our assumptions and conduct more credible analyses.
