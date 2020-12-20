@@ -12,14 +12,14 @@ We highlighted the importance of using causal graphs and causal inference method
 We then presented a ``selection on observables'' simulation showing the importance of the data generating process in the estimation of treatment effects from external interventions.
 We showed, using correctly specified outcome models, that incorrect assumptions about one's data generating processes could lead to bias in estimates of one's treatment effect of interest.
 
-To help avoid such pitfalls, we then discussed how data generating processes can be illustrated effectively using causal graphs as shown by \citet{pearl_1995_causal}.
-We went beyond using an existing graphs, and we presented a process for constructing causal graphs based on expert opinion of the problem at hand.
+To help avoid such pitfalls, we then discussed how using causal graphs effectively illustrate one's assumed, data generating process.
+We went beyond sole reliance on existing graphs, and we presented a process for constructing causal graphs based on expert opinion of the problem at hand.
 To ensure these opinions are empirically supported, we also presented methods for testing the implications encoded in a proposed causal graph.
-These implications might be either observed or latent, and implications of both kind may be present at once.
+These implications might be either observed or latent, and implications of both kinds may be present at once.
 
 Going further, we reviewed causal discovery methods for algorithmically creating causal graphs from data as opposed to depending solely on expert-opinion graphs.
 We described how causal discovery is helpful for discerning relationships between one's covariates.
-Then, we briefly presented several causal discovery algorithms used by researchers in different fields.
+Then, we briefly presented several causal discovery algorithms.
 Following the review, we demonstrated one of these causal discovery algorithms, the PC algorithm, on a simple example.
 We showed that causal discovery methods help us test independencies within our data,
 resolve ambiguities in our graphs,
@@ -29,7 +29,7 @@ Moving from inference to usage of causal graphs, we presented examples of latent
 First, we highlighted some current methods for addressing latent confounding such as ICLV models.
 Noting their restrictive requirements for supplemental indicator data,
 we then presented a recently developed algorithm by \citet{wang_2019_blessings}
-that was designed to work with just one's choice data.
+that works with just one's choice data.
 We used this model on the same example illustrated in the selection on observables simulations,
 and we highlighted instances where it aided recovery of a confounder in one's causal graph.
 We then showed that while the deconfounder algorithm might be a promising step in the right direction,
@@ -40,12 +40,12 @@ Given these issues, we pointed out alternatives to the deconfounder that one may
 Further, we reviewed and referenced the literature on the many downstream issues to be considered in order to maximize the benefit from one's causal inference activities.
 
 Overall, we hope that this chapter has provided enough evidence to convince choice modellers that using causal graphs in their analyses is important and useful.
-Ideally, readers will be motivated to step outside of their traditional analytical frameworks and use techniques presented across the causal inference literature.
-In doing so, we hope our chapter provides the necessary introductory knowledge (and additional references) on how to:
+Ideally, readers will step outside of their traditional analytical frameworks and use techniques presented across the causal inference literature.
+In doing so, we hope our chapter provides the necessary introductory knowledge (and references) on how to:
 \begin{itemize}
     \item construct causal graphs that fit their specific contexts,
     \item test the robustness and credibility of produced causal graphs against available data,
     \item make use of causal discovery techniques, and
     \item characterize and assess one's options for dealing with latent variables in one's causal graph.
 \end{itemize}
-If not already apparent, we think incorporating causal graphs into our work will help all of us more clearly outline our assumptions and conduct more credible analyses.
+If not already apparent, incorporating causal graphs into our work will help us all more clearly outline our assumptions and conduct more credible analyses.
