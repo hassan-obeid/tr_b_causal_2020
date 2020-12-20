@@ -10,7 +10,7 @@
 
 This section focuses on latent confounding in causal inference problems.
 As mentioned in Section \ref{sec:graph-construction},  latent confounders affect the treatment assignment of our causal variables of interest, as well as the outcome.
-While more complicated, this setup is the more realistic and typical case faced by demand modelers.
+While more complicated, this setup is the more realistic and typical case faced by demand modellers.
 We first go over a few examples of confounding in transportation analyses and explain
 the challenges that come with such cases.
 Next we will briefly review a few approaches to dealing with latent confounding.
@@ -55,13 +55,13 @@ Physically missing observations include measurement errors
 (such as inexact measurements of key variables, data entry errors, or measurement inaccuracy),
 missing data, survey item non-response, etc.
 
-To cope with these latent variables, modelers make parameterized assumptions about how the latent variables relate to the observed variables.
+To cope with these latent variables, modellers make parameterized assumptions about how the latent variables relate to the observed variables.
 Then, these parameters are inferred alongside the latent variables and used to estimate causal effects of interventions.
 % ICLV is spelled out since readers may not remember from section 3.
 Examples of such latent variable models include Integrated Choice and Latent Variable (ICLV), Generalized Linear Latent and Mixed Models (GLMM; including mixed logit models), Factor Analysis Models, and Latent Class Models.
-For specific examples of these models being used to address latent confounding, see \citet{louizos_2017_causal} and \citet{perrakis_2019_latent} for factor analysis and latent class modeling examples, respectively.
+For specific examples of these models being used to address latent confounding, see \citet{louizos_2017_causal} and \citet{perrakis_2019_latent} for factor analysis and latent class modelling examples, respectively.
 
-From a choice modeling perspective, recall from Section \ref{sec:choice-graphs} that ICLV models have been used for decades.
+From a choice modelling perspective, recall from Section \ref{sec:choice-graphs} that ICLV models have been used for decades.
 The same is true of GLMMs / mixed-logit models.
 These models address primarily address issues of latent mediation.
 For mixed logit models this is evident in specifications where observable variables such as socio-demographics (e.g. income) cause an unobservable preferences (e.g. price sensitivity) that then influences the choice.
@@ -94,8 +94,8 @@ interest exogenous. The process of applying the method can be stated simply.
 It proceeds as follows:
 \begin{itemize}
 	\item First, estimate the substitute confounder using any good latent variable
-	model the modeler chooses. The authors suggest estimating a factor model
-	with k factors on the set of covariates the modeler is interested in.
+	model the modeller chooses. The authors suggest estimating a factor model
+	with k factors on the set of covariates the modeller is interested in.
 	\item Second, check the factor model's accuracy using posterior predictive
 	checks.
 	\item Once a sufficiently accurate latent variable model is recovered, use it
@@ -132,7 +132,7 @@ We estimate three models:
 	\item Model 1: A multinomial logit with the correct original specification,
 	except we omit the travel distance variable in the specification without
 	trying to adjust for it. This model represents the worst case scenario
-	where a modeler ignores, or is unaware of, unobserved confounding.
+	where a modeller ignores, or is unaware of, unobserved confounding.
 	\item Model 2: We use the deconfounder algorithm to try to recover the
 	confounder (travel distance). In this method, we use all the variables in
 	each mode's utility to recover that mode's confounder. This is in line
