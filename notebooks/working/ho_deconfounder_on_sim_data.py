@@ -640,7 +640,7 @@ ax.legend(loc="best", fontsize=13)
 sbn.despine()
 
 fig.savefig(
-    str(pyprojroot.here("article/images/coefficient_bias_sec_7.png")),
+    str(pyprojroot.here("article/images/coefficient_bias_sec_7.pdf")),
     dpi=500,
     bbox_inches="tight",
 )
