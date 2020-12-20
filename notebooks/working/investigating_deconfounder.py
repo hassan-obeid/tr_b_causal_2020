@@ -1,12 +1,12 @@
 # ---
 # jupyter:
 #   jupytext:
-#     formats: ipynb,py
+#     formats: ipynb,py:light
 #     text_representation:
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.3.4
+#       jupytext_version: 1.7.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -42,6 +42,7 @@ import seaborn as sns
 import numpy as np
 import numpy.random as npr
 import pandas as pd
+import pyprojroot
 import tensorflow as tf
 import tensorflow_probability as tfp
 import statsmodels.api as sm
@@ -195,16 +196,6 @@ results_df_partial
 # ### Tim, this would be a good place to add your other tests. I'm thinking of the bullet points below:
 # - We can hypothesize a causal graph, and run conditional independence tests. 
 # - Prior predictive checks? 
-
-from factor_analyzer.factor_analyzer import calculate_bartlett_sphericity,calculate_kmo
-
-chi_square_value,p_value=calculate_bartlett_sphericity(df[['a','b','c','d','e','f']])
-print("Bartlett sphericity test indicates potential latent confounder, with a p-value of: ", p_value)
-
-# +
-# kmo_all,kmo_model=calculate_kmo(df[['a','b','c','d','e','f']])
-# kmo_model
-# -
 
 # ## Fitting a factor model using 3 PCA variations.
 #
@@ -423,17 +414,24 @@ for i in coef:
 
 
 # +
+FONTSIZE = 13
 fig, ax = plt.subplots(figsize=(16,9))
 ax.plot(coef, b_est, color = 'green', marker = 'o')
 ax.axhline(2, label = 'True Parameter', ls='--')
 
-ax.set_ylabel('Estimated Parameter', size = 18)
-ax.set_xlabel('Standard Deviation of Added Noise', size = 18)
+ax.set_ylabel('Estimated Parameter', size = FONTSIZE)
+ax.set_xlabel('Standard Deviation of Added Noise', size = FONTSIZE)
 # ax.set_title('Sensitivity of causal effect to random noise added to the confounder', size = 20)
-ax.legend()
+ax.tick_params(axis='x', labelsize=FONTSIZE)
+ax.tick_params(axis='y', labelsize=FONTSIZE)
+ax.legend(fontsize=FONTSIZE)
+sns.despine()
 
-fig.savefig('confounder-sensitivity.pdf')
-fig.savefig('confounder-sensitivity.png')
+fig.savefig(
+    pyprojroot.here("article/images/confounder-sensitivity.pdf"),
+    dpi=500,
+    bbox_inches="tight"
+)
 # -
 
 

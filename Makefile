@@ -45,6 +45,7 @@ article : imagedir
 project : article
 	python notebooks/final/7.0-mab-selection-on-observables-final.py
 	python notebooks/working/ho_deconfounder_on_sim_data.py
+	python notebooks/working/investigating_deconfounder.py
 
 ## help        : Documentation for make targets.
 .PHONY : help
