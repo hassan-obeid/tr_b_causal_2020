@@ -61,6 +61,9 @@ from pyprojroot import here
 # # Set Notebook Parameters
 
 # +
+SEED = 197
+np.random.seed(SEED)
+
 # Path to Data
 DATA_PATH = here(
     "data/raw/spring_2016_all_bay_area_long_format_plus_cross_bay_col.csv"
