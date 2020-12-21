@@ -43,7 +43,7 @@ In both cases, however, we pay great attention to the design of our experiments.
 When experimenting to make decisions, such as whether to launch a given treatment or not, we pay extra attention to the size of our experiment.
 Specifically, we want our experiment's sample size to be large enough such that after we update our beliefs using the experimental data, that we have at least our minimum desired probability of making the correct decision.
 The decision can be to declare the effect of a treatment statistically different from zero, but more frequently, the decision will be more fundamental such as ``implement treatment A.''
-For thorough explanations of how to conceptualize and design experiments in a bayesian, model-based setting, see \citet{chaloner_1995_bayesian} and \citet{wang_2002_simulation}.
+For thorough explanations of how to conceptualize and design experiments in a Bayesian, model-based setting, see \citet{chaloner_1995_bayesian} and \citet{wang_2002_simulation}.
 For examples and guidance on how to use one's causal graph structure to guide the general design of one's experiment, beyond sample size, see \citet{madrigal_2007_cluster}.
 There, the structure of one's causal graph is used to inform general design decisions such as the clustered allocation of individuals to treatment, and the experimental design is itself analyzed graphically.
 Additionally, note the relations to reinforcement learning where an agent has to perform experiments in order to discover the action/intervention that will maximize her expected, counterfactual reward.
@@ -81,6 +81,6 @@ In doing so, we should consult articles such as \citet{pearl_2017_detecting} and
 This should help us avoid drawing incorrect conclusions or misinterpreting our analyses.
 
 Thirdly, we will need to answer logistical questions about the levels and the frequency of treatment.
-With regard to choosing the levels of (possibly continuous and multiple) treatments, recent work on causal bayesian optimization represents the state of the art in this area \citep{aglietti_2020_causal}.
+With regard to choosing the levels of (possibly continuous and multiple) treatments, recent work on causal Bayesian optimization represents the state of the art in this area \citep{aglietti_2020_causal}.
 Moreover, the entire field of reinforcement learning focuses on running experiments and learning from past observations to determine the treatment arms/levels that will maximize one's reward (however we define it).
 Accordingly, we stand to gain much by consulting the work on and principles from causal reinforcement learning (c.f. \citet{bareinboim_2015_bandits}) when choosing our optimal treatment plan.
