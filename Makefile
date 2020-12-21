@@ -21,6 +21,7 @@ graphs :
 	python workflow/store_drive_alone_utility_graph.py
 	python workflow/store_deconfounder_graph.py
 	python workflow/store_discovery_graph.py
+	python workflow/store_sob_graphs.py
 
 ## imagesdir   : Copy the needed images into a common location for article compilation.
 .PHONY : imagedir
@@ -34,6 +35,15 @@ imagedir : plots graphs
 	cp reports/figures/deconfounder-causal-graph.pdf article/images/deconfounder-causal-graph.pdf
 	cp reports/figures/latent-drivers-vs-num-autos.pdf article/images/latent-drivers-vs-num-autos.pdf
 	cp reports/figures/discovery-example-graph.pdf article/images/discovery-example-graph.pdf
+	cp reports/figures/Independent_graph.pdf article/images/Independent_graph.pdf
+	cp reports/figures/DA_interacting_graph.pdf article/images/DA_interacting_graph.pdf
+	cp reports/figures/SR2_interacting_graph.pdf article/images/SR2_interacting_graph.pdf
+	cp reports/figures/SR3_interacting_graph.pdf article/images/SR3_interacting_graph.pdf
+	cp reports/figures/WTW_interacting_graph.pdf article/images/WTW_interacting_graph.pdf
+	cp reports/figures/DTW_interacting_graph.pdf article/images/DTW_interacting_graph.pdf
+	cp reports/figures/WTD_interacting_graph.pdf article/images/WTD_interacting_graph.pdf
+	cp reports/figures/BIKE_interacting_graph.pdf article/images/BIKE_interacting_graph.pdf
+	cp reports/figures/WALK_interacting_graph.pdf article/images/WALK_interacting_graph.pdf
 
 ## notebooks     : Execute all jupyter notebooks for the project.
 .PHONY : notebooks
