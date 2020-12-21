@@ -63,7 +63,7 @@ For purposes of this exercise, we consider the Multinomial Logit model defined i
 The systematic utility equations of the adopted multinomial logit model are specified as follows:
 \begin{equation*}
    \begin{aligned}
-   \textrm{Utility} \left(\textrm{Drive Alone}\right) &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_drive\_alone}} \times \textrm{Cost\_per\_Distance}\left(\textrm{da}\right) \\
+   \textrm{Utility} \left(\textrm{Drive Alone}\right) &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_drive\_alone}} \times \textrm{Cost\_per\_Distance}_{\textrm{da}} \\
    &\quad + \beta_{\textrm{autos}} \times \textrm{Number\_of\_Autos} \\
    \textrm{Utility} \left(\textrm{Shared Ride 2}\right) &= ASC_{\textrm{shared\_ride\_2}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
    &\quad + \beta_{\textrm{cost\_per\_distance\_shared\_ride\_2}} \times \textrm{Cost\_per\_Distance}_{ \textrm{sr2} } + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
@@ -207,6 +207,8 @@ aimed at reducing travel distance.
 These differences are plotted under the following assumptions: that the outcome model is the same in both scenarios and that the only difference between the two scenarios is the set of variables affected by the proposed intervention.
 This difference in the set of variables affected by the proposed intervention is a result of the two different causal graphs representing each scenario (Figures \ref{fig:IND_GRAPH} and \ref{fig:DA_causal_2}).
 Figure \ref{fig:histogram_probability} highlights the resulting bias between the estimated probability of an average individual choosing a car centric mode.
+The histograms show that the distribution of inferred treatment effects based on the ``true'' causal graph includes both positive and negative treatment effects.
+With low but non-trivial probability, using the wrong causal graph in one's analyses could result in not only wrong magnitudes of the treatment effect of interest but also the wrong sign.
 This plotted discrepancy shows the importance of using causal graphs in the estimation of treatment effects.
 Of course, the importance of a correct causal graph does not and should not take away from the importance of correctly specified outcome choice models.
 
