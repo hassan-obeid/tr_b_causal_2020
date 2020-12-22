@@ -30,8 +30,8 @@ imagedir : plots graphs
 	cp reports/figures/rum-causal-graph.pdf article/images/rum-causal-graph.pdf
 	cp reports/figures/iclv-causal-graph.pdf article/images/iclv-causal-graph.pdf
 	cp reports/figures/drive-alone-utility-graph.pdf article/images/drive-alone-utility-graph.pdf
-	cp reports/figures/mit--num_drivers_vs_num_autos.png article/images/mit--num_drivers_vs_num_autos.png
-	cp reports/figures/cit--time_vs_cost_given_distance.png article/images/cit--time_vs_cost_given_distance.png
+	cp reports/figures/mit--num_drivers_vs_num_autos.pdf article/images/mit--num_drivers_vs_num_autos.pdf
+	cp reports/figures/cit--time_vs_cost_given_distance.pdf article/images/cit--time_vs_cost_given_distance.pdf
 	cp reports/figures/deconfounder-causal-graph.pdf article/images/deconfounder-causal-graph.pdf
 	cp reports/figures/latent-drivers-vs-num-autos.pdf article/images/latent-drivers-vs-num-autos.pdf
 	cp reports/figures/discovery-example-graph.pdf article/images/discovery-example-graph.pdf
