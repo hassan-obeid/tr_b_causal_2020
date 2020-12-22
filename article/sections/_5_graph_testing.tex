@@ -30,7 +30,7 @@ Mean independence simply provides justification for placing greater belief in th
 
 This approach of indirectly assessing distributional independence by testing mean independence is not new.
 The following papers have all proposed and implemented such an idea: \citet{burkart_2017_predictive, chalupka_2018_fast, inacio_2019_conditional}.
-For conditional independences, the crux of the approach is to predict $Y$ based on $X$ and $Z$.
+For conditional independencies, the crux of the approach is to predict $Y$ based on $X$ and $Z$.
 Then, compare against a prediction of $Y$ based on a resampled value of $X$ and the original $Z$.
 If $Y$ is mean-independent of $X$ given $Z$, i.e. $E \left[ Y \mid X, Z \right] = E\left[ Y \mid Z \right]$, then the predictive power of a model with resampled $X$ should resemble the predictive power of a model with the original $X$.
 After all, in both cases, the conditional expectation of $Y$ is independent of our $X$ values (real or resampled).
