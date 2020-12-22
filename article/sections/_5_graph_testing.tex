@@ -30,7 +30,7 @@ Mean independence simply provides justification for placing greater belief in th
 
 This approach of indirectly assessing distributional independence by testing mean independence is not new.
 The following papers have all proposed and implemented such an idea: \citet{burkart_2017_predictive, chalupka_2018_fast, inacio_2019_conditional}.
-For conditional independences, the crux of the approach is to predict $Y$ based on $X$ and $Z$.
+For conditional independencies, the crux of the approach is to predict $Y$ based on $X$ and $Z$.
 Then, compare against a prediction of $Y$ based on a resampled value of $X$ and the original $Z$.
 If $Y$ is mean-independent of $X$ given $Z$, i.e. $E \left[ Y \mid X, Z \right] = E\left[ Y \mid Z \right]$, then the predictive power of a model with resampled $X$ should resemble the predictive power of a model with the original $X$.
 After all, in both cases, the conditional expectation of $Y$ is independent of our $X$ values (real or resampled).
@@ -97,7 +97,7 @@ In both cases, we will test our assumptions using the previous subsection's proc
 % Marginal testing results
 \begin{figure}
    \centering
-   \includegraphics[width=0.5\textwidth]{mit--num_drivers_vs_num_autos.png}
+   \includegraphics[width=0.5\textwidth]{mit--num_drivers_vs_num_autos}
    \caption{Marginal independence test results for the number of cars and licensed drivers in a household}
    \label{fig:marginal-independence-test}
 \end{figure}
@@ -121,6 +121,7 @@ In Figure \ref{fig:conditional-independence-test}, we have an analogous visualiz
 Here, we test the hypothesis that travel time is mean-independent of travel cost, conditional on travel distance.
 To execute this test, we model the conditional expectation of travel time as a linear function of travel cost and travel distance.
 As with the marginal independence test results, the $R^2$ of the model using the observed values of travel cost are greater than the model's $R^2$ using any simulated datasets.
+In fact, the simulated $R^2$ values are so tightly distributed between $0.9371$ and $0.9373$ that the distribution is not visible in relation to the observed value of $0.95$.
 Again, this means that the $R^2$ using observed data is unlikely given our method of sampling from the null distribution of $R^2$ given conditional, mean-independence of travel time and travel cost.
 
 As before, these results suggest conditional dependence between our variables of interest.

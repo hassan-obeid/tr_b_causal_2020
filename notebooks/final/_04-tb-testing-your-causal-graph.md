@@ -90,6 +90,9 @@ NUM_PERMUTATIONS = 100
 # Choose a color to represent reference /
 # permutation-based test statistics
 PERMUTED_COLOR = "#a6bddb"
+
+# Choose a seed for the conditional independence tests
+SEED = 1038
 ```
 
 ## Load and describe needed data
@@ -213,7 +216,22 @@ oi.visual_permutation_test(
     z_array=distance_array,
     num_permutations=NUM_PERMUTATIONS,
     permutation_color=PERMUTED_COLOR,
+    seed=SEED,
 )
+```
+
+```python
+r2_observed, r2_permuted = oi.computed_vs_obs_r2(
+    time_array,
+    cost_array,
+    z_array=distance_array,
+    num_permutations=NUM_PERMUTATIONS,
+    seed=SEED,
+)
+
+print(f"Min [Permuted R^2]: {r2_permuted.min()}")
+print(f"Max [Observed R^2]: {r2_permuted.max()}")
+print(f"Observed R^2: {r2_observed}")
 ```
 
 ### Caveats and pitfalls
