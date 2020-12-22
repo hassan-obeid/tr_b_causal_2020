@@ -28,16 +28,17 @@ incorporating causal inference techniques where appropriate and from contributin
 to the causal inference literature where it's lacking.
 
 This topic is even more relevant now because of the significant and recent boost in the causal inference literature, both in the potential outcomes and the causal graphical modelling frameworks.
-Leveraging these latest advances, the goal of this chapter is to formalize a workflow for approaching
+Leveraging these latest advances, the goal of this chapter is to empirically illustrate a workflow for approaching
 transportation demand modelling problems from a causal perspective.
 We will draw heavily on the use of directed acyclic graphs (DAGs) formalized by \citet{pearl_causality_2000} as a means of representing the modeller's knowledge and assumptions about a given problem.
-The chapter will provide an overview of DAGs, the
-testable implications that come with one's causal representation, the main
-tests that one could do to falsify or justify a given causal graph, and then how
-to use a causal graph to estimate the causal relationships of interest.
-We will demonstrate the use of this framework through simulations, where we
-clearly show the benefits and implications of this approach as opposed to
-traditional approaches.
+The chapter will provide an overview of DAGs,
+the consequences of ignoring them when making causal inferences,
+and their testable assumptions/implications.
+We then present convenient methods of testing those assumptions,
+and we show how to transition from isolated tests to complete inference of causal graphs from existing data.
+Throughout, we demonstrate our graphical framework through simulations and empirical examples.
+These examples highlight the benefits of our proposed approach versus traditional methods that eschew causal inference techniques,
+and they provide guidance to researchers and practitioners that wish to use such methods in their own work.
 
 The last part of this chapter deals with the more complicated issue of latent
 confounding, where an unobserved variable confounds two or more variables in the causal graph.
