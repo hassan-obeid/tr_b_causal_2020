@@ -95,7 +95,7 @@ def create_marginal_independence_testing_results(
 )
 @click.option(
     "--output_name",
-    default="mit--num_drivers_vs_num_autos.png",
+    default="mit--num_drivers_vs_num_autos.pdf",
     type=str,
     help="Filename for results of visual Marginal Independence Test.",
     show_default=True,

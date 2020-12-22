@@ -94,7 +94,7 @@ def create_conditional_independence_testing_results(
 )
 @click.option(
     "--output_name",
-    default="cit--time_vs_cost_given_distance.png",
+    default="cit--time_vs_cost_given_distance.pdf",
     type=str,
     help="Filename for results of visual CIT.",
     show_default=True,
