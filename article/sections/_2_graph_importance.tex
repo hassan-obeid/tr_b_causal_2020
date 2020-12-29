@@ -44,23 +44,19 @@ We would like to forecast how such an intervention would change the share of emp
 We model this travel mode choice problem based on a dataset from \citet{brathwaite_asymmetric}.
 This dataset is based on the 2012 California Household Travel Survey, and it
 contains approximately 4000 home-based school or work tours made by approximately 3850 individuals in the California Bay area.
-The dataset includes the following eight travel modes:
+The dataset includes eight travel modes. 
+For our illustrative purposes, we focus on the following car-centric modes and will not further present details about other modes:
 
 \begin{itemize}
    \item Drive Alone: The individual uses a private vehicle to make the trip
    \item Shared Ride 2: The individual shares an automobile ride with one more individual
    \item Shared Ride 3+: The individual shares an automobile ride with two or more individuals
-   \item Walk-Transit-Walk: The individual uses transit, walking to their transit origin and from their transit destination to the final destination
-   \item Drive-Transit-Walk: The individual uses transit, driving to access transit and walking from a transit stop to their final destination
-   \item Walk-Transit-Drive: The individual uses transit, walking to access transit and driving from a transit stop to their final destination
-   \item Bike: The individual uses a bike to make the trip
-   \item Walk: The individual walks to make the trip
 \end{itemize}
 
 Readers interested in a more detailed description of the dataset can refer to \citet{brathwaite_asymmetric}.
 For purposes of this exercise, we consider the Multinomial Logit model defined in \citet{brathwaite_asymmetric} as the true outcome generating model.
 
-The systematic utility equations of the adopted multinomial logit model are specified as follows:
+The systematic utility equations of the adopted multinomial logit model for the car-centric modes are specified as follows:
 \begin{equation*}
    \begin{aligned}
    \textrm{Utility} \left(\textrm{Drive Alone}\right) &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_drive\_alone}} \times \textrm{Cost\_per\_Distance}_{\textrm{da}} \\
@@ -73,17 +69,8 @@ The systematic utility equations of the adopted multinomial logit model are spec
    &\quad + \beta_{\textrm{cost\_per\_distance\_sr3+}} \times \textrm{Cost\_per\_Distance}_{\textrm{sr3+}} + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
    &\quad + \beta_{\textrm{cross\_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{Household\_Size} \\
    &\quad + \beta_{\textrm{n\_kids\_hh}} \times \textrm{Number\_of\_kids} \\
-   \textrm{Utility} \left(\textrm{Walk-Transit-Walk}\right) &= ASC_{\textrm{WTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
-   &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
-   \textrm{Utility} \left(\textrm{Drive-Transit-Walk}\right) &= ASC_{\textrm{DTW}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
-   &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
-   \textrm{Utility} \left(\textrm{Walk-Tranist-Drive}\right) &= ASC_{\textrm{WTD}} + \beta_{\textrm{travel\_time\_transit}} \times \textrm{Travel\_Time} \\
-   &\quad + \beta_{\textrm{travel\_cost}} \times \textrm{Travel\_Cost} \\
-   \textrm{Utility} \left(\textrm{Bike}\right) &= ASC_{\textrm{Bike}} + \beta_{\textrm{travel\_distance\_bike}} \times \textrm{Travel\_Distance} \\
-   \textrm{Utility} \left(\textrm{Walk}\right) &= ASC_{\textrm{Walk}} + \beta_{\textrm{travel\_distance\_walk}} \times \textrm{Travel\_Distance} \\
    \end{aligned}
 \end{equation*}
-
 
 For our purposes, we assume that there are no latent variables.
 The variables were chosen based on the specification of the MNL model outlined by the equations above.
@@ -101,7 +88,8 @@ We can describe the variables as follows:
 
 Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables are independent of each other for each utility equation.
 This DAG represent a scenario where an analyst only modifies variables in their dataset that are directly impacted by the proposed intervention, without considering the different relationships between these variables and other explanatory variables in the dataset.
-Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:BIKE_causal_2} illustrate the causal graphs with ``dependent'' explanatory variables.
+Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2} illustrate the causal graphs with ``dependent'' explanatory variables.
+This DAG represents a scenario where an analyst considers the relationships between all variables and modifies all children nodes of the variable directly impacted by the proposed intervention.
 For our purposes, we assume that these DAGs represent the ``true'' data generating process, where several variables affect each other.
 Each of these graphs is based on the utility function of each mode in the multinomial logit model specified in \citet{brathwaite_asymmetric}.
 
@@ -133,79 +121,21 @@ Each of these graphs is based on the utility function of each mode in the multin
    \label{fig:SR3_causal_2}
 \end{figure}
 
-\begin{figure}
-   \centering
-   \includegraphics[width=0.2\textwidth]{WTW_interacting_graph}
-   \caption{Causal Graph for the Walk-Transit-Walk Utility Function}
-   \label{fig:WTW_causal_2}
-\end{figure}
+Using the same outcome model, we:
+\begin{itemize}
+   \item Simulate data from the DAGs shown in Figure \ref{fig:IND_GRAPH} through Figure \ref{fig:SR3_causal_2}
+   \item Modify the travel distance variable in all graphs to emulate a company's decision to move its employees closer to campus, and modify all children nodes of the impacted variable (where appropriate) based on the structure of each DAG.
+   \item Predict the probabilities of choosing car-centric modes before and after modifying the data to emulate the proposed intervention and compute the differences in mode choice probabilities based on the different DAGs
+\end{item}
 
-\begin{figure}
-   \centering
-   \includegraphics[width=0.2\textwidth]{WTD_interacting_graph}
-   \caption{Causal Graph for the Walk-Transit-Drive Utility Function}
-   \label{fig:WTD_causal_2}
-\end{figure}
-
-\begin{figure}
-   \centering
-   \includegraphics[width=0.2\textwidth]{DTW_interacting_graph}
-   \caption{Causal Graph for the Drive-Transit-Walk Utility Function}
-   \label{fig:DTW_causal_2}
-\end{figure}
-
-\begin{figure}
-   \centering
-   \includegraphics[width=0.2\textwidth]{WALK_interacting_graph}
-   \caption{Causal Graph for the Shared Ride 3+ Utility Function}
-   \label{fig:WALK_causal_2}
-\end{figure}
-
-\begin{figure}
-   \centering
-   \includegraphics[width=0.2\textwidth]{BIKE_interacting_graph}
-   \caption{Causal Graph for the Bike Utility Function}
-   \label{fig:BIKE_causal_2}
-\end{figure}
-
-Using the setup described above, we conduct our simulation exercise as follows:
-\begin{enumerate}
-
-   \item We build a DAG (Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}) for each utility function based on assumptions of how explanatory variables interact and influence the outcome.
-   \item We simulate data for variables without parent nodes in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
-   These simulations are based on these variables' marginal distributions in our dataset.
-   \item We use the real dataset to estimate the relationships between observed variables in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:BIKE_causal_2}.
-      \label{itm:sim-dag-estimation}
-   \item We use these estimated relationships to simulate the remaining explanatory variables.
-   \item We simulate outcomes based on a chosen ``true'' multinomial logit model specification and parameters.
-   \item We estimate the specified choice model using the simulated dataset.
-   \item We use the estimated model to predict baseline probabilities using the initial covariates.
-   \item We apply the do-operator \citet{pearl_causality_2000} to our simulated data by reducing the travel distance for all individuals in the dataset.
-   This emulates a company's decision to move its employees closer to campus.
-   \item We predict new probabilities based on the estimated choice model and reduced travel distances.
-   These new probabilities are used to estimate the treatment effect under the incorrect causal graph in Figure \ref{fig:IND_GRAPH}.
-   \item We simulate new travel time and travel cost values for our commuters based on the estimated relationships from Step \ref{itm:sim-dag-estimation}.
-   This completes the effect of applying the intervention, as with a total treatment effect estimator.
-   \item We predict probabilities based on the based on the estimated choice model and altered time, distance, and cost variables.
-   These probabilities are used to estimate the treatment effect under the correct causal graph in Figure \ref{fig:DA_causal_2}.
-   \item We predict probabilities based on the chosen parameters used to generate the outcomes and based on the altered time, distance, and cost variables.
-   These probabilities are used to calculate a ``true'' treatment effect.
-   \item We repeat this process multiple times, storing the three causal effect estimates on each iteration.
-
-\end{enumerate}
-
-For our purposes, we focus on car-centric modes (Drive alone, Shared ride with another person,
-and a shared ride with two or more individuals).
-We compute the difference in mode choice probabilities from different models based on the two constructed DAGs.
 Readers interested in exploring the details of our simulation exercise can refer to our GitHub repository \citep{brathwaite_etal_2020}.
-
 
 
 We then plot histograms of the computed differences between the average probability of an individual
 in our sample choosing a car centric mode before and after implementing a policy or intervention
 aimed at reducing travel distance.
 These differences are plotted under the following assumptions: that the outcome model is the same in both scenarios and that the only difference between the two scenarios is the set of variables affected by the proposed intervention.
-This difference in the set of variables affected by the proposed intervention is a result of the two different causal graphs representing each scenario (Figures \ref{fig:IND_GRAPH} and \ref{fig:DA_causal_2}).
+This difference in the set of variables affected by the proposed intervention is a result of the two different causal graphs representing each scenario (Figures \ref{fig:IND_GRAPH}, \ref{fig:DA_causal_2}, \ref{fig:SR2_causal_2}, and \ref{fig:SR3_causal_2}).
 Figure \ref{fig:histogram_probability} highlights the resulting bias between the estimated probability of an average individual choosing a car centric mode.
 The histograms show that the distribution of inferred treatment effects based on the ``true'' causal graph includes both positive and negative treatment effects.
 With low but non-trivial probability, using the wrong causal graph in one's analyses could result in not only wrong magnitudes of the treatment effect of interest but also the wrong sign.
