@@ -2,18 +2,17 @@
 """
 Stores all causal graphs for the utility equations in Section 2 of the article.
 """
+import causal2020.graphs.sob as graphs
 import click
-from causal2020.graphs.sob import DA_IND_GRAPH, DA_INTERACTING_GRAPH, \
-    SHARED_2_INTERACTING_GRAPH, SHARED_3P_INTERACTING_GRAPH
-from causal2020 import utils 
+from causal2020 import utils
 
 
-def main_func(writer=utils) -> bool:
+def main_func(supplier=graphs, writer=utils) -> bool:
     sob_graphs = {
-        "Independent_graph": DA_IND_GRAPH,
-        "DA_interacting_graph": DA_INTERACTING_GRAPH,
-        "SR2_interacting_graph": SHARED_2_INTERACTING_GRAPH,
-        "SR3_interacting_graph": SHARED_3P_INTERACTING_GRAPH,
+        "Independent_graph": supplier.da_independent.DA_IND_GRAPH,
+        "DA_interacting_graph": supplier.da_interacting.DA_INTERACTING_GRAPH,
+        "SR2_interacting_graph": supplier.sr2_interacting.SHARED_2_INTERACTING_GRAPH,
+        "SR3_interacting_graph": supplier.sr3p_interacting.SHARED_3P_INTERACTING_GRAPH,
     }
 
     # Write the image of each graph to file
