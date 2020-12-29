@@ -39,11 +39,6 @@ imagedir : plots graphs
 	cp reports/figures/DA_interacting_graph.pdf article/images/DA_interacting_graph.pdf
 	cp reports/figures/SR2_interacting_graph.pdf article/images/SR2_interacting_graph.pdf
 	cp reports/figures/SR3_interacting_graph.pdf article/images/SR3_interacting_graph.pdf
-	cp reports/figures/WTW_interacting_graph.pdf article/images/WTW_interacting_graph.pdf
-	cp reports/figures/DTW_interacting_graph.pdf article/images/DTW_interacting_graph.pdf
-	cp reports/figures/WTD_interacting_graph.pdf article/images/WTD_interacting_graph.pdf
-	cp reports/figures/BIKE_interacting_graph.pdf article/images/BIKE_interacting_graph.pdf
-	cp reports/figures/WALK_interacting_graph.pdf article/images/WALK_interacting_graph.pdf
 
 ## notebooks     : Execute all jupyter notebooks for the project.
 .PHONY : notebooks
