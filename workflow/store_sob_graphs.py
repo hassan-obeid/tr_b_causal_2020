@@ -3,8 +3,8 @@
 Stores all causal graphs for the utility equations in Section 2 of the article.
 """
 import click
-from causal2020.graphs.sob import DA_IND_GRAPH, DA_INTERACTING_GRAPH,
-                                  SHARED_2_INTERACTING_GRAPH, SHARED_3P_INTERACTING_GRAPH
+from causal2020.graphs.sob import DA_IND_GRAPH, DA_INTERACTING_GRAPH, \
+    SHARED_2_INTERACTING_GRAPH, SHARED_3P_INTERACTING_GRAPH
 from causal2020 import utils 
 
 
