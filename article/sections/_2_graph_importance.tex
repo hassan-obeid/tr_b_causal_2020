@@ -87,10 +87,9 @@ Below is a description of the key variables included in the model:
 
 Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables in each utility equation are marginally independent.
 This DAG is equivalent to what an analyst assumes when they only update the variables directly impacted by a given policy, without considering the dependencies between the explanatory variables. 
-Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2} illustrate the causal graphs with ``dependent'' explanatory variables.
-This DAG represents a scenario where an analyst considers the relationships between all variables and modifies all children nodes of the variable directly impacted by the proposed intervention.
-For our purposes, we assume that these DAGs represent the ``true'' data generating process, where several variables affect each other.
-Each of these graphs is based on the utility function of each mode in the multinomial logit model specified in \citet{brathwaite_asymmetric}.
+To illustrate the problem with this approach, consider the case where the ``true'' data generating process that reflects the dependencies between the covariates is as shown in Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}. 
+Under this generative model, intervening on one variable would also result in changes to other variables that are dependent on it.
+The goal of our simulation exercise is to show that ignoring the true generative model of the data would result in arbitrarily biased treatment effects, even if the analyst knows the true outcome model.
 
 \begin{figure}
    \centering
