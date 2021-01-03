@@ -45,7 +45,7 @@ We model this travel mode choice problem based on a dataset from \citet{brathwai
 This dataset is based on the 2012 California Household Travel Survey, and it
 contains approximately 4000 home-based school or work tours made by approximately 3850 individuals in the California Bay area.
 The dataset includes eight travel modes. 
-For our illustrative purposes, we focus on the following car-centric modes and will not further present details about other modes:
+For our illustrative purposes, we focus on the following car-centric modes:
 
 \begin{itemize}
    \item Drive Alone: The individual uses a private vehicle to make the trip
@@ -54,9 +54,9 @@ For our illustrative purposes, we focus on the following car-centric modes and w
 \end{itemize}
 
 Readers interested in a more detailed description of the dataset can refer to \citet{brathwaite_asymmetric}.
-For purposes of this exercise, we consider the Multinomial Logit model defined in \citet{brathwaite_asymmetric} as the true outcome generating model.
+For the purposes of this exercise, we treat the multinomial logit model (MNL) defined in \citet{brathwaite_asymmetric} as the true outcome generating model.
 
-The systematic utility equations of the adopted multinomial logit model for the car-centric modes are specified as follows:
+In this model, the systematic utility equations of the car-centric modes defined above are specified as follows:
 \begin{equation*}
    \begin{aligned}
    \textrm{Utility} \left(\textrm{Drive Alone}\right) &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_drive\_alone}} \times \textrm{Cost\_per\_Distance}_{\textrm{da}} \\
@@ -73,8 +73,7 @@ The systematic utility equations of the adopted multinomial logit model for the 
 \end{equation*}
 
 For our purposes, we assume that there are no latent variables.
-The variables were chosen based on the specification of the MNL model outlined by the equations above.
-We can describe the variables as follows:
+Below is a description of the key variables included in the model:
 
 \begin{itemize}
   \item Total Travel Distance: the total travel distance for individual i and mode j, for all available modes for individual i during trip t of tour l.
@@ -86,8 +85,8 @@ We can describe the variables as follows:
   \item Cross-bay trip: a binary variable indicating whether the trip t in tour l for individual i is a cross-bay trip.
 \end{itemize}
 
-Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables are independent of each other for each utility equation.
-This DAG represent a scenario where an analyst only modifies variables in their dataset that are directly impacted by the proposed intervention, without considering the different relationships between these variables and other explanatory variables in the dataset.
+Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables in each utility equation are marginally independent.
+This DAG is equivalent to what an analyst assumes when they only update the variables directly impacted by a given policy, without considering the dependencies between the explanatory variables. 
 Similarly, Figure \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2} illustrate the causal graphs with ``dependent'' explanatory variables.
 This DAG represents a scenario where an analyst considers the relationships between all variables and modifies all children nodes of the variable directly impacted by the proposed intervention.
 For our purposes, we assume that these DAGs represent the ``true'' data generating process, where several variables affect each other.
