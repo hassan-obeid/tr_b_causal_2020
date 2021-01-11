@@ -57,7 +57,7 @@ Readers interested in a more detailed description of the dataset can refer to \c
 For the purposes of this exercise, we treat the multinomial logit model (MNL) defined in \citet{brathwaite_asymmetric} as the true outcome generating model.
 
 In this model, the systematic utility equations of the car-centric modes defined above are specified as follows:
-\begin{equation*}
+\begin{equation}
    \begin{aligned}
    \textrm{Utility} \left(\textrm{Drive Alone}\right) &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_drive\_alone}} \times \textrm{Cost\_per\_Distance}_{\textrm{da}} \\
    &\quad + \beta_{\textrm{autos}} \times \textrm{Number\_of\_Autos} \\
@@ -89,7 +89,7 @@ Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables i
 This DAG is equivalent to what an analyst assumes when they only update the variables directly impacted by a given policy, without considering the dependencies between the explanatory variables. 
 To illustrate the problem with this approach, consider the case where the ``true'' data generating process that reflects the dependencies between the covariates is as shown in Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}. 
 Under this generative model, intervening on one variable would also result in changes to other variables that are dependent on it.
-The goal of our simulation exercise is to show that ignoring the true generative model of the data can result in arbitrarily biased treatment effects, even if the analyst knows the true outcome model.
+The goal of our simulation exercise is to show that ignoring the true generative model of the data (Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}) can result in arbitrarily biased treatment effects, even if the analyst knows the true outcome model (Equations \ref{eq:DA} through \ref{eq:SR3}).
 
 \begin{figure}
    \centering
@@ -119,7 +119,7 @@ The goal of our simulation exercise is to show that ignoring the true generative
    \label{fig:SR3_causal_2}
 \end{figure}
 
-To achieve this goal, we follow these simulation steps, using the same outcome model:
+To achieve this goal, we follow these simulation steps, using the same outcome model defined in Equations \ref{eq:DA} to \ref{eq:SR3}:
 \begin{itemize}
    \item Simulate data from the DAGs shown in Figure \ref{fig:IND_GRAPH} through Figure \ref{fig:SR3_causal_2}.
    \item In one scenario, only modify the travel distance variable in all graphs to emulate a company's decision to move its employees closer to campus. This is similar to assuming the DAG in Figure \ref{fig:IND_GRAPH} as the true data generating model.
@@ -134,7 +134,7 @@ We then plot histograms of the computed differences between the average probabil
 in our sample choosing a car centric mode before and after implementing a policy or intervention
 aimed at reducing travel distance.
 Recall that these differences are plotted under the assumptions that the outcome model is the same in both scenarios, and the only difference between the two scenarios is the set of variables assumed to be affected by the proposed intervention.
-This difference in the set of variables affected by the proposed intervention is a result of the two different causal graphs representing each scenario (Figures \ref{fig:IND_GRAPH}, \ref{fig:DA_causal_2}, \ref{fig:SR2_causal_2}, and \ref{fig:SR3_causal_2}).
+This difference in the set of variables affected by the proposed intervention is a result of the two different causal graphs representing each scenario (Figures \ref{fig:IND_GRAPH} - \ref{fig:SR3_causal_2}).
 Figure \ref{fig:histogram_probability} highlights the resulting bias between the estimated probability of an average individual choosing a car centric mode.
 The histograms show that the distribution of inferred treatment effects based on the ``true'' causal graph includes both positive and negative treatment effects.
 With low but non-trivial probability, using the wrong causal graph in one's analyses could result in not only wrong magnitudes of the treatment effect of interest but also the wrong sign.
