@@ -124,7 +124,7 @@ The goal of our simulation exercise is to show that ignoring the true generative
 
 To achieve this goal, we follow these simulation steps, using the same outcome model defined in Equations \ref{eq:DA} to \ref{eq:SR3}:
 \begin{itemize}
-   \item Simulate data from the DAGs shown in Figure \ref{fig:IND_GRAPH} through Figure \ref{fig:SR3_causal_2}.
+   \item Simulate data from the DAGs shown in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:SR3_causal_2}.
    \item In one scenario, only modify the travel distance variable in all graphs to emulate a company's decision to move its employees closer to campus. This is similar to assuming the DAG in Figure \ref{fig:IND_GRAPH} as the true data generating model.
    \item In the other scenario, modify the travel distance variable in all utility graphs, as well as all the variables that are dependent on it based on the DAGs in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:SR3_causal_2}. This case is meant to reflect the ``correct'' approach needed to quantify the effects of the company's policy. 
    \item Predict the probabilities of choosing car-centric modes before and after modifying the data to emulate the proposed intervention under each of the two scenarios above, and compute the differences in mode choice probabilities.
