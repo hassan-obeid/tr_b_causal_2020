@@ -19,7 +19,7 @@ pytest
 scikit-learn
 seaborn
 statsmodels
-tensorflow<1.15.2
-tensorflow-probability<0.9
+# tensorflow<1.15.2
+# tensorflow-probability<0.9
 torch<1.7.0
 tqdm
