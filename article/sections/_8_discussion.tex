@@ -14,6 +14,9 @@ Such challenges lead us to the following set of post-graph-construction topics:
 To us, each item above is important for getting credible results from our analysis and for maximizing our interventions' benefits.
 Accordingly, even though we will neglect details due to space and time constraints, we briefly discuss these topics below.
 
+
+\subsection{Analysis}
+\label{sec:discussion-analysis}
 Perhaps most obviously, after creating and testing a causal graph, we will use it to estimate the effects of our interventions.
 To compute our effect estimates, we will need to evaluate statements such as the probability of a particular node taking a given value, conditional on the values of that node's parents.
 These probabilities will come from our estimated models, so model estimation is critically important to our effect estimation.
@@ -34,6 +37,8 @@ For example, \citet{tran_2016_model} jointly check their models for all variable
 Finally, we can check all our models jointly by defining global diagnostic measures over all nodes in our causal graph.
 See \citet{williamson_2013_model} for a demonstration.
 
+\subsection{Experimentation}
+\label{sec:discussion-experimentation}
 Following model diagnostics, we are ready to use our models and causal graph to inform real interventions.
 These interventions can come in two kind: an experiment or a ``full-scale'' implementation of one's policy.
 If our intervention is experimental, then we are likely interested in one of two aims.
@@ -58,6 +63,10 @@ In these situations, we are interested in optimally designing an experiment (or 
 We are further interested in how we can leverage potentially multiple experimental datasets to improve our causal graphs.
 For a review of the literature on experimentation for learning and construction/refinement of a preliminary causal graph, see \citet{hyttinen_2013_experiment} and \citet[Sec. 3.1.2]{kalisch_2014_causal}.
 For more recent approaches in this vein, see works such as \citet{triantafillou_2015_constraint, kocaoglu_2017_experimental, brouillard_2020_differentiable, rantanen_2020_learning}.
+
+
+\subsection{Decision}
+\label{sec:discussion-decision}
 
 Finally, after we have run any experiments that we are interested in, we still must decide how to intervene in our population.
 Three major types of questions come to mind immediately:
