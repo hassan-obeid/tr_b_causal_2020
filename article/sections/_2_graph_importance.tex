@@ -104,31 +104,30 @@ Under this generative model, intervening on one variable would also result in ch
 The goal of our simulation exercise is to show that ignoring the true generative model of the data (Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}) can result in arbitrarily biased treatment effects, even if the analyst knows the true outcome model (Equations \ref{eq:DA} through \ref{eq:SR3}).
 
 \begin{figure}
-   \centering
+\centering
+\begin{subfigure}
    \includegraphics[width=0.75\textwidth]{Independent_graph}
    \caption{Causal Graph with Independent Covariates}
    \label{fig:IND_GRAPH}
-\end{figure}
+\end{subfigure}
 
-\begin{figure}
-   \centering
+\begin{subfigure}
    \includegraphics[width=0.75\textwidth]{DA_interacting_graph}
    \caption{Causal Graph for the Drive Alone Utility Function}
    \label{fig:DA_causal_2}
-\end{figure}
+\end{subfigure}
 
-\begin{figure}
-   \centering
+\begin{subfigure}
    \includegraphics[width=0.75\textwidth]{SR2_interacting_graph}
    \caption{Causal Graph for the Shared Ride 2 Utility Function}
    \label{fig:SR2_causal_2}
-\end{figure}
+\end{subfigure}
 
-\begin{figure}
-   \centering
+\begin{subfigure}
    \includegraphics[width=0.75\textwidth]{SR3_interacting_graph}
    \caption{Causal Graph for the Shared Ride 3+ Utility Function}
    \label{fig:SR3_causal_2}
+\end{subfigure}
 \end{figure}
 
 To achieve this goal, we follow these simulation steps, using the same outcome model defined in Equations \ref{eq:DA} to \ref{eq:SR3}:
