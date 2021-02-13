@@ -35,6 +35,7 @@ DA_INTERACTING_GRAPH.edge("Number of Autos", "Utility (Drive Alone)")
 DA_INTERACTING_GRAPH.edge(
     "Number of Licensed Drivers", "Utility (Drive Alone)"
 )
+DA_INTERACTING_GRAPH.edge("Cross Bay Trip", "Utility (Drive Alone)")
 DA_INTERACTING_GRAPH.edge(
     "Total Travel Cost", "Utility (Drive Alone)", style="filled", color="red"
 )
