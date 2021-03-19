@@ -106,7 +106,7 @@ Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables i
 This DAG is equivalent to what an analyst assumes when they only update the variables directly impacted by a given policy, without considering the dependencies between the explanatory variables.
 To illustrate the problem with this approach, consider the case where the ``true'' data generating process that reflects the dependencies between the covariates is as shown in Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}.
 Under this generative model, intervening on one variable would also result in changes to other variables that are dependent on it.
-The goal of our simulation exercise is to show that ignoring the true generative model of the data (Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}) can result in arbitrarily biased treatment effects, even if the analyst knows the true outcome model (Equations \ref{eq:DA} through \ref{eq:SR3}).
+The goal of our simulation exercise is to show that ignoring the true generative model of the data (Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}) can result in arbitrarily biased treatment effects, even if the analyst knows the true outcome model (Equations \ref{eq:DA} through \ref{eq:SR3+}).
 
 \begin{figure}
 \centering
@@ -136,7 +136,7 @@ The goal of our simulation exercise is to show that ignoring the true generative
 
 \end{figure}
 
-To achieve this goal, we follow these simulation steps, using the same outcome model defined in Equations \ref{eq:DA} to \ref{eq:SR3}:
+To achieve this goal, we follow these simulation steps, using the same outcome model defined in Equations \ref{eq:DA} to \ref{eq:SR3+}:
 \begin{itemize}
    \item Simulate data from the DAGs shown in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:SR3_causal_2}.
    \item In one scenario, only modify the travel distance variable in all graphs to emulate a company's decision to move its employees closer to campus. This is similar to assuming the DAG in Figure \ref{fig:IND_GRAPH} as the true data generating model.
