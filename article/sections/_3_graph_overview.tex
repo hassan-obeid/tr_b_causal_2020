@@ -1,4 +1,6 @@
-\section{Overview of Causal Graphs}
+\section{Causal Graphs}
+
+\subsection{An Overview}
 \label{sec:graph-overview}
 The previous section, \ref{sec:graph-importance}, motivated why the knowledge encoded in one's DAG is important.
 This section gives a high level overview of what DAGs are and provides references for more thorough readings on the subject.
@@ -58,7 +60,7 @@ Here, the communication advantage of DAGs is of particular relevance, as travel 
 
 Another benefit of DAGs is that they come with testable implications.
 Incorporating these tests in any causal analysis adds robustness and defensibility to one's study.
-In section 5, we discuss these implications further, and we illustrate how to tests for them in one's analysis.
+In section 5, we discuss these implications further, and we illustrate how to test for them in one's analysis.
 
 Lastly, it is important to note that the graphical approach to causality focuses
 primarily on issues of identification of causal effects, as opposed to issues of estimation and inference. That is, given a
@@ -133,10 +135,10 @@ ABM diagrams also detail which downstream choices partially cause which precedin
 For example, considerations about one's travel mode choice influences one's daily activity choices.
 This happens even though the activity choices precede the travel mode choices.
 
-Two main features distinguish RUM, ICLV, and ABM graphs from the causal graphs of \citet{pearl_1995_causal}.
+In conclusion, choice modellers have long used causal graphs.
+However, two main features distinguish RUM, ICLV, and ABM graphs from the causal graphs of \citet{pearl_1995_causal}.
 First, causal graphs in choice modelling traditionally ignore relations between the explanatory variables.
-Typically, choice modelling causal graphs show all explanatory variables together as a monolith.
-The relationships between explanatory variables is often not specified.
+Commonly, choice modellers present these variables together, as a monolith.
 Even worse, researchers may tacitly treat the variables as if they are jointly independent.
 In the language used by a large group of causal inference scholars, econometric causal diagrams ignore the treatment assignment mechanism.
 
@@ -148,12 +150,6 @@ In doing so, we underuse causal implications such as statistical independence.
 Worse, we possibly violate these implications with great frequency.
 Such actions ignore the efforts from causal inference in computer science.
 There, researchers stress using their data to test the implications of their causal graphs.
-
-In conclusion, choice modellers have long made use of causal graphs.
-In select contexts, causal graphs convey causal assumptions about choice processes.
-Thus far, however, our field has underutilized these tools.
-We seldom use causal graphs to encode our assumptions about how our explanatory variables came to be.
-Moreover, we do not routinely test causal graphs against empirical choice data.
 
 These two issues are opportunities for choice modelling to gain from the insights and methods of causal inference scholars.
 The rest of the chapter will focus on the following three topics.

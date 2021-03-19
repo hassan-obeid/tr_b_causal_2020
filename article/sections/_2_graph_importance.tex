@@ -4,10 +4,10 @@
 As stated in Section \ref{sec:intro}, transportation demand models are used to evaluate the impact of policies on a certain
 transportation demand related outcome. As an example, consider the proposals from the following fictitious scenarios:
 \begin{itemize}
- \item Based on input from the public, the Department of Transportation (DOT) is considering implementing a new parking policy.
+ \item Based on input from the public, a certain Department of Transportation (DOT) is considering implementing a new parking policy.
  This proposed policy would change prices and restrict availability to discourage individuals from parking in the central business district.
  The DOT and its constituents believe that this policy will encourage people to use more active transportation modes (e.g., walking, biking, etc.) and cause them to drive less.
- \item A certain DOT is considering constructing a streetcar (trolley, tram) line in a low/mid-income area in its jurisdiction.
+ \item The DOT is considering constructing a streetcar (trolley, tram) line in a low/mid-income area in its jurisdiction.
  Citing examples from other cities and countries, the DOT claims that the new streetcar line will create more transit oriented developments and increase economic activity in the areas surrounding the proposed project.
  \end{itemize}
 
@@ -29,13 +29,12 @@ Researchers and practitioners have made use of DAGs in fields ranging from medic
 
 Likewise, DAGs could prove useful in addressing transportation policy questions.
 \citet{brathwaite_2018_causal} have proposed a framework illustrating how practitioners and researchers can use DAGs to answer such transportation modelling questions in a causal context.
-However, \citet{brathwaite_2018_causal} did not show an empirical application of their framework and how it results in different conclusions when compared to traditional modelling approaches.
+However, \citet{brathwaite_2018_causal} did not show an empirical application of their framework.
 
-In this section, we will present an example illustrating the importance of using DAGs in transportation demand modelling.
+In this section, we will present an empirical example illustrating the importance of using DAGs in transportation demand modelling.
 Specifically, we will illustrate how different assumptions about the data generating process result in different conclusions, even while assuming the same outcome model.
-To make our point, we build upon \citet{brathwaite_2018_causal}.
-Here, we present an empirical exercise using a simplified transportation modelling problem.
-Before going any further, we note that this example is illustrative, and it does not reflect all complexities in a typical transportation choice modelling problem.
+Before going any further, we note that this example is not meant to be all-encompassing.
+That is, it does not reflect all complexities in a typical transportation choice modelling problem.
 Indeed, it is not our primary goal in this section to recover the causal effect of the proposed intervention.
 Instead, we are most interested in showing how different DAGs would result in different conclusions about the effect of the proposed intervention.
 
@@ -43,7 +42,7 @@ Let us assume that a company wants to reduce its workforce carbon footprint by m
 We would like to forecast how such an intervention would change the share of employees driving to work.
 We model this travel mode choice problem based on a dataset from \citet{brathwaite_asymmetric}.
 This dataset is based on the 2012 California Household Travel Survey, and it
-contains approximately 4000 home-based school or work tours made by approximately 3850 individuals in the California Bay area.
+contains approximately 4000 home-based school or work tours made by approximately 3850 individuals in the San Francisco Bay Area, California.
 The dataset includes eight travel modes.
 For our illustrative purposes, we focus on the following car-centric modes:
 
@@ -61,7 +60,8 @@ In this model, the systematic utility equations of the car-centric modes defined
    \begin{aligned}
    \label{eq:DA}
    \textrm{Utility} \left(\textrm{Drive Alone}\right) &= \beta_{\textrm{travel\_time}} \times \textrm{Travel\_Time} + \beta_{\textrm{cost\_per\_distance\_drive\_alone}} \times \textrm{Cost\_per\_Distance}_{\textrm{da}} \\
-   &\quad + \beta_{\textrm{autos}} \times \textrm{Number\_of\_Autos}
+   &\quad + \beta_{\textrm{autos\_per\_licensed\_driver}} \times \textrm{Autos\_per\_Licensed\_Driver} \\
+   &\quad + \beta_{\textrm{cross\_bay\_da}} \times \textrm{Cross\_Bay}
    \end{aligned}
 \end{equation}
 
@@ -69,8 +69,10 @@ In this model, the systematic utility equations of the car-centric modes defined
    \begin{aligned}
    \label{eq:SR2}
    \textrm{Utility} \left(\textrm{Shared Ride 2}\right) &= ASC_{\textrm{shared\_ride\_2}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
-   &\quad + \beta_{\textrm{cost\_per\_distance\_shared\_ride\_2}} \times \textrm{Cost\_per\_Distance}_{ \textrm{sr2} } + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
-   &\quad + \beta_{\textrm{cross\_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{Household\_Size} \\
+   &\quad + \beta_{\textrm{cost\_per\_distance\_shared\_ride\_2}} \times \textrm{Cost\_per\_Distance}_{ \textrm{sr2} } \\
+   &\quad + \beta_{\textrm{autos\_per\_licensed\_driver}}  \times \textrm{Autos\_per\_Licensed\_Driver} \\
+   &\quad + \beta_{\textrm{cross\_bay\_shared\_ride}} \times \textrm{Cross\_Bay} \\
+   &\quad + \beta_{\textrm{hh\_size}} \times \textrm{Household\_Size} \\
    &\quad + \beta_{\textrm{n\_kids\_hh}} \times \textrm{Number\_of\_kids}
    \end{aligned}
 \end{equation}
@@ -79,8 +81,10 @@ In this model, the systematic utility equations of the car-centric modes defined
    \begin{aligned}
    \label{eq:SR3+}
    \textrm{Utility} \left(\textrm{Shared Ride 3+}\right) &= ASC_{\textrm{sr3+}} + \beta_{\textrm{time\_drive}} \times \textrm{Travel\_Time} \\
-   &\quad + \beta_{\textrm{cost\_per\_distance\_sr3+}} \times \textrm{Cost\_per\_Distance}_{\textrm{sr3+}} + \beta_{\textrm{autos}}  \times \textrm{Number\_of\_Autos} \\
-   &\quad + \beta_{\textrm{cross\_bay}} \times \textrm{Cross\_Bay} + \beta_{\textrm{hh\_size}} \times \textrm{Household\_Size} \\
+   &\quad + \beta_{\textrm{cost\_per\_distance\_sr3+}} \times \textrm{Cost\_per\_Distance}_{\textrm{sr3+}} \\
+   &\quad + \beta_{\textrm{autos\_per\_licensed\_driver}}  \times \textrm{Autos\_per\_Licensed\_Driver} \\
+   &\quad + \beta_{\textrm{cross\_bay\_shared\_ride}} \times \textrm{Cross\_Bay} \\
+   &\quad + \beta_{\textrm{hh\_size}} \times \textrm{Household\_Size} \\
    &\quad + \beta_{\textrm{n\_kids\_hh}} \times \textrm{Number\_of\_kids}
    \end{aligned}
 \end{equation}
@@ -102,37 +106,37 @@ Figure \ref{fig:IND_GRAPH} illustrates the DAG where all explanatory variables i
 This DAG is equivalent to what an analyst assumes when they only update the variables directly impacted by a given policy, without considering the dependencies between the explanatory variables.
 To illustrate the problem with this approach, consider the case where the ``true'' data generating process that reflects the dependencies between the covariates is as shown in Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}.
 Under this generative model, intervening on one variable would also result in changes to other variables that are dependent on it.
-The goal of our simulation exercise is to show that ignoring the true generative model of the data (Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}) can result in arbitrarily biased treatment effects, even if the analyst knows the true outcome model (Equations \ref{eq:DA} through \ref{eq:SR3}).
+The goal of our simulation exercise is to show that ignoring the true generative model of the data (Figures \ref{fig:DA_causal_2} through \ref{fig:SR3_causal_2}) can result in arbitrarily biased treatment effects, even if the analyst knows the true outcome model (Equations \ref{eq:DA} through \ref{eq:SR3+}).
 
 \begin{figure}
-   \centering
-   \includegraphics[width=0.75\textwidth]{Independent_graph}
+\centering
+\begin{subfigure}[b]{0.75\textwidth}
+   \includegraphics{Independent_graph}
    \caption{Causal Graph with Independent Covariates}
    \label{fig:IND_GRAPH}
-\end{figure}
+\end{subfigure}
 
-\begin{figure}
-   \centering
-   \includegraphics[width=0.75\textwidth]{DA_interacting_graph}
+\begin{subfigure}[b]{0.75\textwidth}
+   \includegraphics{DA_interacting_graph}
    \caption{Causal Graph for the Drive Alone Utility Function}
    \label{fig:DA_causal_2}
-\end{figure}
+\end{subfigure}
 
-\begin{figure}
-   \centering
-   \includegraphics[width=0.75\textwidth]{SR2_interacting_graph}
+\begin{subfigure}[b]{0.75\textwidth}
+   \includegraphics{SR2_interacting_graph}
    \caption{Causal Graph for the Shared Ride 2 Utility Function}
    \label{fig:SR2_causal_2}
-\end{figure}
+\end{subfigure}
 
-\begin{figure}
-   \centering
-   \includegraphics[width=0.75\textwidth]{SR3_interacting_graph}
+\begin{subfigure}[b]{0.75\textwidth}
+   \includegraphics{SR3_interacting_graph}
    \caption{Causal Graph for the Shared Ride 3+ Utility Function}
    \label{fig:SR3_causal_2}
+\end{subfigure}
+
 \end{figure}
 
-To achieve this goal, we follow these simulation steps, using the same outcome model defined in Equations \ref{eq:DA} to \ref{eq:SR3}:
+To achieve this goal, we follow these simulation steps, using the same outcome model defined in Equations \ref{eq:DA} to \ref{eq:SR3+}:
 \begin{itemize}
    \item Simulate data from the DAGs shown in Figure \ref{fig:DA_causal_2} through Figure \ref{fig:SR3_causal_2}.
    \item In one scenario, only modify the travel distance variable in all graphs to emulate a company's decision to move its employees closer to campus. This is similar to assuming the DAG in Figure \ref{fig:IND_GRAPH} as the true data generating model.
@@ -172,7 +176,7 @@ In the case of confounding variables, we need to consider the treatment assignme
 As \citep{hahn_2020_bayesian} show, one way to account for the treatment assignment mechanism is to estimate the propensity score in our sample and adjust for that in our outcome model.
 
 In contrast to the example shown in this section, the data generating process might not be easily distinguishable in the majority of situations, mainly due to the complexity of the real world.
-Therefore, constructing a causal graph that represents the data generating process as much as possible is not an easy task.
+Therefore, constructing a causal graph that represents the data generating process as closely as possible is not an easy task.
 To prepare readers to create causal graphs, the next section will provide a brief overview of them and their history in choice modelling.
-Then, Section \ref{sec:graph-construction} explores this topic and includes detailed guidance on how to build causal graphs representing the researchers beliefs about the data generating process.
+Then, Section \ref{sec:graph-construction} explores this topic and includes detailed guidance on how to build causal graphs representing the researchers' beliefs about the data generating process.
 Section \ref{sec:graph-testing} follows up with guidance on how to test one's causal graphs against one's data.

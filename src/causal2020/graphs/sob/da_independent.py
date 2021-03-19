@@ -14,6 +14,7 @@ DA_IND_GRAPH.edge("Total Travel Time", "Utility (Drive Alone)")
 DA_IND_GRAPH.edge("Number of Autos", "Utility (Drive Alone)")
 DA_IND_GRAPH.edge("Number of Licensed Drivers", "Utility (Drive Alone)")
 DA_IND_GRAPH.edge("Total Travel Cost", "Utility (Drive Alone)")
+DA_IND_GRAPH.edge("Cross Bay Trip", "Utility (Drive Alone)")
 DA_IND_GRAPH.edge(
     "Total Travel Distance",
     "Utility (Drive Alone)",
